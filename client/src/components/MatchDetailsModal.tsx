@@ -3,56 +3,74 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { CompatibilityScoreCard } from "./CompatibilityScoreCard";
 import { Button } from "@/components/ui/button";
 import { Heart, User, Briefcase, MessageCircle } from "lucide-react";
 
+interface Match {
+  profileId: string;
+  name: string;
+  distance: number;
+  compatibility: {
+    overallScore: number;
+    nicheScore: number;
+    wholePersonScore: number;
+    opportunitiesScore: number;
+    nicheMatches: string[];
+    wholePersonInsights: string[];
+    opportunityMatches: string[];
+    explanation: string;
+  };
+}
+
 interface MatchDetailsModalProps {
+  match: Match;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function MatchDetailsModal({ open, onOpenChange }: MatchDetailsModalProps) {
+export function MatchDetailsModal({ match, open, onOpenChange }: MatchDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="modal-match-details">
         <DialogHeader>
           <DialogTitle className="text-2xl">Match Compatibility Breakdown</DialogTitle>
+          <DialogDescription>
+            {match.distance} km away • {match.compatibility.overallScore}% compatible
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           <CompatibilityScoreCard
             icon={Heart}
             title="Niche Interests"
-            score={92}
-            highlights={["Island of Dr. Moreau", "Experimental Jazz", "Urban Gardening"]}
+            score={match.compatibility.nicheScore}
+            highlights={match.compatibility.nicheMatches}
             color="blue"
           />
           <CompatibilityScoreCard
             icon={User}
             title="Whole Person"
-            score={84}
-            highlights={["Books", "Music", "Hobbies", "Values"]}
+            score={match.compatibility.wholePersonScore}
+            highlights={match.compatibility.wholePersonInsights}
             color="purple"
           />
           <CompatibilityScoreCard
             icon={Briefcase}
             title="Opportunities"
-            score={78}
-            highlights={["Software Engineer", "Mentorship", "Collaboration"]}
+            score={match.compatibility.opportunitiesScore}
+            highlights={match.compatibility.opportunityMatches}
             color="green"
           />
         </div>
 
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <h4 className="font-semibold mb-2">Why You Matched</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Both share a passion for obscure literary works like "Island of Dr. Moreau"</li>
-            <li>• Compatible music taste spanning experimental and indie genres</li>
-            <li>• One seeking software engineering role, other hiring for engineer position</li>
-            <li>• Both active in urban sustainability and gardening communities</li>
-          </ul>
+          <p className="text-sm text-muted-foreground">
+            {match.compatibility.explanation}
+          </p>
         </div>
 
         <div className="flex gap-4 mt-6">

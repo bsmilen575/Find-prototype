@@ -1,21 +1,78 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Users, Filter, Settings } from "lucide-react";
+import { MapPin, Users, Filter, Settings, RefreshCw } from "lucide-react";
 import { MatchPreviewCard } from "./MatchPreviewCard";
 import { MatchDetailsModal } from "./MatchDetailsModal";
+import { useProfile } from "@/lib/useProfile";
+import { useLocation } from "wouter";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+
+interface Match {
+  profileId: string;
+  name: string;
+  distance: number;
+  compatibility: {
+    overallScore: number;
+    nicheScore: number;
+    wholePersonScore: number;
+    opportunitiesScore: number;
+    nicheMatches: string[];
+    wholePersonInsights: string[];
+    opportunityMatches: string[];
+    explanation: string;
+  };
+}
 
 export function MapView() {
-  const [radius, setRadius] = useState([500]);
-  const [selectedMatch, setSelectedMatch] = useState(false);
+  const [radius, setRadius] = useState([5]);
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const { profileId } = useProfile();
+  const [, setLocation] = useLocation();
 
-  const mockMatches = [
-    { id: 1, score: 92, distance: "0.2 mi", types: ["Niche Interests", "Opportunities"] },
-    { id: 2, score: 87, distance: "0.5 mi", types: ["Whole Person", "Niche Interests"] },
-    { id: 3, score: 78, distance: "0.8 mi", types: ["Opportunities"] }
-  ];
+  useEffect(() => {
+    if (!profileId) {
+      setLocation("/onboarding");
+    }
+  }, [profileId, setLocation]);
+
+  const { data: matches = [], isLoading, refetch } = useQuery<Match[]>({
+    queryKey: [`/api/profiles/${profileId}/matches?radius=${radius[0]}`],
+    enabled: !!profileId,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+  });
+
+  const handleRefresh = () => {
+    if (profileId && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          await apiRequest("POST", `/api/profiles/${profileId}/location`, {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          queryClient.invalidateQueries({ queryKey: [`/api/profiles/${profileId}/matches`] });
+          refetch();
+        } catch (error) {
+          console.error("Failed to update location:", error);
+        }
+      });
+    }
+  };
+
+  const getMatchTypes = (compatibility: Match['compatibility']) => {
+    const types = [];
+    if (compatibility.nicheScore >= 70) types.push("Niche Interests");
+    if (compatibility.wholePersonScore >= 70) types.push("Whole Person");
+    if (compatibility.opportunitiesScore >= 70) types.push("Opportunities");
+    return types.length > 0 ? types : ["Compatible"];
+  };
+
+  if (!profileId) {
+    return null;
+  }
 
   return (
     <div className="min-h-[calc(100vh-73px)] bg-background p-6">
@@ -47,20 +104,20 @@ export function MapView() {
                 <Filter className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 <div className="flex-1">
                   <label className="text-sm font-medium mb-2 block">
-                    Search Radius: {radius[0]}m
+                    Search Radius: {radius[0]} km
                   </label>
                   <Slider
                     value={radius}
                     onValueChange={setRadius}
-                    min={100}
-                    max={5000}
-                    step={100}
+                    min={1}
+                    max={50}
+                    step={1}
                     className="w-full"
                     data-testid="slider-radius"
                   />
                 </div>
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-5 w-5" />
+                <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={isLoading}>
+                  <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
                 </Button>
               </div>
             </Card>
@@ -72,25 +129,44 @@ export function MapView() {
                 <Users className="h-5 w-5" />
                 Nearby
               </h3>
-              <Badge variant="secondary">{mockMatches.length}</Badge>
+              <Badge variant="secondary">{matches.length}</Badge>
             </div>
 
-            <div className="space-y-4">
-              {mockMatches.map((match) => (
-                <MatchPreviewCard
-                  key={match.id}
-                  compatibilityScore={match.score}
-                  distance={match.distance}
-                  matchTypes={match.types}
-                  onViewDetails={() => setSelectedMatch(true)}
-                />
-              ))}
-            </div>
+            {isLoading ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                <RefreshCw className="h-6 w-6 mx-auto mb-2 animate-spin" />
+                Finding matches...
+              </Card>
+            ) : matches.length === 0 ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                <Users className="h-8 w-8 mx-auto mb-2" />
+                <p className="text-sm">No matches nearby yet</p>
+                <p className="text-xs mt-1">Try increasing your search radius</p>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {matches.map((match) => (
+                  <MatchPreviewCard
+                    key={match.profileId}
+                    compatibilityScore={match.compatibility.overallScore}
+                    distance={`${match.distance} km away`}
+                    matchTypes={getMatchTypes(match.compatibility)}
+                    onViewDetails={() => setSelectedMatch(match)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <MatchDetailsModal open={selectedMatch} onOpenChange={setSelectedMatch} />
+      {selectedMatch && (
+        <MatchDetailsModal
+          match={selectedMatch}
+          open={!!selectedMatch}
+          onOpenChange={(open) => !open && setSelectedMatch(null)}
+        />
+      )}
     </div>
   );
 }

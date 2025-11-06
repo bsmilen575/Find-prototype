@@ -72,25 +72,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const matches = [];
       
-      for (const candidate of nearbyProfiles) {
-        if (candidate.id === profile.id) continue;
-        
-        const compatibility = await calculateCompatibility(profile, candidate);
-        
-        if (compatibility.overallScore >= 60) {
-          const distance = calculateDistance(
-            profile.latitude,
-            profile.longitude,
-            candidate.latitude!,
-            candidate.longitude!
-          );
+      // First filter by embedding similarity if available
+      const candidatesWithScores = nearbyProfiles
+        .filter(candidate => candidate.id !== profile.id)
+        .map(candidate => {
+          let embeddingScore = 0;
+          if (profile.embedding && candidate.embedding) {
+            try {
+              const embedding1 = JSON.parse(profile.embedding);
+              const embedding2 = JSON.parse(candidate.embedding);
+              embeddingScore = cosineSimilarity(embedding1, embedding2);
+            } catch (e) {
+              console.error("Embedding similarity failed:", e);
+            }
+          }
+          return { candidate, embeddingScore };
+        })
+        .filter(({ embeddingScore }) => embeddingScore >= 0.6 || embeddingScore === 0) // Keep if score is good or not computed
+        .sort((a, b) => b.embeddingScore - a.embeddingScore)
+        .slice(0, 20); // Limit to top 20 by embedding similarity
+
+      // Then get detailed compatibility for top candidates
+      for (const { candidate } of candidatesWithScores) {
+        try {
+          const compatibility = await calculateCompatibility(profile, candidate);
           
-          matches.push({
-            profileId: candidate.id,
-            name: candidate.name,
-            distance: Math.round(distance * 10) / 10,
-            compatibility,
-          });
+          if (compatibility.overallScore >= 60) {
+            const distance = calculateDistance(
+              profile.latitude,
+              profile.longitude,
+              candidate.latitude!,
+              candidate.longitude!
+            );
+            
+            matches.push({
+              profileId: candidate.id,
+              name: candidate.name,
+              distance: Math.round(distance * 10) / 10,
+              compatibility,
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to calculate compatibility for ${candidate.id}:`, error);
+          // Continue with other matches
         }
       }
 

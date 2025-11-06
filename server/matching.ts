@@ -3,7 +3,17 @@ import OpenAI from "openai";
 import { type Profile } from "@shared/schema";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let openaiClient: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openaiClient) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY is not configured. Please add it to use matching features.");
+    }
+    openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return openaiClient;
+}
 
 export interface CompatibilityScore {
   overallScore: number;
@@ -17,6 +27,7 @@ export interface CompatibilityScore {
 }
 
 export async function generateProfileEmbedding(profile: Profile): Promise<number[]> {
+  const openai = getOpenAI();
   const profileText = `
     Books: ${profile.books.join(", ")}
     Music: ${profile.music.join(", ")}
@@ -36,7 +47,36 @@ export async function calculateCompatibility(
   profile1: Profile,
   profile2: Profile
 ): Promise<CompatibilityScore> {
-  const prompt = `You are a compatibility matching expert. Analyze these two profiles and calculate compatibility scores.
+  // First, try embedding-based similarity if both profiles have embeddings
+  let embeddingScore = 0;
+  if (profile1.embedding && profile2.embedding) {
+    try {
+      const embedding1 = JSON.parse(profile1.embedding);
+      const embedding2 = JSON.parse(profile2.embedding);
+      const similarity = cosineSimilarity(embedding1, embedding2);
+      embeddingScore = Math.round(similarity * 100);
+    } catch (e) {
+      console.error("Failed to compute embedding similarity:", e);
+    }
+  }
+
+  // If OpenAI is not configured, return embedding-based score only
+  if (!process.env.OPENAI_API_KEY) {
+    return {
+      overallScore: embeddingScore,
+      nicheScore: embeddingScore,
+      wholePersonScore: embeddingScore,
+      opportunitiesScore: 0,
+      nicheMatches: [],
+      wholePersonInsights: ["Based on overall profile similarity"],
+      opportunityMatches: [],
+      explanation: `${embeddingScore}% compatible based on profile similarity. Connect OpenAI for detailed analysis.`,
+    };
+  }
+
+  // Use AI for detailed scoring
+  try {
+    const prompt = `You are a compatibility matching expert. Analyze these two profiles and calculate compatibility scores.
 
 Profile 1:
 - Books: ${profile1.books.join(", ") || "None"}
@@ -66,37 +106,52 @@ Respond in JSON format:
   "explanation": "2-3 sentence explanation of why they matched"
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-5",
-    messages: [
-      {
-        role: "system",
-        content: "You are an expert at analyzing human compatibility based on interests and opportunities.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    response_format: { type: "json_object" },
-  });
+    const openai = getOpenAI();
+    const response = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert at analyzing human compatibility based on interests and opportunities.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
 
-  const result = JSON.parse(response.choices[0].message.content || "{}");
+    const result = JSON.parse(response.choices[0].message.content || "{}");
 
-  const overallScore = Math.round(
-    (result.nicheScore * 0.4 + result.wholePersonScore * 0.4 + result.opportunitiesScore * 0.2)
-  );
+    const overallScore = Math.round(
+      (result.nicheScore * 0.4 + result.wholePersonScore * 0.4 + result.opportunitiesScore * 0.2)
+    );
 
-  return {
-    overallScore,
-    nicheScore: result.nicheScore || 0,
-    wholePersonScore: result.wholePersonScore || 0,
-    opportunitiesScore: result.opportunitiesScore || 0,
-    nicheMatches: result.nicheMatches || [],
-    wholePersonInsights: result.wholePersonInsights || [],
-    opportunityMatches: result.opportunityMatches || [],
-    explanation: result.explanation || "Compatibility analysis pending",
-  };
+    return {
+      overallScore,
+      nicheScore: result.nicheScore || 0,
+      wholePersonScore: result.wholePersonScore || 0,
+      opportunitiesScore: result.opportunitiesScore || 0,
+      nicheMatches: result.nicheMatches || [],
+      wholePersonInsights: result.wholePersonInsights || [],
+      opportunityMatches: result.opportunityMatches || [],
+      explanation: result.explanation || "Compatibility analysis pending",
+    };
+  } catch (error) {
+    console.error("AI compatibility scoring failed:", error);
+    // Fallback to embedding score
+    return {
+      overallScore: embeddingScore,
+      nicheScore: embeddingScore,
+      wholePersonScore: embeddingScore,
+      opportunitiesScore: 0,
+      nicheMatches: [],
+      wholePersonInsights: ["Based on overall profile similarity"],
+      opportunityMatches: [],
+      explanation: `${embeddingScore}% compatible based on profile similarity.`,
+    };
+  }
 }
 
 export function cosineSimilarity(vecA: number[], vecB: number[]): number {
