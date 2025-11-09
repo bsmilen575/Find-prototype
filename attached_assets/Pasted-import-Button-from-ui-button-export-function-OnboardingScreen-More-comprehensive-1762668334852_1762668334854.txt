@@ -1,10 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { useLocation } from 'wouter';
-import sphereImage from '@assets/Find sphere 2_1762667909204.png';
+import { Button } from '../ui/button';
 
 export function OnboardingScreen() {
-  const [, setLocation] = useLocation();
-  
   // More comprehensive neural network nodes distributed across the sphere
   const nodes = [
     // Top cluster
@@ -110,13 +106,127 @@ export function OnboardingScreen() {
   ];
   
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }}>
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
-        <div className="relative w-48 h-48 mb-12" data-testid="sphere-container">
-          <img 
-            src={sphereImage} 
-            alt="Find sphere" 
-            className="w-full h-full object-contain"
+        {/* Hyper-realistic Metallic Silver Sphere with Neural Network */}
+        <div className="relative w-48 h-48 mb-12">
+          {/* Metallic Chrome Sphere with enhanced reflections */}
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `
+                radial-gradient(circle at 30% 25%, 
+                  #ffffff 0%, 
+                  #fafafa 5%, 
+                  #efefef 10%, 
+                  #e0e0e0 15%, 
+                  #d0d0d0 20%, 
+                  #c0c0c0 25%, 
+                  #b0b0b0 30%, 
+                  #a0a0a0 35%, 
+                  #909090 40%, 
+                  #808080 45%, 
+                  #707070 50%, 
+                  #606060 55%, 
+                  #505050 60%, 
+                  #404040 70%, 
+                  #303030 80%, 
+                  #202020 90%, 
+                  #151515 100%
+                )
+              `,
+              boxShadow: `
+                inset -35px -35px 70px rgba(0, 0, 0, 0.6),
+                inset 15px 15px 25px rgba(255, 255, 255, 0.5),
+                inset -3px -3px 10px rgba(0, 0, 0, 0.4),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.6),
+                -20px 20px 40px rgba(0, 0, 0, 0.35),
+                20px -20px 35px rgba(255, 255, 255, 0.15),
+                0 35px 70px rgba(0, 0, 0, 0.25)
+              `,
+            }}
+          />
+          
+          {/* Primary specular highlight - bright spot */}
+          <div 
+            className="absolute rounded-full"
+            style={{
+              top: '12%',
+              left: '18%',
+              width: '45%',
+              height: '45%',
+              background: 'radial-gradient(circle at center, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 15%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%)',
+              filter: 'blur(0.3px)',
+            }}
+          />
+          
+          {/* Sharp pinpoint highlight */}
+          <div 
+            className="absolute rounded-full"
+            style={{
+              top: '18%',
+              left: '24%',
+              width: '20%',
+              height: '20%',
+              background: 'radial-gradient(circle at center, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 255, 0.5) 40%, transparent 60%)',
+            }}
+          />
+          
+          {/* Secondary metallic reflection band */}
+          <div 
+            className="absolute rounded-full"
+            style={{
+              top: '35%',
+              left: '8%',
+              width: '55%',
+              height: '18%',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 100%)',
+              filter: 'blur(1.5px)',
+              transform: 'rotate(-22deg)',
+            }}
+          />
+          
+          {/* Bottom environmental reflection */}
+          <div 
+            className="absolute rounded-full"
+            style={{
+              bottom: '18%',
+              right: '15%',
+              width: '40%',
+              height: '40%',
+              background: 'radial-gradient(circle at center, rgba(200, 200, 200, 0.4) 0%, rgba(180, 180, 180, 0.25) 35%, transparent 70%)',
+              filter: 'blur(5px)',
+            }}
+          />
+          
+          {/* Rim light for spherical depth */}
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `
+                radial-gradient(circle at 50% 50%, 
+                  transparent 58%, 
+                  rgba(255, 255, 255, 0.35) 68%, 
+                  rgba(255, 255, 255, 0.2) 75%,
+                  rgba(255, 255, 255, 0.1) 80%,
+                  transparent 87%
+                )
+              `,
+            }}
+          />
+          
+          {/* Additional metallic sheen streaks */}
+          <div 
+            className="absolute rounded-full"
+            style={{
+              top: '55%',
+              left: '25%',
+              width: '35%',
+              height: '12%',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 40%, rgba(255, 255, 255, 0.35) 60%, transparent 100%)',
+              filter: 'blur(2px)',
+              transform: 'rotate(-30deg)',
+            }}
           />
           
           {/* Neural Network Overlay - Web-like structure */}
@@ -208,10 +318,10 @@ export function OnboardingScreen() {
           </svg>
         </div>
         
-        <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }} data-testid="text-title">
+        <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }}>
           Find
         </h1>
-        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '3rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }} data-testid="text-description">
+        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '3rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }}>
           Discover people or things nearby that you might like.
         </p>
       </div>
@@ -224,25 +334,3 @@ export function OnboardingScreen() {
             color: '#ffffff',
             fontFamily: 'Georgia, Garamond, serif'
           }}
-          onClick={() => setLocation('/signup')}
-          data-testid="button-signup"
-        >
-          Sign up for Beta
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full h-14 rounded-2xl"
-          style={{ 
-            fontFamily: 'Georgia, Garamond, serif',
-            borderColor: '#d0d0d0'
-          }}
-          onClick={() => setLocation('/signup')}
-          data-testid="button-signin"
-        >
-          Sign In
-        </Button>
-      </div>
-      
-    </div>
-  );
-}
