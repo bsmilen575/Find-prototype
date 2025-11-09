@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import sphereImage from '@assets/DALL·E 2025-11-08 21.52.58 - A hyper-realistic, smooth, seamless acrylic glass sphere inspired by the Neo Geo Obelisk designs by Jonathan Adler. The sphere is perfectly round, com_1762667678018.webp';
+import sphereImage from '@assets/Find sphere_1762667825348.png';
 
 export function OnboardingScreen() {
   const [, setLocation] = useLocation();
