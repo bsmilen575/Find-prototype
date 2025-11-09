@@ -1,7 +1,7 @@
 export interface Node {
   id: string;
   label: string;
-  type: 'book' | 'podcast' | 'article' | 'video' | 'creator' | 'topic' | 'tag';
+  type: 'book' | 'podcast' | 'article' | 'video' | 'creator' | 'topic' | 'tag' | 'github_repo' | 'huggingface_model' | 'spotify_artist' | 'youtube_channel' | 'paper';
   attentionWeight: number;
   source: string;
   evidence: {
@@ -10,10 +10,15 @@ export interface Node {
     watchTime?: number;
     highlights?: number;
     visits?: number;
+    stars?: number;
+    commits?: number;
+    downloads?: number;
+    plays?: number;
   };
   firstSeen: string;
   lastActive: string;
   cluster?: string;
+  platformUrl?: string;
 }
 
 export interface Edge {
@@ -84,6 +89,17 @@ export const syntheticUserGraph: UserGraph = {
     { id: 'n33', label: 'Complexity Economics', type: 'topic', attentionWeight: 64, source: 'Santa Fe Institute', evidence: { visits: 16, saves: 5 }, firstSeen: '2024-09-20', lastActive: '2024-11-30', cluster: 'c9' },
     { id: 'n34', label: 'Agent-Based Modeling', type: 'tag', attentionWeight: 56, source: 'Papers + Tutorials', evidence: { saves: 4, visits: 12 }, firstSeen: '2024-09-25', lastActive: '2024-10-18', cluster: 'c9' },
     { id: 'n35', label: 'Brian Arthur', type: 'creator', attentionWeight: 51, source: 'Lectures', evidence: { watchTime: 180, saves: 2 }, firstSeen: '2024-10-01', lastActive: '2024-10-15', cluster: 'c9' },
+    
+    { id: 'n36', label: 'transformers', type: 'github_repo', attentionWeight: 89, source: 'GitHub', evidence: { stars: 247, commits: 18, visits: 52 }, firstSeen: '2024-09-05', lastActive: '2025-01-07', cluster: 'c1', platformUrl: 'github.com/huggingface/transformers' },
+    { id: 'n37', label: 'gpt-2', type: 'huggingface_model', attentionWeight: 76, source: 'Hugging Face', evidence: { downloads: 156, visits: 23 }, firstSeen: '2024-09-12', lastActive: '2024-12-18', cluster: 'c1', platformUrl: 'huggingface.co/gpt2' },
+    { id: 'n38', label: 'Jon Hopkins', type: 'spotify_artist', attentionWeight: 83, source: 'Spotify', evidence: { plays: 284, likes: 12 }, firstSeen: '2024-07-10', lastActive: '2025-01-08', cluster: 'c10', platformUrl: 'open.spotify.com/artist/7yxi31szvlbwvKq9dYOmFI' },
+    { id: 'n39', label: 'Lex Fridman Podcast', type: 'youtube_channel', attentionWeight: 92, source: 'YouTube', evidence: { watchTime: 3240, visits: 47 }, firstSeen: '2024-08-01', lastActive: '2025-01-05', cluster: 'c1', platformUrl: 'youtube.com/@lexfridman' },
+    { id: 'n40', label: 'Attention Is All You Need', type: 'paper', attentionWeight: 94, source: 'ArXiv', evidence: { highlights: 38, saves: 14, visits: 29 }, firstSeen: '2024-09-01', lastActive: '2024-12-22', cluster: 'c1', platformUrl: 'arxiv.org/abs/1706.03762' },
+    { id: 'n41', label: 'stable-diffusion', type: 'github_repo', attentionWeight: 72, source: 'GitHub', evidence: { stars: 189, visits: 34 }, firstSeen: '2024-10-15', lastActive: '2024-12-30', cluster: 'c6', platformUrl: 'github.com/CompVis/stable-diffusion' },
+    { id: 'n42', label: 'DALL-E', type: 'huggingface_model', attentionWeight: 68, source: 'Hugging Face', evidence: { downloads: 92, visits: 18 }, firstSeen: '2024-10-18', lastActive: '2024-11-25', cluster: 'c6', platformUrl: 'huggingface.co/openai/dall-e' },
+    { id: 'n43', label: 'Nils Frahm', type: 'spotify_artist', attentionWeight: 79, source: 'Spotify', evidence: { plays: 312, likes: 15 }, firstSeen: '2024-06-20', lastActive: '2025-01-06', cluster: 'c10', platformUrl: 'open.spotify.com/artist/5hMw0lBPPgbwFDN1pz9y9Y' },
+    { id: 'n44', label: '3Blue1Brown', type: 'youtube_channel', attentionWeight: 87, source: 'YouTube', evidence: { watchTime: 1680, visits: 38 }, firstSeen: '2024-05-15', lastActive: '2024-12-28', cluster: 'c3', platformUrl: 'youtube.com/@3blue1brown' },
+    { id: 'n45', label: 'The Book of Shaders', type: 'github_repo', attentionWeight: 65, source: 'GitHub', evidence: { stars: 142, visits: 27 }, firstSeen: '2024-10-20', lastActive: '2024-11-30', cluster: 'c6', platformUrl: 'github.com/patriciogonzalezvivo/thebookofshaders' },
   ],
   
   edges: [
@@ -152,17 +168,35 @@ export const syntheticUserGraph: UserGraph = {
     { source: 'n1', target: 'n30', weight: 0.59, type: 'semantic' },
     { source: 'n31', target: 'n1', weight: 0.63, type: 'semantic' },
     { source: 'n23', target: 'n6', weight: 0.41, type: 'semantic' },
+    
+    { source: 'n36', target: 'n1', weight: 0.88, type: 'co-occur' },
+    { source: 'n36', target: 'n4', weight: 0.91, type: 'semantic' },
+    { source: 'n37', target: 'n40', weight: 0.85, type: 'sequential' },
+    { source: 'n39', target: 'n1', weight: 0.79, type: 'temporal' },
+    { source: 'n39', target: 'n2', weight: 0.82, type: 'co-occur' },
+    { source: 'n40', target: 'n1', weight: 0.94, type: 'semantic' },
+    { source: 'n40', target: 'n4', weight: 0.89, type: 'semantic' },
+    { source: 'n41', target: 'n23', weight: 0.87, type: 'semantic' },
+    { source: 'n41', target: 'n24', weight: 0.84, type: 'co-occur' },
+    { source: 'n42', target: 'n23', weight: 0.81, type: 'temporal' },
+    { source: 'n42', target: 'n41', weight: 0.90, type: 'co-occur' },
+    { source: 'n44', target: 'n11', weight: 0.76, type: 'semantic' },
+    { source: 'n44', target: 'n19', weight: 0.73, type: 'semantic' },
+    { source: 'n45', target: 'n24', weight: 0.86, type: 'semantic' },
+    { source: 'n45', target: 'n41', weight: 0.79, type: 'co-occur' },
+    { source: 'n38', target: 'n43', weight: 0.77, type: 'semantic' },
   ],
   
   clusters: [
-    { id: 'c1', name: 'AI Safety & Interpretability', nodeIds: ['n1', 'n2', 'n3', 'n4', 'n5'] },
+    { id: 'c1', name: 'AI Safety & Interpretability', nodeIds: ['n1', 'n2', 'n3', 'n4', 'n5', 'n36', 'n37', 'n39', 'n40'] },
     { id: 'c2', name: 'Narrative & Storytelling', nodeIds: ['n6', 'n7', 'n8', 'n9', 'n10'] },
-    { id: 'c3', name: 'Causal Inference', nodeIds: ['n11', 'n12', 'n13', 'n14'] },
+    { id: 'c3', name: 'Causal Inference', nodeIds: ['n11', 'n12', 'n13', 'n14', 'n44'] },
     { id: 'c4', name: 'Systems Thinking', nodeIds: ['n15', 'n16', 'n17', 'n18'] },
     { id: 'c5', name: 'Cognitive Science', nodeIds: ['n19', 'n20', 'n21', 'n22'] },
-    { id: 'c6', name: 'Generative Art', nodeIds: ['n23', 'n24', 'n25'] },
+    { id: 'c6', name: 'Generative Art', nodeIds: ['n23', 'n24', 'n25', 'n41', 'n42', 'n45'] },
     { id: 'c7', name: 'Network Science', nodeIds: ['n26', 'n27', 'n28', 'n29'] },
     { id: 'c8', name: 'Mechanism Design', nodeIds: ['n30', 'n31', 'n32'] },
     { id: 'c9', name: 'Complexity Economics', nodeIds: ['n33', 'n34', 'n35'] },
+    { id: 'c10', name: 'Ambient & Electronic Music', nodeIds: ['n38', 'n43'] },
   ],
 };
