@@ -2,9 +2,9 @@
 
 ## Overview
 
-Find is a real-time location-based matching platform that connects users with compatible people nearby based on deep multi-dimensional compatibility analysis. The application focuses on three core matching dimensions: niche interests (books, music, hobbies), whole-person compatibility (comprehensive profile analysis), and opportunity matching (job seekers, mentors, collaborators).
+Find is a hyper-local, real-time matching platform that connects people within 100 meters based on shared interests. The application uses a simple, transparent matching algorithm: if two people share 2+ interests from their 5-interest profiles, they get notified. 
 
-The platform emphasizes privacy-first design principles, using cryptographic techniques to protect user data while enabling meaningful connections. Users can discover compatible matches in their vicinity without compromising personal information until they choose to connect.
+The platform emphasizes privacy-first design with double-blind reveal - both people must choose to reveal themselves before identities are shared. Users control their discoverability with a simple toggle and can see anonymous match cards showing only shared interests and distance.
 
 ## User Preferences
 
@@ -17,9 +17,9 @@ Preferred communication style: Simple, everyday language.
 **Framework**: React with TypeScript using Vite as the build tool
 
 **Routing**: Wouter for client-side routing with three main routes:
-- `/` - Home page with MapView component for discovering matches
+- `/` - Home screen with discoverable toggle and anonymous match cards
 - `/about` - Information about the platform and privacy features
-- `/onboarding` - Multi-step profile creation flow
+- `/onboarding` - Single-page profile creation (name + 5 interests)
 
 **State Management**:
 - TanStack React Query for server state management and caching
@@ -35,15 +35,18 @@ Preferred communication style: Simple, everyday language.
 **Server Framework**: Express.js with TypeScript
 
 **API Structure**: RESTful API with the following endpoints:
-- `POST /api/profiles` - Create new user profile
+- `POST /api/profiles` - Create new user profile (name + 5 interests)
 - `GET /api/profiles/:id` - Retrieve profile by ID
 - `POST /api/profiles/:id/location` - Update user location
-- `GET /api/profiles/:id/matches` - Get compatible matches within specified radius
+- `POST /api/profiles/:id/discoverable` - Toggle discoverable status
+- `GET /api/profiles/:id/matches` - Get matches within 100m (2+ shared interests)
 
-**Matching Engine**: Multi-stage compatibility scoring system with three components:
-1. Niche Score - Shared specific interests (books, music, hobbies)
-2. Whole Person Score - Overall profile compatibility
-3. Opportunities Score - Complementary needs/offerings
+**Matching Engine**: Simple interest array comparison:
+1. Fixed 100-meter radius for hyper-local matching
+2. Case-insensitive interest comparison
+3. Minimum threshold: 2+ shared interests
+4. Returns: shared interests array, match count, distance in meters
+5. Filters out non-discoverable profiles
 
 **Storage Strategy**: Currently using in-memory storage (`MemStorage` class) with interface (`IStorage`) designed for future database implementation. Location-based queries use haversine formula for distance calculations.
 
@@ -52,10 +55,10 @@ Preferred communication style: Simple, everyday language.
 **Database**: PostgreSQL via Neon serverless driver, managed through Drizzle ORM
 
 **Schema Design**:
-- Single `profiles` table with fields: id, name, books[], music[], hobbies[], seeking[], latitude, longitude, embedding, lastActive
-- Array fields for multi-value interests
-- Embedding field stores serialized vector representation for similarity matching
-- Geographic coordinates for proximity-based filtering
+- Single `profiles` table with fields: id, name, interests[], discoverable, latitude, longitude, lastActive
+- interests: Exactly 5 items (books, music, hobbies, anything)
+- discoverable: Boolean toggle for visibility control
+- Geographic coordinates for proximity-based filtering (100m radius)
 
 **ORM**: Drizzle with Zod schema validation for type-safe database operations and API input validation
 
@@ -70,25 +73,26 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Matching Algorithm
 
-**Embedding Generation**: Uses OpenAI's `text-embedding-3-small` model to create vector representations of user profiles based on combined books, music, hobbies, and seeking fields.
+**Simple Interest Matching**: Direct string array comparison with case-insensitive matching
 
-**Similarity Calculation**: 
-- Cosine similarity between profile embeddings for whole-person compatibility
-- Direct comparison of array fields for niche interest matching
-- Weighted combination of scores to generate overall compatibility percentage
+**Matching Logic**: 
+- Normalize interests (lowercase, trim whitespace)
+- Count shared interests between two profiles
+- Match threshold: 2+ shared interests
+- Sort results by match count, then by distance
 
-**Geographic Filtering**: Radius-based filtering using latitude/longitude coordinates with configurable search distance (default 5km, adjustable via slider in UI).
+**Geographic Filtering**: Fixed 100-meter radius using haversine formula for hyper-local matching (same building or block).
 
-**Real-time Updates**: Matches query refetches every 30 seconds to provide near-real-time discovery of nearby compatible users.
+**Privacy Controls**:
+- Discoverable toggle: Users control when they appear in matches
+- Anonymous matches: Only shared interests shown until double-blind reveal
+- Real-time Updates: Matches refetch every 30 seconds when discoverable
 
 ## External Dependencies
 
 ### Third-Party Services
 
-**OpenAI API**: 
-- Used for profile embedding generation (`text-embedding-3-small`)
-- Required for compatibility matching features
-- API key must be configured in `OPENAI_API_KEY` environment variable
+**No external APIs required**: The system uses simple string comparison for matching - no AI or embeddings needed.
 
 ### Database
 

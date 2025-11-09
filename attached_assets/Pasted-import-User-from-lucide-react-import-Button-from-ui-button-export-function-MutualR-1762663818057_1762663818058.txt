@@ -1,0 +1,79 @@
+import { User } from 'lucide-react';
+import { Button } from '../ui/button';
+
+export function MutualRevealScreen() {
+  return (
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0' }}>
+      {/* Status bar spacing */}
+      <div className="h-11" />
+      
+      {/* Header */}
+      <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+        <h2 className="text-gray-900">It's a match!</h2>
+        <p className="text-gray-600">You both revealed yourselves</p>
+      </div>
+      
+      <div className="flex-1 px-6 py-8 pb-24 overflow-y-auto">
+        {/* Profile Section */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-3xl mb-4 shadow-lg">
+            A
+          </div>
+          <h2 className="text-gray-900 mb-2">Alex Chen</h2>
+          <div className="flex items-center gap-2 text-gray-600 text-sm">
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+            <span>0.1 mi away</span>
+          </div>
+        </div>
+        
+        {/* Shared Interests Section */}
+        <div className="mb-8">
+          <h3 className="text-gray-900 mb-4">Shared interests</h3>
+          <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700">AI safety</span>
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700">Science fiction</span>
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700">Coffee culture</span>
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* All Their Interests */}
+        <div className="mb-8">
+          <h3 className="text-gray-900 mb-3">Alex's interests</h3>
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">AI safety</span>
+            <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">Science fiction</span>
+            <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">Coffee culture</span>
+            <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">Urban design</span>
+            <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm">Indie music</span>
+          </div>
+        </div>
+        
+        {/* Action Button */}
+        <div className="fixed bottom-0 left-0 right-0 p-6" style={{ backgroundColor: '#f5f3f0' }}>
+          <Button 
+            className="w-full h-14 rounded-2xl bg-black hover:bg-gray-800 text-white"
+          >
+            Tap phones to add each other to your Find network
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

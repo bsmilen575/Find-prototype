@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertProfileSchema } from "@shared/schema";
-import { generateProfileEmbedding, calculateCompatibility, cosineSimilarity } from "./matching";
+import { findSharedInterests, isMatch } from "./matching";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create profile
@@ -10,15 +10,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertProfileSchema.parse(req.body);
       const profile = await storage.createProfile(validatedData);
-      
-      // Generate embedding asynchronously
-      try {
-        const embedding = await generateProfileEmbedding(profile);
-        await storage.updateProfileEmbedding(profile.id, JSON.stringify(embedding));
-      } catch (error) {
-        console.error("Failed to generate embedding:", error);
-      }
-      
       res.json(profile);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -50,7 +41,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(profile);
   });
 
-  // Find matches
+  // Toggle discoverable status
+  app.post("/api/profiles/:id/discoverable", async (req, res) => {
+    const { discoverable } = req.body;
+    
+    if (typeof discoverable !== "boolean") {
+      return res.status(400).json({ error: "Invalid discoverable value" });
+    }
+    
+    const profile = await storage.updateDiscoverable(req.params.id, discoverable);
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+    
+    res.json(profile);
+  });
+
+  // Find matches (simple interest-based matching within 100m)
   app.get("/api/profiles/:id/matches", async (req, res) => {
     try {
       const profile = await storage.getProfile(req.params.id);
@@ -58,7 +65,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found" });
       }
 
-      const radiusKm = parseFloat(req.query.radius as string) || 5;
+      // Fixed 100m radius for hyper-local matching
+      const radiusKm = 0.1;
       
       if (!profile.latitude || !profile.longitude) {
         return res.json([]);
@@ -72,53 +80,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const matches = [];
       
-      // First filter by embedding similarity if available
-      const candidatesWithScores = nearbyProfiles
-        .filter(candidate => candidate.id !== profile.id)
-        .map(candidate => {
-          let embeddingScore = 0;
-          if (profile.embedding && candidate.embedding) {
-            try {
-              const embedding1 = JSON.parse(profile.embedding);
-              const embedding2 = JSON.parse(candidate.embedding);
-              embeddingScore = cosineSimilarity(embedding1, embedding2);
-            } catch (e) {
-              console.error("Embedding similarity failed:", e);
-            }
-          }
-          return { candidate, embeddingScore };
-        })
-        .filter(({ embeddingScore }) => embeddingScore >= 0.6 || embeddingScore === 0) // Keep if score is good or not computed
-        .sort((a, b) => b.embeddingScore - a.embeddingScore)
-        .slice(0, 20); // Limit to top 20 by embedding similarity
-
-      // Then get detailed compatibility for top candidates
-      for (const { candidate } of candidatesWithScores) {
-        try {
-          const compatibility = await calculateCompatibility(profile, candidate);
+      for (const candidate of nearbyProfiles) {
+        // Skip self and non-discoverable profiles
+        if (candidate.id === profile.id || !candidate.discoverable) {
+          continue;
+        }
+        
+        // Check if there are 2+ shared interests
+        if (isMatch(profile, candidate)) {
+          const matchInfo = findSharedInterests(profile, candidate);
+          const distance = calculateDistance(
+            profile.latitude,
+            profile.longitude,
+            candidate.latitude!,
+            candidate.longitude!
+          );
           
-          if (compatibility.overallScore >= 60) {
-            const distance = calculateDistance(
-              profile.latitude,
-              profile.longitude,
-              candidate.latitude!,
-              candidate.longitude!
-            );
-            
-            matches.push({
-              profileId: candidate.id,
-              name: candidate.name,
-              distance: Math.round(distance * 10) / 10,
-              compatibility,
-            });
-          }
-        } catch (error) {
-          console.error(`Failed to calculate compatibility for ${candidate.id}:`, error);
-          // Continue with other matches
+          matches.push({
+            profileId: candidate.id,
+            distance: Math.round(distance * 1000), // Distance in meters
+            sharedInterests: matchInfo.sharedInterests,
+            matchCount: matchInfo.matchCount,
+            // Don't reveal name until double-blind reveal
+            revealed: false,
+          });
         }
       }
 
-      matches.sort((a, b) => b.compatibility.overallScore - a.compatibility.overallScore);
+      // Sort by match count, then by distance
+      matches.sort((a, b) => {
+        if (b.matchCount !== a.matchCount) {
+          return b.matchCount - a.matchCount;
+        }
+        return a.distance - b.distance;
+      });
       
       res.json(matches);
     } catch (error: any) {
