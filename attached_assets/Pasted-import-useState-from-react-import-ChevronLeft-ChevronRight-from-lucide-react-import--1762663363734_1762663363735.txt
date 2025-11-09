@@ -1,0 +1,224 @@
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { MobileFrame } from './components/MobileFrame';
+import { OnboardingScreen } from './components/mockup-screens/OnboardingScreen';
+import { SignUpScreen } from './components/mockup-screens/SignUpScreen';
+import { HomeScreen } from './components/mockup-screens/HomeScreen';
+import { MatchNotificationScreen } from './components/mockup-screens/MatchNotificationScreen';
+import { MutualRevealScreen } from './components/mockup-screens/MutualRevealScreen';
+import { Button } from './components/ui/button';
+
+const slides = [
+  {
+    title: 'Welcome to Find',
+    description: 'Discover people nearby that you might like',
+    component: OnboardingScreen,
+    showStatusBar: false,
+    features: [
+      {
+        title: 'Interest-Based Discovery',
+        description: 'Connect with people who share your passions'
+      },
+      {
+        title: 'Privacy First',
+        description: 'You control what you share and when'
+      }
+    ]
+  },
+  {
+    title: 'Sign Up',
+    description: 'Enter your name and interests to get started',
+    component: SignUpScreen,
+    showStatusBar: true,
+    features: [
+      {
+        title: 'Simple Onboarding',
+        description: 'Just 5 interests to start discovering matches'
+      },
+      {
+        title: 'Location Access',
+        description: 'Required for finding people nearby within 100m'
+      }
+    ]
+  },
+  {
+    title: 'Home Screen',
+    description: 'Control your visibility and see potential matches',
+    component: HomeScreen,
+    showStatusBar: true,
+    features: [
+      {
+        title: 'Connection Toggle',
+        description: 'Turn discoverability on/off at any time'
+      },
+      {
+        title: 'Potential Matches',
+        description: 'See anonymous profiles with shared interests'
+      },
+      {
+        title: 'Real-Time Updates',
+        description: 'Refreshes every 30 seconds to find nearby matches'
+      }
+    ]
+  },
+  {
+    title: 'Match Notification',
+    description: 'Get notified when someone nearby shares your interests',
+    component: MatchNotificationScreen,
+    showStatusBar: true,
+    features: [
+      {
+        title: 'Mutual Reveal',
+        description: 'Both people must choose to reveal themselves'
+      },
+      {
+        title: 'Privacy Protected',
+        description: 'Your identity stays hidden until both reveal'
+      },
+      {
+        title: 'Interest Matching',
+        description: 'Notification triggered when 2+ interests match'
+      }
+    ]
+  },
+  {
+    title: 'After Mutual Reveal',
+    description: 'Connect through simple chat or contact exchange',
+    component: MutualRevealScreen,
+    showStatusBar: true,
+    features: [
+      {
+        title: 'Profile Details',
+        description: 'See their name and all interests'
+      },
+      {
+        title: 'Shared Interests',
+        description: 'Visual breakdown of what you have in common'
+      },
+      {
+        title: 'Connection Options',
+        description: 'Start a conversation or exchange contact info'
+      }
+    ]
+  },
+];
+
+export default function App() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+  
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+  
+  const CurrentScreen = slides[currentSlide].component;
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
+      {/* Header */}
+      <div className="px-8 py-6 border-b border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-white mb-2">Find App Prototype</h1>
+          <p className="text-gray-400">Real-time, location-based discovery using interest graphs</p>
+        </div>
+      </div>
+      
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="max-w-7xl w-full mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Mobile Frame */}
+            <div className="flex justify-center">
+              <MobileFrame showStatusBar={slides[currentSlide].showStatusBar}>
+                <CurrentScreen />
+              </MobileFrame>
+            </div>
+            
+            {/* Right Column - Slide Info */}
+            <div className="text-white space-y-8">
+              <div>
+                <div className="inline-block px-4 py-2 bg-white/10 text-gray-300 rounded-full text-sm mb-4">
+                  Screen {currentSlide + 1} of {slides.length}
+                </div>
+                <h2 className="text-white mb-4">{slides[currentSlide].title}</h2>
+                <p className="text-gray-300 text-xl">
+                  {slides[currentSlide].description}
+                </p>
+              </div>
+              
+              {/* Features List */}
+              <div className="space-y-4">
+                <h3 className="text-white">Key Features:</h3>
+                <div className="grid gap-3">
+                  {slides[currentSlide].features.map((feature, index) => (
+                    <div key={index} className="flex items-start gap-3 bg-white/5 rounded-xl p-4 border border-white/10">
+                      <div className="w-2 h-2 rounded-full bg-white mt-2" />
+                      <div>
+                        <p className="text-white">{feature.title}</p>
+                        <p className="text-gray-400 text-sm">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Backend Logic Note */}
+              {currentSlide === 2 && (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                  <h4 className="text-white mb-2">Backend Logic</h4>
+                  <p className="text-gray-300 text-sm">
+                    Store: user ID, name, 5 interests (array), lat/long, toggle status
+                    <br />
+                    Every 30 seconds: check for users within 100m radius who are "open"
+                    <br />
+                    Compare interest arrays: if 2+ matches → create potential match → send notification
+                  </p>
+                </div>
+              )}
+              
+              {/* Navigation */}
+              <div className="flex items-center gap-4 pt-4">
+                <Button
+                  onClick={prevSlide}
+                  variant="outline"
+                  className="h-12 px-6 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <ChevronLeft className="w-5 h-5 mr-2" />
+                  Previous
+                </Button>
+                <Button
+                  onClick={nextSlide}
+                  className="h-12 px-6 bg-white hover:bg-gray-100 text-black"
+                >
+                  Next
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Slide Indicators */}
+      <div className="px-8 py-6 border-t border-white/10">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-2 rounded-full transition-all ${
+                index === currentSlide
+                  ? 'w-8 bg-white'
+                  : 'w-2 bg-white/20 hover:bg-white/40'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
