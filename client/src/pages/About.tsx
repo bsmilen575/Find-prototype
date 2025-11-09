@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { FlowDiagram } from "@/components/FlowDiagram";
 import { Card } from "@/components/ui/card";
-import heroImage from "@assets/generated_images/Retro_future_collaboration_scene_9d415cc4.png";
+import heroImage from "@assets/generated_images/Futuristic_silver_metallic_orb_5270cb78.png";
 
 export default function About() {
   return (
@@ -50,13 +50,13 @@ export default function About() {
             <Card className="p-6">
               <h4 className="font-semibold mb-3">How Matching Works</h4>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                Find uses a multi-stage orchestration engine:
+                Simple, transparent matching within 100 meters:
               </p>
               <ol className="text-sm text-muted-foreground space-y-2 ml-4">
-                <li><span className="font-medium">1. Retrieval:</span> Quickly scan nearby users based on location and basic filters</li>
-                <li><span className="font-medium">2. Embedding:</span> AI converts your interests into mathematical vectors for similarity matching</li>
-                <li><span className="font-medium">3. Ranking:</span> Score potential matches across three dimensions (niche, whole person, opportunities)</li>
-                <li><span className="font-medium">4. Privacy Filter:</span> Show compatibility scores without revealing identity</li>
+                <li><span className="font-medium">1. Share 5 Interests:</span> Add what you care about (books, music, hobbies, anything)</li>
+                <li><span className="font-medium">2. Find Nearby:</span> Every 30 seconds, check for people within 100m who are discoverable</li>
+                <li><span className="font-medium">3. Simple Matching:</span> If 2+ interests overlap, you get a notification</li>
+                <li><span className="font-medium">4. Double-Blind Reveal:</span> Both people must choose to reveal before identities are shared</li>
               </ol>
             </Card>
           </div>

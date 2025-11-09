@@ -7,7 +7,7 @@ export interface IStorage {
   getProfilesNearby(latitude: number, longitude: number, radiusKm: number): Promise<Profile[]>;
   createProfile(profile: InsertProfile): Promise<Profile>;
   updateProfileLocation(id: string, latitude: number, longitude: number): Promise<Profile | undefined>;
-  updateProfileEmbedding(id: string, embedding: string): Promise<void>;
+  updateDiscoverable(id: string, discoverable: boolean): Promise<Profile | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -62,13 +62,10 @@ export class MemStorage implements IStorage {
     const profile: Profile = {
       id,
       name: insertProfile.name,
-      books: insertProfile.books || [],
-      music: insertProfile.music || [],
-      hobbies: insertProfile.hobbies || [],
-      seeking: insertProfile.seeking || [],
+      interests: insertProfile.interests || [],
+      discoverable: insertProfile.discoverable ?? true,
       latitude: insertProfile.latitude || null,
       longitude: insertProfile.longitude || null,
-      embedding: null,
       lastActive: new Date(),
     };
     this.profiles.set(id, profile);
@@ -89,12 +86,17 @@ export class MemStorage implements IStorage {
     return updated;
   }
 
-  async updateProfileEmbedding(id: string, embedding: string): Promise<void> {
+  async updateDiscoverable(id: string, discoverable: boolean): Promise<Profile | undefined> {
     const profile = this.profiles.get(id);
-    if (profile) {
-      profile.embedding = embedding;
-      this.profiles.set(id, profile);
-    }
+    if (!profile) return undefined;
+    
+    const updated = {
+      ...profile,
+      discoverable,
+      lastActive: new Date(),
+    };
+    this.profiles.set(id, updated);
+    return updated;
   }
 }
 
