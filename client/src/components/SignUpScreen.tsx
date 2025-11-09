@@ -2,8 +2,54 @@ import { MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useLocation } from 'wouter';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export function SignUpScreen() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const [locationGranted, setLocationGranted] = useState(false);
+
+  const handleLocationAccess = async () => {
+    try {
+      const permission = await navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocationGranted(true);
+          toast({
+            title: "Location access granted",
+            description: "You're all set to discover nearby connections!",
+          });
+        },
+        (error) => {
+          toast({
+            title: "Location access denied",
+            description: "Please enable location access to use Find.",
+            variant: "destructive",
+          });
+        }
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to access location. Please check your browser settings.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConnect = () => {
+    if (!locationGranted) {
+      toast({
+        title: "Location required",
+        description: "Please allow location access first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setLocation('/map');
+  };
+
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0' }} data-testid="signup-screen">
       <div className="h-11" />
@@ -116,14 +162,16 @@ export function SignUpScreen() {
           <Button 
             variant="outline"
             className="w-full h-14 rounded-2xl border-2 border-gray-900 text-gray-900"
+            onClick={handleLocationAccess}
             data-testid="button-location"
           >
             <MapPin className="w-5 h-5 mr-2" />
-            Allow location access
+            {locationGranted ? 'Location access granted ✓' : 'Allow location access'}
           </Button>
           
           <Button 
             className="w-full h-14 rounded-2xl bg-black text-white"
+            onClick={handleConnect}
             data-testid="button-connect"
           >
             I'm ready to connect
