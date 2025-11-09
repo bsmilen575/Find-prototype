@@ -24,90 +24,85 @@ export function OnboardingScreen() {
           </svg>
 
           {/* Main sphere SVG */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.2))' }}>
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 15px 35px rgba(0,0,0,0.25))' }}>
             <defs>
-              {/* Layered color bands - like acrylic obelisk */}
-              <linearGradient id="color-bands" x1="0%" y1="0%" x2="0%" y2="100%">
-                {/* Top - vibrant orange/amber */}
-                <stop offset="0%" stopColor="#FF8C00" />
-                <stop offset="15%" stopColor="#FF6B00" />
-                <stop offset="20%" stopColor="#FFA500" />
-                
-                {/* Upper middle - cyan/turquoise transition */}
-                <stop offset="25%" stopColor="#00CED1" />
-                <stop offset="35%" stopColor="#40E0D0" />
-                <stop offset="40%" stopColor="#00D9C9" />
-                
-                {/* Middle - teal/green */}
-                <stop offset="45%" stopColor="#00B8A9" />
-                <stop offset="55%" stopColor="#5FD9C7" />
-                <stop offset="60%" stopColor="#48D1C7" />
-                
-                {/* Lower middle - dark accent band */}
-                <stop offset="65%" stopColor="#2C3E50" />
-                <stop offset="70%" stopColor="#1A252F" />
-                
-                {/* Bottom - bright cyan/teal */}
-                <stop offset="75%" stopColor="#00CED1" />
-                <stop offset="85%" stopColor="#5FD9C7" />
-                <stop offset="100%" stopColor="#40E0D0" />
-              </linearGradient>
-
-              {/* Radial overlay for 3D depth */}
-              <radialGradient id="sphere-depth" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
-                <stop offset="50%" stopColor="#ffffff" stopOpacity="0.05" />
-                <stop offset="85%" stopColor="#000000" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#000000" stopOpacity="0.35" />
+              {/* Spherical gradient mask for 3D effect */}
+              <radialGradient id="sphere-mask" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="white" stopOpacity="1" />
+                <stop offset="85%" stopColor="white" stopOpacity="1" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
               </radialGradient>
 
-              {/* Glossy specular highlight */}
-              <radialGradient id="gloss-highlight" cx="32%" cy="28%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                <stop offset="20%" stopColor="#ffffff" stopOpacity="0.7" />
-                <stop offset="50%" stopColor="#ffffff" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-              </radialGradient>
-
-              {/* Secondary reflection */}
-              <radialGradient id="secondary-gloss" cx="65%" cy="35%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
-                <stop offset="30%" stopColor="#ffffff" stopOpacity="0.25" />
+              {/* Main specular highlight - very bright */}
+              <radialGradient id="main-highlight" cx="35%" cy="30%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="15%" stopColor="#ffffff" stopOpacity="0.85" />
+                <stop offset="35%" stopColor="#ffffff" stopOpacity="0.3" />
                 <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
 
-              {/* Edge rim light */}
-              <radialGradient id="rim-glow" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="transparent" />
-                <stop offset="70%" stopColor="transparent" />
-                <stop offset="88%" stopColor="rgba(255,255,255,0.3)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0.15)" />
+              {/* 3D sphere shading */}
+              <radialGradient id="sphere-shading" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.15" />
+                <stop offset="50%" stopColor="transparent" />
+                <stop offset="85%" stopColor="#000000" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.45" />
               </radialGradient>
 
-              {/* Blur filter for soft glow */}
-              <filter id="soft-blur">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
+              {/* Light refraction glow */}
+              <filter id="glow-filter">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" />
               </filter>
             </defs>
 
-            {/* Base colored sphere with vertical bands */}
-            <circle cx="100" cy="100" r="85" fill="url(#color-bands)" opacity="0.9" />
+            {/* Horizontal color bands (from top to bottom of sphere) */}
+            
+            {/* Top band - Bright Orange/Amber */}
+            <ellipse cx="100" cy="40" rx="75" ry="18" fill="#FF7700" opacity="0.95" />
+            <ellipse cx="100" cy="40" rx="75" ry="18" fill="url(#sphere-shading)" />
+            
+            {/* Upper band - Yellow/Orange blend */}
+            <ellipse cx="100" cy="55" rx="82" ry="20" fill="#FFA030" opacity="0.95" />
+            <ellipse cx="100" cy="55" rx="82" ry="20" fill="url(#sphere-shading)" />
+            
+            {/* Upper-middle - Cyan/Turquoise */}
+            <ellipse cx="100" cy="75" rx="85" ry="22" fill="#00D4D4" opacity="0.95" />
+            <ellipse cx="100" cy="75" rx="85" ry="22" fill="url(#sphere-shading)" />
+            
+            {/* Center-top - Bright Teal */}
+            <ellipse cx="100" cy="95" rx="85" ry="20" fill="#40E0CC" opacity="0.95" />
+            <ellipse cx="100" cy="95" rx="85" ry="20" fill="url(#sphere-shading)" />
+            
+            {/* Center - Deep Teal/Green */}
+            <ellipse cx="100" cy="110" rx="85" ry="18" fill="#00B8A0" opacity="0.95" />
+            <ellipse cx="100" cy="110" rx="85" ry="18" fill="url(#sphere-shading)" />
+            
+            {/* Center-bottom - Dark Charcoal band */}
+            <ellipse cx="100" cy="125" rx="83" ry="16" fill="#34495E" opacity="0.95" />
+            <ellipse cx="100" cy="125" rx="83" ry="16" fill="url(#sphere-shading)" />
+            
+            {/* Lower-middle - Bright Cyan */}
+            <ellipse cx="100" cy="140" rx="80" ry="18" fill="#00CED1" opacity="0.95" />
+            <ellipse cx="100" cy="140" rx="80" ry="18" fill="url(#sphere-shading)" />
+            
+            {/* Lower - Turquoise */}
+            <ellipse cx="100" cy="155" rx="72" ry="16" fill="#5FD9CC" opacity="0.95" />
+            <ellipse cx="100" cy="155" rx="72" ry="16" fill="url(#sphere-shading)" />
+            
+            {/* Bottom band - Bright Teal */}
+            <ellipse cx="100" cy="168" rx="60" ry="14" fill="#40E0D0" opacity="0.95" />
+            <ellipse cx="100" cy="168" rx="60" ry="14" fill="url(#sphere-shading)" />
 
-            {/* 3D depth shading */}
-            <circle cx="100" cy="100" r="85" fill="url(#sphere-depth)" />
+            {/* Circular mask to create sphere shape */}
+            <circle cx="100" cy="100" r="85" fill="url(#sphere-mask)" style={{ mixBlendMode: 'destination-in' }} />
 
-            {/* Edge rim lighting */}
-            <circle cx="100" cy="100" r="85" fill="url(#rim-glow)" />
-
-            {/* Main glossy highlight */}
-            <circle cx="100" cy="100" r="85" fill="url(#gloss-highlight)" filter="url(#soft-blur)" />
-
-            {/* Secondary reflection */}
-            <circle cx="100" cy="100" r="85" fill="url(#secondary-gloss)" />
-
-            {/* Sharp bright highlight spot */}
-            <ellipse cx="72" cy="68" rx="20" ry="26" fill="rgba(255,255,255,0.9)" filter="url(#soft-blur)" transform="rotate(-22 72 68)" />
-            <ellipse cx="72" cy="68" rx="10" ry="14" fill="rgba(255,255,255,1)" transform="rotate(-22 72 68)" />
+            {/* Main glossy highlight - super bright like acrylic */}
+            <circle cx="100" cy="100" r="85" fill="url(#main-highlight)" filter="url(#glow-filter)" />
+            
+            {/* Sharp highlight spot */}
+            <ellipse cx="75" cy="65" rx="25" ry="32" fill="rgba(255,255,255,0.85)" filter="url(#glow-filter)" transform="rotate(-20 75 65)" />
+            <ellipse cx="75" cy="65" rx="14" ry="18" fill="rgba(255,255,255,0.95)" transform="rotate(-20 75 65)" />
+            <ellipse cx="75" cy="65" rx="6" ry="8" fill="#ffffff" transform="rotate(-20 75 65)" />
           </svg>
         </div>
         
