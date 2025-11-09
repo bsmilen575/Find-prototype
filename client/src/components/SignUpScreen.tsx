@@ -50,7 +50,7 @@ export function SignUpScreen() {
                     <stop offset="100%" style={{ stopColor: '#285AEB' }} />
                   </linearGradient>
                 </defs>
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/>
+                <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4c0 3.2-2.6 5.8-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2zm-.2 2C5.6 4 4 5.6 4 7.6v8.8c0 2 1.6 3.6 3.6 3.6h8.8c2 0 3.6-1.6 3.6-3.6V7.6C20 5.6 18.4 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
               </svg>
             </Button>
             <Button 
@@ -88,7 +88,20 @@ export function SignUpScreen() {
           
           <div className="relative">
             <div className="absolute top-3 left-3 flex items-center gap-1 pointer-events-none">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-400 to-pink-400" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="9" cy="12" r="7" fill="url(#circle-gradient-1)" opacity="0.8" />
+                <circle cx="15" cy="12" r="7" fill="url(#circle-gradient-2)" opacity="0.8" />
+                <defs>
+                  <linearGradient id="circle-gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: '#a78bfa' }} />
+                    <stop offset="100%" style={{ stopColor: '#ec4899' }} />
+                  </linearGradient>
+                  <linearGradient id="circle-gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: '#60a5fa' }} />
+                    <stop offset="100%" style={{ stopColor: '#a78bfa' }} />
+                  </linearGradient>
+                </defs>
+              </svg>
               <span className="text-gray-400">...</span>
             </div>
             <Textarea 
