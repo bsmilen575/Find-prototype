@@ -5,7 +5,7 @@ export function OnboardingScreen() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#faf8f5', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f0eb', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
         <div className="relative w-64 h-64 mb-12 flex items-center justify-center" data-testid="logo-container">
           <img 
