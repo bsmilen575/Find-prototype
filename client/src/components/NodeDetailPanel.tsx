@@ -6,9 +6,12 @@ import { syntheticUserGraph } from '@shared/synthetic-data';
 interface NodeDetailPanelProps {
   node: Node;
   onClose: () => void;
+  onKill: (nodeId: string) => void;
+  onPin: (nodeId: string) => void;
+  isPinned: boolean;
 }
 
-export function NodeDetailPanel({ node, onClose }: NodeDetailPanelProps) {
+export function NodeDetailPanel({ node, onClose, onKill, onPin, isPinned }: NodeDetailPanelProps) {
   const neighbors = syntheticUserGraph.edges
     .filter(e => e.source === node.id || e.target === node.id)
     .map(e => {
@@ -170,16 +173,18 @@ export function NodeDetailPanel({ node, onClose }: NodeDetailPanelProps) {
           <Button
             variant="outline"
             className="w-full"
+            onClick={() => onKill(node.id)}
             data-testid="button-kill-node"
           >
             Kill this node
           </Button>
           <Button
-            variant="default"
+            variant={isPinned ? "default" : "outline"}
             className="w-full"
+            onClick={() => onPin(node.id)}
             data-testid="button-keep-node"
           >
-            Keep & pin this node
+            {isPinned ? 'Pinned ✓' : 'Keep & pin this node'}
           </Button>
         </div>
       </div>
