@@ -10,6 +10,7 @@ import Onboarding from "@/pages/Onboarding";
 import Welcome from "@/pages/Welcome";
 import MatchNotification from "@/pages/MatchNotification";
 import ProfileMatch from "@/pages/ProfileMatch";
+import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/welcome" component={Welcome} />
       <Route path="/match" component={MatchNotification} />
       <Route path="/profile/:id" component={ProfileMatch} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
