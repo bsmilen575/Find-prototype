@@ -17,10 +17,10 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Welcome} />
+      <Route path="/home" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/onboarding" component={Onboarding} />
-      <Route path="/welcome" component={Welcome} />
       <Route path="/match" component={MatchNotification} />
       <Route path="/profile/:id" component={ProfileMatch} />
       <Route path="/settings" component={Settings} />
