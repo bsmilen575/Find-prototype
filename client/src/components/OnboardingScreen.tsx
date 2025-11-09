@@ -7,11 +7,12 @@ export function OnboardingScreen() {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
-        <div className="relative w-64 h-64 mb-12 flex items-center justify-center" data-testid="logo-container">
+        <div className="relative w-64 h-64 mb-12 flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }} data-testid="logo-container">
           <img 
             src="/find-logo.png"
             alt="Find Logo"
             className="w-full h-full object-contain"
+            style={{ mixBlendMode: 'multiply' }}
             data-testid="logo-image"
           />
         </div>
