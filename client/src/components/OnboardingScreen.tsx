@@ -5,50 +5,51 @@ export function OnboardingScreen() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f2ede8' }} data-testid="onboarding-screen">
-      <div className="flex-1 flex items-center justify-center">
-        <img 
-          src="/attached_assets/Screenshot 2025-11-09 at 10.48.33 AM_1762714116206.png"
-          alt="Find Welcome"
-          className="w-full h-auto max-w-2xl"
-          data-testid="welcome-image"
-        />
-      </div>
+    <div className="w-full h-full relative" data-testid="onboarding-screen">
+      <img 
+        src="/welcome-screen.png"
+        alt="Find Welcome Screen"
+        className="w-full h-full object-cover"
+        data-testid="welcome-image"
+      />
       
-      <div className="p-6 pb-10 space-y-3">
-        <Button 
-          size="lg"
-          className="w-full rounded-3xl"
-          style={{ 
-            backgroundColor: '#000000', 
-            color: '#ffffff',
-            fontFamily: 'Georgia, serif',
-            fontSize: '1.125rem',
-            fontWeight: '400'
-          }}
-          onClick={() => setLocation('/signup')}
-          data-testid="button-signup"
-        >
-          Sign up for Beta
-        </Button>
-        <Button 
-          size="lg"
-          variant="outline" 
-          className="w-full rounded-3xl"
-          style={{ 
-            fontFamily: 'Georgia, serif',
-            borderColor: '#333333',
-            borderWidth: '1px',
-            backgroundColor: 'transparent',
-            color: '#000000',
-            fontSize: '1.125rem',
-            fontWeight: '400'
-          }}
-          onClick={() => setLocation('/signup')}
-          data-testid="button-signin"
-        >
-          Sign In
-        </Button>
+      <div className="absolute left-0 right-0 px-4" style={{ bottom: '11%' }}>
+        <div className="max-w-md mx-auto space-y-3">
+          <button
+            className="w-full rounded-full"
+            style={{ 
+              backgroundColor: '#000000', 
+              color: '#ffffff',
+              fontFamily: 'Georgia, serif',
+              fontSize: '18px',
+              fontWeight: '400',
+              padding: '16px 24px',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onClick={() => setLocation('/signup')}
+            data-testid="button-signup"
+          >
+            Sign up for Beta
+          </button>
+          <button
+            className="w-full rounded-full"
+            style={{ 
+              fontFamily: 'Georgia, serif',
+              border: '1px solid #333333',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              color: '#000000',
+              fontSize: '18px',
+              fontWeight: '400',
+              padding: '16px 24px',
+              cursor: 'pointer'
+            }}
+            onClick={() => setLocation('/signup')}
+            data-testid="button-signin"
+          >
+            Sign In
+          </button>
+        </div>
       </div>
     </div>
   );
