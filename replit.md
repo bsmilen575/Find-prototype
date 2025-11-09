@@ -37,14 +37,23 @@ Preferred communication style: Simple, everyday language.
 - D3.js force-directed graph showing interests as nodes
 - Node size scaled by attention weight (time-weighted engagement)
 - Edges represent relationships (co-occur, sequential, semantic, temporal)
-- Interactive: drag nodes, tap to inspect details, zoom/pan
-- Lens modes toggle visual encodings:
-  - Default: Grayscale (calm, low-stimulus)
-  - Recency: Color-coded by days since last active
-  - Source: Color by content type (book, podcast, article, video, creator, topic)
-  - Heat: Color by attention weight intensity
-- Node detail panel shows evidence (likes, saves, watch time, highlights), connected neighbors, timeline
-- Synthetic dataset: 35 nodes across 9 thematic clusters (AI Safety, Narrative, Causal Inference, Systems Thinking, etc.)
+- Interactive features:
+  - Drag nodes to reposition
+  - Zoom and pan (tracked via zoomTransformRef for accurate selection)
+  - Click nodes to view detail panel
+  - Lasso mode: click-to-select multiple nodes (uses isLassoModeRef for dynamic behavior)
+  - Circuit creation: select 2+ nodes and create named circuits with persistence
+  - Kill nodes: remove from graph permanently
+  - Pin nodes: fix position with visual indicator (green border)
+- Lens modes with smooth 300ms color transitions (no simulation restart):
+  - Default: Grayscale (#9ca3af) for calm, low-stimulus viewing
+  - Recency: Green (<7d), yellow (<30d), red (<90d), gray (>90d)
+  - Source: Color by content type - purple (book), pink (podcast), blue (article), amber (video), emerald (creator), indigo (topic), teal (tag)
+  - Heat: Red (>80), amber (60-80), yellow (40-60), gray (<40) based on attention weight
+- Node detail panel: evidence (likes, saves, watch time, highlights), connected neighbors, timeline
+- Circuit display: Shows created circuits in controls panel with truncated names
+- Synthetic dataset: 35 nodes across 9 thematic clusters (AI Safety, Narrative, Causal Inference, Systems Thinking, Emergence, etc.)
+- Performance: Separated effects for lens color updates, selection stroke updates, and simulation - prevents unnecessary graph restarts
 
 ### Backend Architecture
 

@@ -35,7 +35,7 @@ export function GraphControls({
   ];
 
   return (
-    <div className="absolute bottom-6 left-6 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3">
+    <div className="absolute bottom-6 left-6 z-20 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3">
       <div className="flex items-center gap-2">
         <Button
           size="sm"
