@@ -123,7 +123,7 @@ export function OnboardingScreen() {
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <defs>
               <filter id="glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                 <feMerge>
                   <feMergeNode in="coloredBlur"/>
                   <feMergeNode in="SourceGraphic"/>
@@ -132,7 +132,7 @@ export function OnboardingScreen() {
             </defs>
             
             {/* Network connections */}
-            <g stroke="#00ccff" strokeWidth="0.15" opacity="0.4" fill="none" filter="url(#glow)">
+            <g stroke="#ffffff" strokeWidth="0.15" opacity="0.3" fill="none" filter="url(#glow)">
               {connections.map(([i, j], idx) => {
                 const n1 = nodes[i];
                 const n2 = nodes[j];
@@ -148,7 +148,7 @@ export function OnboardingScreen() {
               })}
             </g>
             
-            {/* Network nodes */}
+            {/* Network nodes with pulsing animation */}
             <g filter="url(#glow)">
               {nodes.map((node, idx) => (
                 <circle
@@ -156,9 +156,22 @@ export function OnboardingScreen() {
                   cx={node.x}
                   cy={node.y}
                   r={0.4 + (node.intensity * 0.6)}
-                  fill="#00ffcc"
-                  opacity={0.5 + (node.intensity * 0.4)}
-                />
+                  fill="#ffffff"
+                  opacity={0.6 + (node.intensity * 0.3)}
+                >
+                  <animate
+                    attributeName="opacity"
+                    values={`${0.4 + (node.intensity * 0.3)};${0.7 + (node.intensity * 0.3)};${0.4 + (node.intensity * 0.3)}`}
+                    dur={`${2 + (idx % 3)}s`}
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="r"
+                    values={`${0.4 + (node.intensity * 0.6)};${0.5 + (node.intensity * 0.7)};${0.4 + (node.intensity * 0.6)}`}
+                    dur={`${2 + (idx % 3)}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
               ))}
             </g>
           </svg>
