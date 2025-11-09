@@ -5,14 +5,13 @@ export function OnboardingScreen() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#ede9e5', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f7f3ef', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
-        <div className="relative w-64 h-64 mb-12 flex items-center justify-center" style={{ backgroundColor: '#ede9e5' }} data-testid="logo-container">
+        <div className="relative w-64 h-64 mb-12 flex items-center justify-center" data-testid="logo-container">
           <img 
             src="/find-logo.png"
             alt="Find Logo"
             className="w-full h-full object-contain"
-            style={{ mixBlendMode: 'multiply' }}
             data-testid="logo-image"
           />
         </div>
