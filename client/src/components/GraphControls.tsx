@@ -35,8 +35,8 @@ export function GraphControls({
   ];
 
   return (
-    <div className="absolute bottom-6 left-6 z-20 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3">
-      <div className="flex items-center gap-2">
+    <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-auto z-20 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3 max-w-full md:max-w-md">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           size="sm"
           variant={isLassoMode ? 'default' : 'outline'}
@@ -45,7 +45,8 @@ export function GraphControls({
           data-testid="button-lasso-mode"
         >
           <Lasso className="w-3.5 h-3.5" />
-          {isLassoMode ? `Selected: ${selectedNodesCount}` : 'Select Nodes'}
+          <span className="hidden sm:inline">{isLassoMode ? `Selected: ${selectedNodesCount}` : 'Select Nodes'}</span>
+          <span className="sm:hidden">{isLassoMode ? selectedNodesCount : 'Select'}</span>
         </Button>
         {isLassoMode && selectedNodesCount >= 2 && (
           <Button
@@ -56,12 +57,13 @@ export function GraphControls({
             data-testid="button-create-circuit"
           >
             <Plus className="w-3.5 h-3.5" />
-            Create Circuit
+            <span className="hidden sm:inline">Create Circuit</span>
+            <span className="sm:hidden">Create</span>
           </Button>
         )}
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium text-gray-700 mr-1">Lens:</span>
         {lenses.map((lens) => {
           const Icon = lens.icon;
@@ -75,7 +77,7 @@ export function GraphControls({
               data-testid={`button-lens-${lens.id}`}
             >
               <Icon className="w-3.5 h-3.5" />
-              {lens.label}
+              <span className="hidden sm:inline">{lens.label}</span>
             </Button>
           );
         })}

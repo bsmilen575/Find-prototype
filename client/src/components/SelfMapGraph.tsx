@@ -304,7 +304,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const handleCreateCircuit = () => {
     if (selectedNodes.size >= 2) {
       const selectedLabels = Array.from(selectedNodes).map(id => 
-        syntheticUserGraph.nodes.find(n => n.id === id)?.label
+        graphData.nodes.find(n => n.id === id)?.label
       ).filter(Boolean);
       
       const newCircuit: Circuit = {
