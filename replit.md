@@ -17,12 +17,13 @@ Preferred communication style: Simple, everyday language.
 **Framework**: React with TypeScript using Vite as the build tool
 
 **Routing**: Wouter for client-side routing with key routes:
-- `/` - Welcome screen with hyper-realistic metallic sphere and neural network overlay
+- `/` - Welcome screen with clean hero image and navigation buttons
 - `/map` - **Self Map**: Force-directed graph visualization of user's interest graph (D3.js)
 - `/home` - Home screen with discoverable toggle and anonymous match cards
 - `/about` - Information about the platform and privacy features
 - `/onboarding` - Single-page profile creation (name + 5 interests)
 - `/signup` - Detailed signup with Pod setup and interest capture
+- `/settings` - **Import Architecture**: Platform connector dashboard for building interest graph from digital behavior
 
 **State Management**:
 - TanStack React Query for server state management and caching
@@ -52,8 +53,30 @@ Preferred communication style: Simple, everyday language.
   - Heat: Red (>80), amber (60-80), yellow (40-60), gray (<40) based on attention weight
 - Node detail panel: evidence (likes, saves, watch time, highlights), connected neighbors, timeline
 - Circuit display: Shows created circuits in controls panel with truncated names
-- Synthetic dataset: 35 nodes across 9 thematic clusters (AI Safety, Narrative, Causal Inference, Systems Thinking, Emergence, etc.)
+- Synthetic dataset: 45 nodes across 10 thematic clusters including platform-specific sources:
+  - Traditional content: books, podcasts, articles, videos, creators, topics, tags
+  - Platform-specific: GitHub repos (transformers, stable-diffusion), Hugging Face models (gpt-2, DALL-E), Spotify artists (Jon Hopkins, Nils Frahm), YouTube channels (Lex Fridman, 3Blue1Brown), ArXiv papers
+  - Evidence fields include: likes, saves, watch time, highlights, visits, stars, commits, downloads, plays, platformUrl
 - Performance: Separated effects for lens color updates, selection stroke updates, and simulation - prevents unnecessary graph restarts
+
+**Import Architecture** (Settings - /settings):
+- Non-functional platform connector dashboard demonstrating future data import capabilities
+- Left tab navigation: Import Data, Privacy, Profile
+- 8 platform connectors grouped by domain:
+  - Code: GitHub (repos, stars, commits), Hugging Face (models, downloads)
+  - Audio: Spotify (artists, playlists, listening history)
+  - Video: YouTube (channels, subscriptions, watch history)
+  - Social: Twitter / X (likes, bookmarks, follows)
+  - Reading: ArXiv (papers), Goodreads (books, ratings), Substack (newsletters)
+- Staged connection flow: Connect → Pending (spinner) → Connected (checkmark + sample insights)
+- Each connector shows:
+  - Platform icon and description
+  - OAuth scopes (read-only access)
+  - Sync cadence (daily/weekly)
+  - Sample insights from synthetic data when connected
+  - Status indicators (disconnected, pending, connected, error)
+- Privacy-first messaging: on-device processing, read-only scopes, revocable access
+- Design: Georgia serif typography, warm beige background (#f2ede8), shadcn Card components
 
 ### Backend Architecture
 
