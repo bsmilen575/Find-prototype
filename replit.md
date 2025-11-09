@@ -18,11 +18,13 @@ Preferred communication style: Simple, everyday language.
 
 **Routing**: Wouter for client-side routing with key routes:
 - `/` - Welcome screen with hyper-realistic metallic sphere and neural network overlay
-- `/map` - **Self Map**: Force-directed graph visualization of user's interest graph (D3.js)
+- `/map` - **Self Map**: Force-directed graph visualization with Mine/Nearby Pulse tabs
+  - **Mine**: User's personal interest graph (unique individual interests)
+  - **Nearby Pulse**: Aggregated interest graph of people in locality (mainstream trends)
 - `/home` - Home screen with discoverable toggle and anonymous match cards
 - `/about` - Information about the platform and privacy features
 - `/onboarding` - Single-page profile creation (name + 5 interests)
-- `/signup` - Detailed signup with Pod setup and interest capture
+- `/signup` - Detailed signup with Pod setup, interest capture, and location permission
 
 **State Management**:
 - TanStack React Query for server state management and caching
@@ -34,7 +36,9 @@ Preferred communication style: Simple, everyday language.
 **Design Philosophy**: Privacy-first visual language drawing inspiration from Airbnb (location discovery), LinkedIn (professional profiles), Signal (privacy aesthetic), and Tinder (quick decision-making). Uses Inter as primary font and Space Grotesk for accent typography. Warm beige (#f5f3f0) background for calm, focused experience.
 
 **Graph Visualization** (Self Map - /map):
-- D3.js force-directed graph showing interests as nodes
+- Mobile-first design with Mine/Nearby Pulse tab switcher
+- "Open" toggle for discoverable status in header
+- D3.js force-directed graph showing interests as nodes (accepts graphData prop for different datasets)
 - Node size scaled by attention weight (time-weighted engagement)
 - Edges represent relationships (co-occur, sequential, semantic, temporal)
 - Interactive features:
@@ -42,7 +46,7 @@ Preferred communication style: Simple, everyday language.
   - Zoom and pan (tracked via zoomTransformRef for accurate selection)
   - Click nodes to view detail panel
   - Lasso mode: click-to-select multiple nodes (uses isLassoModeRef for dynamic behavior)
-  - Circuit creation: select 2+ nodes and create named circuits with persistence
+  - Circuit creation: select 2+ nodes and create named circuits from active graphData
   - Kill nodes: remove from graph permanently
   - Pin nodes: fix position with visual indicator (green border)
 - Lens modes with smooth 300ms color transitions (no simulation restart):
@@ -52,8 +56,12 @@ Preferred communication style: Simple, everyday language.
   - Heat: Red (>80), amber (60-80), yellow (40-60), gray (<40) based on attention weight
 - Node detail panel: evidence (likes, saves, watch time, highlights), connected neighbors, timeline
 - Circuit display: Shows created circuits in controls panel with truncated names
-- Synthetic dataset: 35 nodes across 9 thematic clusters (AI Safety, Narrative, Causal Inference, Systems Thinking, Emergence, etc.)
+- GraphControls: Mobile-responsive with flex-wrap, shortened labels on small screens
+- Data sources:
+  - **Mine**: syntheticUserGraph (35 nodes: Fitness, TV, Travel, Cooking, Home, Music, Photography, Tech, Finance)
+  - **Nearby Pulse**: nearbyPulseGraph (27 nodes: Coffee Shops, Sports, Taylor Swift, Netflix, Pizza, Hiking, etc.)
 - Performance: Separated effects for lens color updates, selection stroke updates, and simulation - prevents unnecessary graph restarts
+- Key property on SelfMapGraph ensures D3 simulation rebuilds when switching between Mine/Nearby Pulse
 
 ### Backend Architecture
 

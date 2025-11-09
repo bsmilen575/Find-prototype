@@ -11,31 +11,23 @@ export function SignUpScreen() {
   const { toast } = useToast();
   const [locationGranted, setLocationGranted] = useState(false);
 
-  const handleLocationAccess = async () => {
-    try {
-      const permission = await navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocationGranted(true);
-          toast({
-            title: "Location access granted",
-            description: "You're all set to discover nearby connections!",
-          });
-        },
-        (error) => {
-          toast({
-            title: "Location access denied",
-            description: "Please enable location access to use Find.",
-            variant: "destructive",
-          });
-        }
-      );
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Unable to access location. Please check your browser settings.",
-        variant: "destructive",
-      });
-    }
+  const handleLocationAccess = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocationGranted(true);
+        toast({
+          title: "Location access granted",
+          description: "You're all set to discover nearby connections!",
+        });
+      },
+      (error) => {
+        toast({
+          title: "Location access denied",
+          description: "Please enable location access to use Find.",
+          variant: "destructive",
+        });
+      }
+    );
   };
 
   const handleConnect = () => {
