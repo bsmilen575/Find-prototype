@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import sphereImage from '@assets/generated_images/Colorful_acrylic_glass_sphere_20b5baa4.png';
+import sphereImage from '@assets/generated_images/Transparent_acrylic_rainbow_sphere_417958a1.png';
 
 export function OnboardingScreen() {
   const [, setLocation] = useLocation();
