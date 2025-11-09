@@ -16,10 +16,13 @@ Preferred communication style: Simple, everyday language.
 
 **Framework**: React with TypeScript using Vite as the build tool
 
-**Routing**: Wouter for client-side routing with three main routes:
-- `/` - Home screen with discoverable toggle and anonymous match cards
+**Routing**: Wouter for client-side routing with key routes:
+- `/` - Welcome screen with hyper-realistic metallic sphere and neural network overlay
+- `/map` - **Self Map**: Force-directed graph visualization of user's interest graph (D3.js)
+- `/home` - Home screen with discoverable toggle and anonymous match cards
 - `/about` - Information about the platform and privacy features
 - `/onboarding` - Single-page profile creation (name + 5 interests)
+- `/signup` - Detailed signup with Pod setup and interest capture
 
 **State Management**:
 - TanStack React Query for server state management and caching
@@ -28,7 +31,20 @@ Preferred communication style: Simple, everyday language.
 
 **UI Components**: shadcn/ui component library built on Radix UI primitives with Tailwind CSS for styling. The design system follows a "New York" style with custom color tokens and spacing primitives defined in the Tailwind configuration.
 
-**Design Philosophy**: Privacy-first visual language drawing inspiration from Airbnb (location discovery), LinkedIn (professional profiles), Signal (privacy aesthetic), and Tinder (quick decision-making). Uses Inter as primary font and Space Grotesk for accent typography.
+**Design Philosophy**: Privacy-first visual language drawing inspiration from Airbnb (location discovery), LinkedIn (professional profiles), Signal (privacy aesthetic), and Tinder (quick decision-making). Uses Inter as primary font and Space Grotesk for accent typography. Warm beige (#f5f3f0) background for calm, focused experience.
+
+**Graph Visualization** (Self Map - /map):
+- D3.js force-directed graph showing interests as nodes
+- Node size scaled by attention weight (time-weighted engagement)
+- Edges represent relationships (co-occur, sequential, semantic, temporal)
+- Interactive: drag nodes, tap to inspect details, zoom/pan
+- Lens modes toggle visual encodings:
+  - Default: Grayscale (calm, low-stimulus)
+  - Recency: Color-coded by days since last active
+  - Source: Color by content type (book, podcast, article, video, creator, topic)
+  - Heat: Color by attention weight intensity
+- Node detail panel shows evidence (likes, saves, watch time, highlights), connected neighbors, timeline
+- Synthetic dataset: 35 nodes across 9 thematic clusters (AI Safety, Narrative, Causal Inference, Systems Thinking, etc.)
 
 ### Backend Architecture
 
@@ -55,10 +71,11 @@ Preferred communication style: Simple, everyday language.
 **Database**: PostgreSQL via Neon serverless driver, managed through Drizzle ORM
 
 **Schema Design**:
-- Single `profiles` table with fields: id, name, interests[], discoverable, latitude, longitude, lastActive
-- interests: Exactly 5 items (books, music, hobbies, anything)
-- discoverable: Boolean toggle for visibility control
-- Geographic coordinates for proximity-based filtering (100m radius)
+- `profiles` table: id, name, interests[], discoverable, latitude, longitude, lastActive, graphData (JSONB), signature (embedding array)
+- `nodes` table: id, profileId, label, type, attentionWeight, source, evidence (JSONB), firstSeen, lastActive, cluster
+- `edges` table: id, profileId, sourceNodeId, targetNodeId, weight, type
+- `clusters` table: id, profileId, name, nodeIds[], color
+- Graph structure supports future advanced matching with embeddings and signatures
 
 **ORM**: Drizzle with Zod schema validation for type-safe database operations and API input validation
 
@@ -109,6 +126,12 @@ Preferred communication style: Simple, everyday language.
 - Navigation components (tabs, accordion, navigation-menu)
 
 **shadcn/ui**: Pre-styled components built on Radix UI with custom theme configuration
+
+**D3.js**: Data visualization library for force-directed graph layout in Self Map
+- Force simulation with link, charge, center, and collision forces
+- Interactive drag behavior on nodes
+- Zoom and pan transformations
+- Dynamic color encoding based on lens modes
 
 ### Fonts
 
