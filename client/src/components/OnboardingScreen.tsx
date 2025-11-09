@@ -87,118 +87,113 @@ export function OnboardingScreen() {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
-        <div className="relative w-48 h-48 mb-12" data-testid="sphere-container">
-          <div 
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `
-                radial-gradient(circle at 30% 25%, 
-                  #ffffff 0%, 
-                  #fafafa 5%, 
-                  #efefef 10%, 
-                  #e0e0e0 15%, 
-                  #d0d0d0 20%, 
-                  #c0c0c0 25%, 
-                  #b0b0b0 30%, 
-                  #a0a0a0 35%, 
-                  #909090 40%, 
-                  #808080 45%, 
-                  #707070 50%, 
-                  #606060 55%, 
-                  #505050 60%, 
-                  #404040 70%, 
-                  #303030 80%, 
-                  #202020 90%, 
-                  #151515 100%
-                )
-              `,
-              boxShadow: `
-                inset -35px -35px 70px rgba(0, 0, 0, 0.6),
-                inset 15px 15px 25px rgba(255, 255, 255, 0.5),
-                inset -3px -3px 10px rgba(0, 0, 0, 0.4),
-                inset 1px 1px 3px rgba(255, 255, 255, 0.6),
-                -20px 20px 40px rgba(0, 0, 0, 0.35),
-                20px -20px 35px rgba(255, 255, 255, 0.15),
-                0 35px 70px rgba(0, 0, 0, 0.25)
-              `,
-            }}
-          />
-          
-          <div 
-            className="absolute rounded-full"
-            style={{
-              top: '12%',
-              left: '18%',
-              width: '45%',
-              height: '45%',
-              background: 'radial-gradient(circle at center, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 15%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%)',
-              filter: 'blur(0.3px)',
-            }}
-          />
-          
-          <div 
-            className="absolute rounded-full"
-            style={{
-              top: '18%',
-              left: '24%',
-              width: '20%',
-              height: '20%',
-              background: 'radial-gradient(circle at center, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 255, 0.5) 40%, transparent 60%)',
-            }}
-          />
-          
-          <div 
-            className="absolute rounded-full"
-            style={{
-              top: '35%',
-              left: '8%',
-              width: '55%',
-              height: '18%',
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 100%)',
-              filter: 'blur(1.5px)',
-              transform: 'rotate(-22deg)',
-            }}
-          />
-          
-          <div 
-            className="absolute rounded-full"
-            style={{
-              bottom: '18%',
-              right: '15%',
-              width: '40%',
-              height: '40%',
-              background: 'radial-gradient(circle at center, rgba(200, 200, 200, 0.4) 0%, rgba(180, 180, 180, 0.25) 35%, transparent 70%)',
-              filter: 'blur(5px)',
-            }}
-          />
-          
-          <div 
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `
-                radial-gradient(circle at 50% 50%, 
-                  transparent 58%, 
-                  rgba(255, 255, 255, 0.35) 68%, 
-                  rgba(255, 255, 255, 0.2) 75%,
-                  rgba(255, 255, 255, 0.1) 80%,
-                  transparent 87%
-                )
-              `,
-            }}
-          />
-          
-          <div 
-            className="absolute rounded-full"
-            style={{
-              top: '55%',
-              left: '25%',
-              width: '35%',
-              height: '12%',
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 40%, rgba(255, 255, 255, 0.35) 60%, transparent 100%)',
-              filter: 'blur(2px)',
-              transform: 'rotate(-30deg)',
-            }}
-          />
+        <div className="relative w-56 h-56 mb-12" data-testid="sphere-container">
+          {/* Suspended shadow */}
+          <svg className="absolute" style={{ top: '85%', left: '15%', width: '70%', height: '30%' }}>
+            <defs>
+              <radialGradient id="shadow-gradient">
+                <stop offset="0%" stopColor="rgba(0,0,0,0.25)" />
+                <stop offset="50%" stopColor="rgba(0,0,0,0.12)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+              </radialGradient>
+              <filter id="shadow-blur">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
+              </filter>
+            </defs>
+            <ellipse cx="50%" cy="45%" rx="45%" ry="18%" fill="url(#shadow-gradient)" filter="url(#shadow-blur)" />
+          </svg>
+
+          {/* Main sphere SVG */}
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))' }}>
+            <defs>
+              {/* Base translucent gradient - neutral with warm/cool undertones */}
+              <radialGradient id="base-sphere" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="#fdf8f3" stopOpacity="0.95" />
+                <stop offset="40%" stopColor="#fefaf6" stopOpacity="0.88" />
+                <stop offset="70%" stopColor="#fcf6f1" stopOpacity="0.75" />
+                <stop offset="100%" stopColor="#f9f2ed" stopOpacity="0.6" />
+              </radialGradient>
+
+              {/* Iridescent layer 1 - warm tones (orange/yellow) */}
+              <radialGradient id="warm-gradient" cx="30%" cy="35%">
+                <stop offset="0%" stopColor="#ffad5e" stopOpacity="0" />
+                <stop offset="25%" stopColor="#ffad5e" stopOpacity="0.35" />
+                <stop offset="45%" stopColor="#ffe996" stopOpacity="0.25" />
+                <stop offset="75%" stopColor="#ffc875" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#ffad5e" stopOpacity="0" />
+              </radialGradient>
+
+              {/* Iridescent layer 2 - cool tones (cyan/teal) */}
+              <radialGradient id="cool-gradient" cx="65%" cy="55%">
+                <stop offset="0%" stopColor="#74e2ff" stopOpacity="0" />
+                <stop offset="20%" stopColor="#74e2ff" stopOpacity="0.4" />
+                <stop offset="40%" stopColor="#5cd4e8" stopOpacity="0.35" />
+                <stop offset="65%" stopColor="#89e0f5" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#74e2ff" stopOpacity="0" />
+              </radialGradient>
+
+              {/* Iridescent layer 3 - pink/purple accent */}
+              <radialGradient id="accent-gradient" cx="45%" cy="65%">
+                <stop offset="0%" stopColor="#d48bff" stopOpacity="0" />
+                <stop offset="25%" stopColor="#ff9ed4" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="#d48bff" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#d48bff" stopOpacity="0" />
+              </radialGradient>
+
+              {/* Specular highlight - bright spot */}
+              <radialGradient id="highlight-top" cx="32%" cy="28%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="15%" stopColor="#ffffff" stopOpacity="0.9" />
+                <stop offset="35%" stopColor="#ffffff" stopOpacity="0.5" />
+                <stop offset="60%" stopColor="#ffffff" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+              </radialGradient>
+
+              {/* Secondary highlight */}
+              <radialGradient id="highlight-secondary" cx="68%" cy="32%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.7" />
+                <stop offset="25%" stopColor="#ffffff" stopOpacity="0.4" />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
+              </radialGradient>
+
+              {/* Rim lighting effect */}
+              <radialGradient id="rim-light" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="transparent" />
+                <stop offset="75%" stopColor="transparent" />
+                <stop offset="85%" stopColor="rgba(255,255,255,0.4)" />
+                <stop offset="92%" stopColor="rgba(255,255,255,0.25)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+              </radialGradient>
+
+              {/* Gaussian blur for soft effects */}
+              <filter id="soft-glow">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+              </filter>
+
+              <filter id="subtle-blur">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+              </filter>
+            </defs>
+
+            {/* Base sphere with translucent neutral gradient */}
+            <circle cx="100" cy="100" r="85" fill="url(#base-sphere)" />
+
+            {/* Iridescent layers */}
+            <circle cx="100" cy="100" r="85" fill="url(#warm-gradient)" opacity="0.75" style={{ mixBlendMode: 'screen' }} />
+            <circle cx="100" cy="100" r="85" fill="url(#cool-gradient)" opacity="0.7" style={{ mixBlendMode: 'screen' }} />
+            <circle cx="100" cy="100" r="85" fill="url(#accent-gradient)" opacity="0.65" style={{ mixBlendMode: 'screen' }} />
+
+            {/* Rim lighting */}
+            <circle cx="100" cy="100" r="85" fill="url(#rim-light)" />
+
+            {/* Specular highlights */}
+            <circle cx="100" cy="100" r="85" fill="url(#highlight-top)" filter="url(#subtle-blur)" />
+            <circle cx="100" cy="100" r="85" fill="url(#highlight-secondary)" filter="url(#soft-glow)" />
+
+            {/* Sharp highlight accent */}
+            <ellipse cx="75" cy="70" rx="22" ry="28" fill="rgba(255,255,255,0.85)" filter="url(#subtle-blur)" transform="rotate(-25 75 70)" />
+            <ellipse cx="75" cy="70" rx="12" ry="16" fill="rgba(255,255,255,0.95)" transform="rotate(-25 75 70)" />
+          </svg>
           
           <svg className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
             <defs>
