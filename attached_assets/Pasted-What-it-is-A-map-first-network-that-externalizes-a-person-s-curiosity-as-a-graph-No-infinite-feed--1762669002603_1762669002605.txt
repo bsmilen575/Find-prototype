@@ -1,0 +1,200 @@
+What it is
+
+A map-first network that externalizes a person’s curiosity as a graph. No infinite feed. Core loop = see yourself → adjust → discover resonance → opt-in connect.
+
+Core Objects
+
+Node: an interest (topic, creator, work, tag, behavior-derived theme).
+
+Edge: strength of relationship (co-occur, sequential consumption, shared vocab, temporal coupling).
+
+Cluster: community of nodes; becomes a “domain” (e.g., “HAI & interpretability”).
+
+Signature: the shape of your graph (embedding of the full topology). Used for matching.
+
+Home (Self Map)
+
+Default screen is your graph. It breathes and updates in real time.
+
+Layout: force-directed, gravity = personal salience. Larger nodes = time-weighted attention.
+
+Color: start monochrome for calm. Add color only when you turn on a lens (e.g., recency, mood, location, media type).
+
+Interaction:
+
+Tap a node → side panel: why it’s here (evidence: likes, saves, watch time, highlights), neighbors, drift over time.
+
+Lasso multiple nodes → create a Circuit (your custom theme). Circuits become saved filters and matching units.
+
+Heat toggle → shows where attention is spiking or decaying this week.
+
+Governance UI: every node has a “because” line and a Kill/Keep control. Kill removes/weights down a theme; Keep “pins” it.
+
+Discovery (Resonance, not Virality)
+
+Core verb: “Find resonance.” No one’s identity until both sides consent.
+
+Near Resonance: people within X km whose graph signature is close to yours overall.
+
+Circuit Resonance: people whose graphs are dissimilar overall but highly aligned on one Circuit (useful for cross-disciplinary serendipity).
+
+Bridge Seek: find users who bridge two of your clusters you’ve never bridged. This grows you.
+
+Reveal mechanic (double-consent):
+
+You see a Resonance Card: “Strong match on: Narrative cognition ↔ AI safety (3 circuits).”
+
+If you tap Invite Reveal, the other side gets a symmetric card. Identity only unlocks on mutual reveal.
+
+Local Collective (Neighborhood Graph)
+
+Second tab shows aggregate interest fields around you—privacy-preserving.
+
+Name options (pick one, keep it crisp):
+
+Local Pulse
+
+Area Resonance
+
+Neighborhood Graph
+
+Collective Field
+
+City Zeitgeist
+
+Nearby Signal
+
+UI:
+
+Choropleth/contour layer over a map or a radial “field” around your location.
+
+Top emerging circuits in your area (velocity-weighted), top bridges forming locally, and “quiet corners” (high quality, low attention).
+
+Real-Time Without Doomscroll
+
+Ticker, not feed. A slim, dismissible strip shows state changes: “Your ‘Systems + Story’ circuit gained 2 new bridges,” “Local Pulse: ‘Compute efficiency’ trending.”
+
+Session tasks: Each session offers 3 curiosity actions (e.g., “Explore one new node from a quiet corner,” “Bridge two clusters”).
+
+Hard stop: App nudges you out after ~5–10 actions. No endless scroll by design.
+
+Matching Logic (High Level, implementable)
+
+Build node embeddings: from text + behavior (likes, dwell time, saves). Use sentence-level transformer + time decay.
+
+Graph embedding: graph2vec/GraphSAGE on your personal graph → signature vector.
+
+Resonance score:
+
+Global: cosine(signature_A, signature_B).
+
+Circuit-specific: Jaccard/overlap on node sets + mean edge similarity.
+
+Bridge score: count of high-betweenness candidates that connect two user clusters.
+
+Diversity guardrails: penalize matches that are too similar across all circuits; boost cross-cluster complementarity with at least one high-overlap circuit.
+
+Privacy & Agency (Non-negotiable)
+
+Local Pulse is k-anonymous + DP noise. No single user reconstructable.
+
+Selective visibility: users choose which Circuits are discoverable. Private by default.
+
+Ephemeral matching windows: reveal invites expire; no inbox hoarding.
+
+Growth & Empathy Features
+
+Arc View (Timeline): scrub a slider and watch your graph morph month by month. You see identity as a trajectory, not a label.
+
+Mirror Mode: compare “today vs. 90 days ago” (which clusters expanded/atrophied, which edges appeared).
+
+Perspective Swap (opt-in): temporarily view a synthetic approximation of someone else’s graph (structure only). You learn how they think without personal content.
+
+Incentive Design (Make curiosity the currency)
+
+No public like counts. Replace with Resonance gained and Bridges created.
+
+Creator surfaces: if your post creates new edges between nodes in many users’ graphs, it’s highlighted. Reward = connectivity impact, not raw views.
+
+Anti-Abuse & Health
+
+Adaptive friction: cold outreach locked; everything routes through double-consent reveal.
+
+Toxicity/autocult detectors: clusters with extreme insularity and high emotional arousal + low bridge rate trigger gentle curiosity prompts.
+
+Rate limits: the app ends a session by design. You come to tend your graph, not live inside it.
+
+Onboarding & Data Ingest (MVP)
+
+Start lightweight: manual seeds (5 interests), optional imports (Twitter/X likes, Goodreads, Pocket/Instapaper, Spotify artists), plus quick “swipe to place” taste test.
+
+Cold-start edges: co-occurrence from public corpora + small curated ontologies; refine with behavior.
+
+Visual Language (fast and legible)
+
+Base: grayscale nodes/edges, low-stimulus.
+
+Lenses:
+
+Recency = hue.
+
+Confidence = node border thickness.
+
+Source type (text/pod/video) = glyph.
+
+Emotional valence (optional) = subtle halo intensity.
+
+Circuits: soft rounded capsules; drag to merge/split.
+
+Session Flow (example)
+
+Land on Self Map, see two warm clusters today.
+
+Tap Bridge Seek → proposed bridge: “Causal ML ↔ Narrative arcs.”
+
+Accept 1 content suggestion + 1 person-reveal invite (double-consent).
+
+Check Local Pulse → “Interpretability tools quietly rising nearby.” Save as a Circuit.
+
+Done. App signs you out with a nudge to return tomorrow.
+
+Metrics That Matter
+
+Bridge Rate: new cross-cluster edges per active user per week.
+
+Quiet Corner Lift: % of sessions engaging with low-exposure, high-quality nodes.
+
+Resonance Conversion: mutual reveals that lead to sustained exchange.
+
+Curiosity Balance: Gini across clusters—lower is healthier variety.
+
+What to call the “average nearby graph” button
+
+Pick one and ship:
+
+Local Pulse (my pick)
+
+Area Resonance
+
+City Zeitgeist
+
+Neighborhood Graph
+
+Collective Field
+Tooltip: “See emergent interests around you (privacy-preserving).”
+
+Colored vs Black Nodes
+
+Default black/gray (reduces noise, feels serious).
+
+Color only when you choose a lens (recency, mood, media). Keeps meaning tight and avoids confetti.
+
+Why this helps, concretely
+
+You stop guessing who you are. You see it, then shape it.
+
+You connect on structure, not performance.
+
+You get serendipity on demand without the slot-machine feed.
+
+Communities grow around bridges, not rage-bait.
