@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { syntheticUserGraph, type Node as GraphNode, type Edge as GraphEdge } from '@shared/synthetic-data';
+import { type Node as GraphNode, type Edge as GraphEdge, type UserGraph } from '@shared/synthetic-data';
 import { NodeDetailPanel } from './NodeDetailPanel';
 import { GraphControls } from './GraphControls';
 
@@ -21,7 +21,11 @@ interface Circuit {
   createdAt: Date;
 }
 
-export function SelfMapGraph() {
+interface SelfMapGraphProps {
+  graphData: UserGraph;
+}
+
+export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [lensMode, setLensMode] = useState<'none' | 'recency' | 'source' | 'heat'>('none');
@@ -56,10 +60,10 @@ export function SelfMapGraph() {
 
     svg.call(zoom);
 
-    const nodes: D3Node[] = syntheticUserGraph.nodes
+    const nodes: D3Node[] = graphData.nodes
       .filter(n => !killedNodes.has(n.id))
       .map(n => ({ ...n }));
-    const links: D3Link[] = syntheticUserGraph.edges
+    const links: D3Link[] = graphData.edges
       .filter(e => !killedNodes.has(e.source) && !killedNodes.has(e.target))
       .map(e => ({
         ...e,
@@ -172,7 +176,7 @@ export function SelfMapGraph() {
     return () => {
       simulation.stop();
     };
-  }, [killedNodes]);
+  }, [graphData, killedNodes, pinnedNodes]);
 
   useEffect(() => {
     isLassoModeRef.current = isLassoMode;
