@@ -24,95 +24,90 @@ export function OnboardingScreen() {
           </svg>
 
           {/* Main sphere SVG */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))' }}>
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.2))' }}>
             <defs>
-              {/* Base translucent gradient - neutral with warm/cool undertones */}
-              <radialGradient id="base-sphere" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#fdf8f3" stopOpacity="0.95" />
-                <stop offset="40%" stopColor="#fefaf6" stopOpacity="0.88" />
-                <stop offset="70%" stopColor="#fcf6f1" stopOpacity="0.75" />
-                <stop offset="100%" stopColor="#f9f2ed" stopOpacity="0.6" />
+              {/* Layered color bands - like acrylic obelisk */}
+              <linearGradient id="color-bands" x1="0%" y1="0%" x2="0%" y2="100%">
+                {/* Top - vibrant orange/amber */}
+                <stop offset="0%" stopColor="#FF8C00" />
+                <stop offset="15%" stopColor="#FF6B00" />
+                <stop offset="20%" stopColor="#FFA500" />
+                
+                {/* Upper middle - cyan/turquoise transition */}
+                <stop offset="25%" stopColor="#00CED1" />
+                <stop offset="35%" stopColor="#40E0D0" />
+                <stop offset="40%" stopColor="#00D9C9" />
+                
+                {/* Middle - teal/green */}
+                <stop offset="45%" stopColor="#00B8A9" />
+                <stop offset="55%" stopColor="#5FD9C7" />
+                <stop offset="60%" stopColor="#48D1C7" />
+                
+                {/* Lower middle - dark accent band */}
+                <stop offset="65%" stopColor="#2C3E50" />
+                <stop offset="70%" stopColor="#1A252F" />
+                
+                {/* Bottom - bright cyan/teal */}
+                <stop offset="75%" stopColor="#00CED1" />
+                <stop offset="85%" stopColor="#5FD9C7" />
+                <stop offset="100%" stopColor="#40E0D0" />
+              </linearGradient>
+
+              {/* Radial overlay for 3D depth */}
+              <radialGradient id="sphere-depth" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity="0.05" />
+                <stop offset="85%" stopColor="#000000" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.35" />
               </radialGradient>
 
-              {/* Iridescent layer 1 - warm tones (orange/yellow) */}
-              <radialGradient id="warm-gradient" cx="30%" cy="35%">
-                <stop offset="0%" stopColor="#ffad5e" stopOpacity="0" />
-                <stop offset="25%" stopColor="#ffad5e" stopOpacity="0.35" />
-                <stop offset="45%" stopColor="#ffe996" stopOpacity="0.25" />
-                <stop offset="75%" stopColor="#ffc875" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#ffad5e" stopOpacity="0" />
-              </radialGradient>
-
-              {/* Iridescent layer 2 - cool tones (cyan/teal) */}
-              <radialGradient id="cool-gradient" cx="65%" cy="55%">
-                <stop offset="0%" stopColor="#74e2ff" stopOpacity="0" />
-                <stop offset="20%" stopColor="#74e2ff" stopOpacity="0.4" />
-                <stop offset="40%" stopColor="#5cd4e8" stopOpacity="0.35" />
-                <stop offset="65%" stopColor="#89e0f5" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#74e2ff" stopOpacity="0" />
-              </radialGradient>
-
-              {/* Iridescent layer 3 - pink/purple accent */}
-              <radialGradient id="accent-gradient" cx="45%" cy="65%">
-                <stop offset="0%" stopColor="#d48bff" stopOpacity="0" />
-                <stop offset="25%" stopColor="#ff9ed4" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#d48bff" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#d48bff" stopOpacity="0" />
-              </radialGradient>
-
-              {/* Specular highlight - bright spot */}
-              <radialGradient id="highlight-top" cx="32%" cy="28%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-                <stop offset="15%" stopColor="#ffffff" stopOpacity="0.9" />
-                <stop offset="35%" stopColor="#ffffff" stopOpacity="0.5" />
-                <stop offset="60%" stopColor="#ffffff" stopOpacity="0.1" />
+              {/* Glossy specular highlight */}
+              <radialGradient id="gloss-highlight" cx="32%" cy="28%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+                <stop offset="20%" stopColor="#ffffff" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity="0.2" />
                 <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
 
-              {/* Secondary highlight */}
-              <radialGradient id="highlight-secondary" cx="68%" cy="32%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.7" />
-                <stop offset="25%" stopColor="#ffffff" stopOpacity="0.4" />
-                <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
+              {/* Secondary reflection */}
+              <radialGradient id="secondary-gloss" cx="65%" cy="35%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
+                <stop offset="30%" stopColor="#ffffff" stopOpacity="0.25" />
+                <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
 
-              {/* Rim lighting effect */}
-              <radialGradient id="rim-light" cx="50%" cy="50%">
+              {/* Edge rim light */}
+              <radialGradient id="rim-glow" cx="50%" cy="50%">
                 <stop offset="0%" stopColor="transparent" />
-                <stop offset="75%" stopColor="transparent" />
-                <stop offset="85%" stopColor="rgba(255,255,255,0.4)" />
-                <stop offset="92%" stopColor="rgba(255,255,255,0.25)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                <stop offset="70%" stopColor="transparent" />
+                <stop offset="88%" stopColor="rgba(255,255,255,0.3)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0.15)" />
               </radialGradient>
 
-              {/* Gaussian blur for soft effects */}
-              <filter id="soft-glow">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
-              </filter>
-
-              <filter id="subtle-blur">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+              {/* Blur filter for soft glow */}
+              <filter id="soft-blur">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
               </filter>
             </defs>
 
-            {/* Base sphere with translucent neutral gradient */}
-            <circle cx="100" cy="100" r="85" fill="url(#base-sphere)" />
+            {/* Base colored sphere with vertical bands */}
+            <circle cx="100" cy="100" r="85" fill="url(#color-bands)" opacity="0.9" />
 
-            {/* Iridescent layers */}
-            <circle cx="100" cy="100" r="85" fill="url(#warm-gradient)" opacity="0.75" style={{ mixBlendMode: 'screen' }} />
-            <circle cx="100" cy="100" r="85" fill="url(#cool-gradient)" opacity="0.7" style={{ mixBlendMode: 'screen' }} />
-            <circle cx="100" cy="100" r="85" fill="url(#accent-gradient)" opacity="0.65" style={{ mixBlendMode: 'screen' }} />
+            {/* 3D depth shading */}
+            <circle cx="100" cy="100" r="85" fill="url(#sphere-depth)" />
 
-            {/* Rim lighting */}
-            <circle cx="100" cy="100" r="85" fill="url(#rim-light)" />
+            {/* Edge rim lighting */}
+            <circle cx="100" cy="100" r="85" fill="url(#rim-glow)" />
 
-            {/* Specular highlights */}
-            <circle cx="100" cy="100" r="85" fill="url(#highlight-top)" filter="url(#subtle-blur)" />
-            <circle cx="100" cy="100" r="85" fill="url(#highlight-secondary)" filter="url(#soft-glow)" />
+            {/* Main glossy highlight */}
+            <circle cx="100" cy="100" r="85" fill="url(#gloss-highlight)" filter="url(#soft-blur)" />
 
-            {/* Sharp highlight accent */}
-            <ellipse cx="75" cy="70" rx="22" ry="28" fill="rgba(255,255,255,0.85)" filter="url(#subtle-blur)" transform="rotate(-25 75 70)" />
-            <ellipse cx="75" cy="70" rx="12" ry="16" fill="rgba(255,255,255,0.95)" transform="rotate(-25 75 70)" />
+            {/* Secondary reflection */}
+            <circle cx="100" cy="100" r="85" fill="url(#secondary-gloss)" />
+
+            {/* Sharp bright highlight spot */}
+            <ellipse cx="72" cy="68" rx="20" ry="26" fill="rgba(255,255,255,0.9)" filter="url(#soft-blur)" transform="rotate(-22 72 68)" />
+            <ellipse cx="72" cy="68" rx="10" ry="14" fill="rgba(255,255,255,1)" transform="rotate(-22 72 68)" />
           </svg>
         </div>
         
