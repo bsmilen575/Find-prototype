@@ -14,6 +14,16 @@ export function SignUpScreen() {
           <p className="text-gray-600">Use your data, on your terms. Get ready to unlock serendipity.</p>
         </div>
         
+        <div className="mb-5">
+          <label className="block text-gray-700 mb-2">Your Name</label>
+          <Input 
+            type="text" 
+            placeholder="Enter your name"
+            className="h-12 rounded-xl border-2 border-black"
+            data-testid="input-name"
+          />
+        </div>
+        
         <div className="mb-6">
           <h3 className="text-gray-900 mb-3" data-testid="heading-pod">Set up your Pod</h3>
           <p className="text-gray-500 text-sm mb-4">Connect your accounts to build your private interest graph</p>
@@ -66,16 +76,6 @@ export function SignUpScreen() {
               </svg>
             </Button>
           </div>
-        </div>
-        
-        <div className="mb-5">
-          <label className="block text-gray-700 mb-2">Your Name</label>
-          <Input 
-            type="text" 
-            placeholder="Enter your name"
-            className="h-12 rounded-xl border-2 border-black"
-            data-testid="input-name"
-          />
         </div>
         
         <div className="mb-6">
