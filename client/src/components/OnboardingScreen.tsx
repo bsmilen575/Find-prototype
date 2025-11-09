@@ -3,86 +3,6 @@ import { useLocation } from 'wouter';
 
 export function OnboardingScreen() {
   const [, setLocation] = useLocation();
-  const nodes = [
-    { x: 50, y: 15, cluster: 1, intensity: 1 },
-    { x: 45, y: 18, cluster: 1, intensity: 0.9 },
-    { x: 55, y: 17, cluster: 1, intensity: 0.85 },
-    { x: 50, y: 22, cluster: 1, intensity: 0.8 },
-    { x: 58, y: 23, cluster: 1, intensity: 0.75 },
-    
-    { x: 25, y: 30, cluster: 2, intensity: 1 },
-    { x: 22, y: 35, cluster: 2, intensity: 0.9 },
-    { x: 28, y: 38, cluster: 2, intensity: 0.85 },
-    { x: 32, y: 33, cluster: 2, intensity: 0.8 },
-    
-    { x: 75, y: 28, cluster: 3, intensity: 1 },
-    { x: 78, y: 33, cluster: 3, intensity: 0.9 },
-    { x: 72, y: 36, cluster: 3, intensity: 0.85 },
-    { x: 80, y: 38, cluster: 3, intensity: 0.8 },
-    
-    { x: 20, y: 50, cluster: 4, intensity: 1 },
-    { x: 24, y: 52, cluster: 4, intensity: 0.9 },
-    { x: 18, y: 55, cluster: 4, intensity: 0.85 },
-    { x: 28, y: 54, cluster: 4, intensity: 0.8 },
-    
-    { x: 48, y: 48, cluster: 5, intensity: 1 },
-    { x: 52, y: 50, cluster: 5, intensity: 0.95 },
-    { x: 50, y: 53, cluster: 5, intensity: 0.9 },
-    
-    { x: 75, y: 50, cluster: 6, intensity: 1 },
-    { x: 78, y: 54, cluster: 6, intensity: 0.9 },
-    { x: 72, y: 56, cluster: 6, intensity: 0.85 },
-    { x: 80, y: 52, cluster: 6, intensity: 0.8 },
-    
-    { x: 30, y: 68, cluster: 7, intensity: 1 },
-    { x: 26, y: 72, cluster: 7, intensity: 0.9 },
-    { x: 34, y: 73, cluster: 7, intensity: 0.85 },
-    { x: 28, y: 76, cluster: 7, intensity: 0.8 },
-    
-    { x: 50, y: 75, cluster: 8, intensity: 1 },
-    { x: 48, y: 78, cluster: 8, intensity: 0.9 },
-    { x: 53, y: 79, cluster: 8, intensity: 0.85 },
-    
-    { x: 68, y: 70, cluster: 9, intensity: 1 },
-    { x: 72, y: 73, cluster: 9, intensity: 0.9 },
-    { x: 65, y: 75, cluster: 9, intensity: 0.85 },
-    
-    { x: 38, y: 25, cluster: 10, intensity: 0.7 },
-    { x: 62, y: 42, cluster: 10, intensity: 0.7 },
-    { x: 42, y: 60, cluster: 10, intensity: 0.7 },
-    { x: 58, y: 65, cluster: 10, intensity: 0.7 },
-    { x: 35, y: 48, cluster: 10, intensity: 0.7 },
-    { x: 65, y: 58, cluster: 10, intensity: 0.7 },
-  ];
-
-  const connections = [
-    [0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [2, 4], [3, 4],
-    [5, 6], [5, 7], [5, 8], [6, 7], [7, 8],
-    [9, 10], [9, 11], [9, 12], [10, 11], [11, 12],
-    [13, 14], [13, 15], [13, 16], [14, 16], [15, 16],
-    [17, 18], [17, 19], [18, 19],
-    [20, 21], [20, 22], [20, 23], [21, 22], [22, 23],
-    [24, 25], [24, 26], [24, 27], [25, 26], [26, 27],
-    [28, 29], [28, 30], [29, 30],
-    [31, 32], [31, 33], [32, 33],
-    
-    [0, 34], [34, 5], [2, 9], [4, 35],
-    [5, 13], [8, 38], [8, 17],
-    [9, 35], [12, 20], [11, 35],
-    [13, 17], [14, 38], [16, 36],
-    [17, 20], [17, 36], [18, 35], [19, 36],
-    [20, 39], [22, 35], [23, 39],
-    [24, 36], [24, 38], [25, 28],
-    [26, 37], [27, 28],
-    [28, 37], [30, 31], [30, 37],
-    [31, 39], [33, 39],
-    
-    [0, 9], [2, 20], [4, 12],
-    [5, 24], [7, 17], [9, 28],
-    [13, 24], [17, 28], [20, 31],
-    [3, 34], [10, 35], [14, 36],
-    [29, 37], [15, 38], [21, 39],
-  ];
   
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
@@ -194,86 +114,6 @@ export function OnboardingScreen() {
             <ellipse cx="75" cy="70" rx="22" ry="28" fill="rgba(255,255,255,0.85)" filter="url(#subtle-blur)" transform="rotate(-25 75 70)" />
             <ellipse cx="75" cy="70" rx="12" ry="16" fill="rgba(255,255,255,0.95)" transform="rotate(-25 75 70)" />
           </svg>
-          
-          <svg className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-              
-              <filter id="nodeGlow">
-                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            {connections.map(([startIdx, endIdx], idx) => {
-              const start = nodes[startIdx];
-              const end = nodes[endIdx];
-              const avgIntensity = (start.intensity + end.intensity) / 2;
-              return (
-                <line
-                  key={`line-${idx}`}
-                  x1={`${start.x}%`}
-                  y1={`${start.y}%`}
-                  x2={`${end.x}%`}
-                  y2={`${end.y}%`}
-                  stroke="rgba(255, 255, 255, 0.7)"
-                  strokeWidth="1"
-                  opacity={avgIntensity * 0.5}
-                  filter="url(#glow)"
-                  style={{
-                    animation: `pulse ${2 + Math.random()}s ease-in-out infinite`,
-                    animationDelay: `${Math.random() * 2}s`
-                  }}
-                />
-              );
-            })}
-            
-            {nodes.map((node, idx) => (
-              <g key={`node-${idx}`}>
-                <circle
-                  cx={`${node.x}%`}
-                  cy={`${node.y}%`}
-                  r="7"
-                  fill="rgba(255, 255, 255, 0.15)"
-                  opacity={node.intensity * 0.7}
-                  filter="url(#nodeGlow)"
-                  style={{
-                    animation: `pulse ${1.5 + Math.random() * 0.5}s ease-in-out infinite`,
-                    animationDelay: `${Math.random()}s`
-                  }}
-                />
-                <circle
-                  cx={`${node.x}%`}
-                  cy={`${node.y}%`}
-                  r="3.5"
-                  fill="white"
-                  opacity={node.intensity * 0.95}
-                  filter="url(#nodeGlow)"
-                  style={{
-                    animation: `pulse ${1.5 + Math.random() * 0.5}s ease-in-out infinite`,
-                    animationDelay: `${Math.random()}s`
-                  }}
-                />
-                <circle
-                  cx={`${node.x}%`}
-                  cy={`${node.y}%`}
-                  r="1.5"
-                  fill="white"
-                  opacity={1}
-                />
-              </g>
-            ))}
-          </svg>
         </div>
         
         <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }} data-testid="text-title">
@@ -311,16 +151,6 @@ export function OnboardingScreen() {
         </Button>
       </div>
       
-      <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 0.4;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }
