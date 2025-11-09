@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Onboarding from "@/pages/Onboarding";
+import Welcome from "@/pages/Welcome";
 import MatchNotification from "@/pages/MatchNotification";
 import NotFound from "@/pages/not-found";
 
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/onboarding" component={Onboarding} />
+      <Route path="/welcome" component={Welcome} />
       <Route path="/match" component={MatchNotification} />
       <Route component={NotFound} />
     </Switch>
