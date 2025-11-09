@@ -9,7 +9,7 @@ export function OnboardingScreen() {
       <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
         <div className="relative w-64 h-64 mb-12 flex items-center justify-center" data-testid="logo-container">
           <img 
-            src="/attached_assets/Screenshot 2025-11-09 at 9.51.00 AM_1762710665745.png"
+            src="/find-logo.png"
             alt="Find Logo"
             className="w-full h-full object-contain"
             data-testid="logo-image"
