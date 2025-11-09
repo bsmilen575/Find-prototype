@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
 
 export function OnboardingScreen() {
+  const [, setLocation] = useLocation();
   const nodes = [
     { x: 50, y: 15, cluster: 1, intensity: 1 },
     { x: 45, y: 18, cluster: 1, intensity: 0.9 },
@@ -295,6 +297,7 @@ export function OnboardingScreen() {
             color: '#ffffff',
             fontFamily: 'Georgia, Garamond, serif'
           }}
+          onClick={() => setLocation('/signup')}
           data-testid="button-signup"
         >
           Sign up for Beta
@@ -306,6 +309,7 @@ export function OnboardingScreen() {
             fontFamily: 'Georgia, Garamond, serif',
             borderColor: '#d0d0d0'
           }}
+          onClick={() => setLocation('/signup')}
           data-testid="button-signin"
         >
           Sign In

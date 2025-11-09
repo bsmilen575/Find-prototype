@@ -1,9 +1,10 @@
 import { Bell, ChevronRight, Eye, Lock, MapPin, Share2, Sliders } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 
 export function SettingsScreen() {
   return (
-    <div className="w-full h-full bg-gray-50 overflow-auto" data-testid="settings-screen">
+    <div className="w-full h-full overflow-auto" style={{ backgroundColor: '#f5f3f0' }} data-testid="settings-screen">
       <div className="h-11" />
       
       <div className="px-6 pt-6 pb-4 bg-white">
@@ -71,7 +72,7 @@ export function SettingsScreen() {
           </p>
           
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" data-testid="button-facebook">
+            <Button variant="ghost" className="w-full flex items-center justify-between p-3 rounded-xl h-auto" data-testid="button-facebook">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white text-sm">
                   f
@@ -82,9 +83,9 @@ export function SettingsScreen() {
                 </div>
               </div>
               <div className="w-2 h-2 rounded-full bg-green-500" />
-            </button>
+            </Button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" data-testid="button-instagram">
+            <Button variant="ghost" className="w-full flex items-center justify-between p-3 rounded-xl h-auto" data-testid="button-instagram">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-sm">
                   ig
@@ -95,9 +96,9 @@ export function SettingsScreen() {
                 </div>
               </div>
               <div className="w-2 h-2 rounded-full bg-green-500" />
-            </button>
+            </Button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" data-testid="button-twitter">
+            <Button variant="ghost" className="w-full flex items-center justify-between p-3 rounded-xl h-auto" data-testid="button-twitter">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white text-sm">
                   𝕏
@@ -108,7 +109,7 @@ export function SettingsScreen() {
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -117,29 +118,29 @@ export function SettingsScreen() {
         <h3 className="text-gray-900 mb-4" data-testid="heading-privacy">Privacy & Security</h3>
         
         <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-          <button className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors border-b border-gray-100" data-testid="button-data-privacy">
+          <Button variant="ghost" className="w-full flex items-center gap-3 p-4 border-b border-gray-100 rounded-none h-auto justify-start" data-testid="button-data-privacy">
             <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
               <Lock className="w-5 h-5 text-gray-600" />
             </div>
             <span className="flex-1 text-left text-gray-900">Data & Privacy</span>
             <ChevronRight className="w-5 h-5 text-gray-400" />
-          </button>
+          </Button>
           
-          <button className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors border-b border-gray-100" data-testid="button-match-preferences">
+          <Button variant="ghost" className="w-full flex items-center gap-3 p-4 border-b border-gray-100 rounded-none h-auto justify-start" data-testid="button-match-preferences">
             <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
               <Sliders className="w-5 h-5 text-gray-600" />
             </div>
             <span className="flex-1 text-left text-gray-900">Match Preferences</span>
             <ChevronRight className="w-5 h-5 text-gray-400" />
-          </button>
+          </Button>
           
-          <button className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors" data-testid="button-data-sources">
+          <Button variant="ghost" className="w-full flex items-center gap-3 p-4 rounded-none h-auto justify-start" data-testid="button-data-sources">
             <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
               <Share2 className="w-5 h-5 text-gray-600" />
             </div>
             <span className="flex-1 text-left text-gray-900">Data Sources</span>
             <ChevronRight className="w-5 h-5 text-gray-400" />
-          </button>
+          </Button>
         </div>
       </div>
       

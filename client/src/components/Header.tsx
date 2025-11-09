@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
-import { User, MapPin } from "lucide-react";
+import { User, MapPin, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 
 export function Header() {
@@ -28,7 +28,20 @@ export function Header() {
               About
             </button>
             <ThemeToggle />
-            <Button variant="ghost" size="icon" data-testid="button-profile">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setLocation("/settings")}
+              data-testid="button-settings"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setLocation("/profile/me")}
+              data-testid="button-profile"
+            >
               <User className="h-5 w-5" />
             </Button>
           </nav>

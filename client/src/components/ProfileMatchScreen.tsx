@@ -19,14 +19,14 @@ export function ProfileMatchScreen() {
   ];
   
   return (
-    <div className="w-full h-full bg-gray-50 overflow-auto" data-testid="profile-match-screen">
+    <div className="w-full h-full overflow-auto" style={{ backgroundColor: '#f5f3f0' }} data-testid="profile-match-screen">
       <div className="h-11" />
       
       <div className="absolute top-0 left-0 right-0 z-20 px-6 pt-16">
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
+          className="h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm shadow-lg"
           onClick={() => setLocation('/')}
           data-testid="button-back"
         >
@@ -40,7 +40,7 @@ export function ProfileMatchScreen() {
           alt="Profile"
           className="w-full h-full object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t via-transparent to-transparent" style={{ backgroundImage: 'linear-gradient(to top, #f5f3f0, transparent, transparent)' }} />
       </div>
       
       <div className="relative -mt-20 px-6">
@@ -67,7 +67,7 @@ export function ProfileMatchScreen() {
           </div>
           
           <div className="flex gap-3">
-            <Button className="flex-1 bg-black hover:bg-gray-800 text-white h-12 rounded-2xl" data-testid="button-say-hi">
+            <Button className="flex-1 bg-black text-white h-12 rounded-2xl" data-testid="button-say-hi">
               <MessageCircle className="w-5 h-5 mr-2" />
               Say Hi
             </Button>

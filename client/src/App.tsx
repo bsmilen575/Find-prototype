@@ -11,6 +11,7 @@ import Welcome from "@/pages/Welcome";
 import MatchNotification from "@/pages/MatchNotification";
 import ProfileMatch from "@/pages/ProfileMatch";
 import Settings from "@/pages/Settings";
+import SignUp from "@/pages/SignUp";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/match" component={MatchNotification} />
       <Route path="/profile/:id" component={ProfileMatch} />
       <Route path="/settings" component={Settings} />
+      <Route path="/signup" component={SignUp} />
       <Route component={NotFound} />
     </Switch>
   );
