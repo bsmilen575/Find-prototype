@@ -17,7 +17,8 @@ export function OnboardingScreen() {
       
       <div className="p-6 pb-10 space-y-3">
         <Button 
-          className="w-full h-14 rounded-3xl"
+          size="lg"
+          className="w-full rounded-3xl"
           style={{ 
             backgroundColor: '#000000', 
             color: '#ffffff',
@@ -31,8 +32,9 @@ export function OnboardingScreen() {
           Sign up for Beta
         </Button>
         <Button 
+          size="lg"
           variant="outline" 
-          className="w-full h-14 rounded-3xl"
+          className="w-full rounded-3xl"
           style={{ 
             fontFamily: 'Georgia, serif',
             borderColor: '#333333',

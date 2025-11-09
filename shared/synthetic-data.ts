@@ -43,6 +43,30 @@ export interface UserGraph {
   signature?: number[];
 }
 
+export interface PlatformConnector {
+  id: string;
+  name: string;
+  domain: 'Code' | 'Audio' | 'Video' | 'Social' | 'Reading';
+  icon: string;
+  description: string;
+  status: 'disconnected' | 'pending' | 'connected' | 'error';
+  lastSync?: string;
+  syncCadence?: string;
+  scopes?: string[];
+  sampleInsights?: string[];
+}
+
+export const platformConnectors: PlatformConnector[] = [
+  { id: 'github', name: 'GitHub', domain: 'Code', icon: 'github', description: "Repos you've starred, contributed to, or frequently visited", status: 'disconnected', syncCadence: 'Daily', scopes: ['public repos', 'stars', 'commits'], sampleInsights: ['transformers', 'stable-diffusion', 'The Book of Shaders'] },
+  { id: 'huggingface', name: 'Hugging Face', domain: 'Code', icon: 'huggingface', description: "Models and datasets you've downloaded or bookmarked", status: 'disconnected', syncCadence: 'Daily', scopes: ['downloads', 'likes'], sampleInsights: ['gpt-2', 'DALL-E'] },
+  { id: 'spotify', name: 'Spotify', domain: 'Audio', icon: 'spotify', description: 'Artists, albums, and playlists in your library', status: 'disconnected', syncCadence: 'Weekly', scopes: ['listening history', 'saved tracks'], sampleInsights: ['Jon Hopkins', 'Nils Frahm'] },
+  { id: 'youtube', name: 'YouTube', domain: 'Video', icon: 'youtube', description: 'Channels you subscribe to and videos you watch regularly', status: 'disconnected', syncCadence: 'Daily', scopes: ['subscriptions', 'watch history'], sampleInsights: ['Lex Fridman Podcast', '3Blue1Brown'] },
+  { id: 'twitter', name: 'Twitter / X', domain: 'Social', icon: 'twitter', description: 'Accounts you follow and topics you engage with', status: 'disconnected', syncCadence: 'Daily', scopes: ['likes', 'bookmarks', 'follows'], sampleInsights: ['AI Safety', 'Mental Models'] },
+  { id: 'arxiv', name: 'ArXiv', domain: 'Reading', icon: 'file-text', description: "Papers you've saved or referenced", status: 'disconnected', syncCadence: 'Weekly', scopes: ['saved papers'], sampleInsights: ['Attention Is All You Need'] },
+  { id: 'goodreads', name: 'Goodreads', domain: 'Reading', icon: 'book', description: "Books you've read, want to read, or rated highly", status: 'disconnected', syncCadence: 'Weekly', scopes: ['shelves', 'ratings'], sampleInsights: ['Alignment Problem', 'The Book of Why', 'Thinking Fast and Slow'] },
+  { id: 'substack', name: 'Substack', domain: 'Reading', icon: 'mail', description: 'Newsletters you subscribe to and engage with', status: 'disconnected', syncCadence: 'Weekly', scopes: ['subscriptions', 'reading history'], sampleInsights: ['Anthropic Blog', 'Vitalik Buterin'] },
+];
+
 export const syntheticUserGraph: UserGraph = {
   userId: 'demo-user-001',
   nodes: [
