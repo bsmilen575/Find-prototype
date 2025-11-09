@@ -5,32 +5,23 @@ export function OnboardingScreen() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#f2ede8', fontFamily: 'Georgia, Garamond, serif' }} data-testid="onboarding-screen">
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
-        <div className="relative w-64 h-64 mb-12 flex items-center justify-center" data-testid="logo-container">
-          <img 
-            src="/find-logo.png"
-            alt="Find Logo"
-            className="w-full h-full object-contain"
-            data-testid="logo-image"
-          />
-        </div>
-        
-        <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }} data-testid="text-title">
-          Find
-        </h1>
-        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '3rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }} data-testid="text-description">
-          Discover people or things nearby that you might like.
-        </p>
-      </div>
+    <div className="w-full h-full relative" data-testid="onboarding-screen">
+      <img 
+        src="/welcome-screen.png"
+        alt="Find Welcome Screen"
+        className="w-full h-full object-cover"
+        data-testid="welcome-image"
+      />
       
-      <div className="p-6 pb-10 space-y-3">
+      <div className="absolute bottom-0 left-0 right-0 p-6 pb-10 space-y-3">
         <Button 
-          className="w-full h-14 rounded-2xl"
+          className="w-full h-14 rounded-3xl"
           style={{ 
             backgroundColor: '#000000', 
             color: '#ffffff',
-            fontFamily: 'Georgia, Garamond, serif'
+            fontFamily: 'Georgia, serif',
+            fontSize: '1.125rem',
+            fontWeight: '400'
           }}
           onClick={() => setLocation('/signup')}
           data-testid="button-signup"
@@ -39,10 +30,15 @@ export function OnboardingScreen() {
         </Button>
         <Button 
           variant="outline" 
-          className="w-full h-14 rounded-2xl"
+          className="w-full h-14 rounded-3xl"
           style={{ 
-            fontFamily: 'Georgia, Garamond, serif',
-            borderColor: '#d0d0d0'
+            fontFamily: 'Georgia, serif',
+            borderColor: '#333333',
+            borderWidth: '1px',
+            backgroundColor: 'transparent',
+            color: '#000000',
+            fontSize: '1.125rem',
+            fontWeight: '400'
           }}
           onClick={() => setLocation('/signup')}
           data-testid="button-signin"
@@ -50,7 +46,6 @@ export function OnboardingScreen() {
           Sign In
         </Button>
       </div>
-      
     </div>
   );
 }
