@@ -1,4 +1,4 @@
-import { Eye, Flame, Clock, Box, Lasso, Plus, Search } from 'lucide-react';
+import { Eye, Flame, Clock, Lasso, Plus, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -10,8 +10,8 @@ interface Circuit {
 }
 
 interface GraphControlsProps {
-  lensMode: 'none' | 'recency' | 'source' | 'heat';
-  onLensModeChange: (mode: 'none' | 'recency' | 'source' | 'heat') => void;
+  lensMode: 'none' | 'recency' | 'heat';
+  onLensModeChange: (mode: 'none' | 'recency' | 'heat') => void;
   isLassoMode: boolean;
   onLassoModeChange: (enabled: boolean) => void;
   selectedNodesCount: number;
@@ -37,7 +37,6 @@ export function GraphControls({
   const lenses = [
     { id: 'none' as const, label: 'Default', icon: Eye },
     { id: 'recency' as const, label: 'Recency', icon: Clock },
-    { id: 'source' as const, label: 'Source', icon: Box },
     { id: 'heat' as const, label: 'Heat', icon: Flame },
   ];
 
@@ -125,41 +124,6 @@ export function GraphControls({
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-gray-500" />
               <span>&gt;90d</span>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {lensMode === 'source' && (
-        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span>Book</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-pink-500" />
-              <span>Podcast</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span>Article</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span>Video</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span>Creator</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-indigo-500" />
-              <span>Topic</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-teal-500" />
-              <span>Tag</span>
             </div>
           </div>
         </div>

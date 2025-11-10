@@ -28,7 +28,7 @@ interface SelfMapGraphProps {
 export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [lensMode, setLensMode] = useState<'none' | 'recency' | 'source' | 'heat'>('none');
+  const [lensMode, setLensMode] = useState<'none' | 'recency' | 'heat'>('none');
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [isLassoMode, setIsLassoMode] = useState(false);
   const [killedNodes, setKilledNodes] = useState<Set<string>>(new Set());
