@@ -62,15 +62,44 @@ Preferred communication style: Simple, everyday language.
 - D3.js force-directed graph showing interests as nodes
 - Node size scaled by attention weight (time-weighted engagement)
 - Edges represent relationships (co-occur, sequential, semantic, temporal)
+- **Central "You" Anchor Node**: Synthetic node representing the user
+  - Positioned at centroid (average x/y) of all interest nodes
+  - Amber circle (#f59e0b) with 15px radius, white star (★) icon
+  - Drop-shadow glow effect for visual prominence
+  - All interests connect to it with faint gray lines (opacity 0.15, weight 0.05)
+  - Fixed position, excluded from cluster calculations
+  - Shows "★ You" in legend
+- **Hover Tooltips**: Display node metadata on mouseover
+  - Shows: Interest name, Last Interaction (relative time via formatDistanceToNow), Shared Nearby count
+  - Expand button ("...") appears for nodes with children
+  - Clean minimal design with Share2 icon from lucide-react
+- **Drill-Down Navigation**: Hierarchical exploration of sub-interests
+  - Click expand button or node with children to zoom into subgraph
+  - Breadcrumb navigation at top (e.g., "Find > Indie Music > Phoebe Bridgers")
+  - Back button in GraphControls when not at root level
+  - Smooth d3 zoom transition (750ms duration)
+  - Nodes with children: Travel Destinations, Interior Design, Indie Music, TV Recommendations, Tech News
+  - Preserves graph state (pins, kills, circuits) across navigation levels
+  - "You" anchor maintained in subgraphs
+- **Nearby Pulse Integration** (Nearby Pulse tab only):
+  - Ghost nodes: Popular local interests user doesn't have, with dashed outlines (#9ca3af), reduced opacity (0.6), lighter fill (#e5e7eb), "(nearby)" label suffix
+  - Animated halos: Amber rings (#f59e0b) around user's overlapping interests, pulse animation (scale 1.0 to 1.15, 2s infinite loop)
+  - Contextual legend: Shows "Ghost Node (Popular Nearby)" and "Halo (Also Popular Here)"
+  - 15 ghost nodes, 12 overlap relationships from nearbyPulseData
+- **Tuned D3 Force Simulation**: Optimized for stable, natural-looking clusters
+  - Cluster-aware link distances (70px intra-cluster, 140px inter-cluster)
+  - Cluster-aware charge forces (-150 intra-cluster, -350 inter-cluster)
+  - Collision radius tied to node size (Math.sqrt(attentionWeight) * 0.6 + 10)
+  - Alpha decay 0.01 for slower, more stable settling
 - **Search functionality**: Real-time filtering of nodes by label
   - Matching nodes highlighted with orange stroke (#f59e0b)
   - Non-matching nodes faded to 30% opacity
   - Match count displayed in search input
-  - Works on both Mine and Nearby Pulse tabs
+  - Works on both Mine and Nearby Pulse tabs, across all navigation levels
 - Interactive features:
   - Drag nodes to reposition
   - Zoom and pan (tracked via zoomTransformRef for accurate selection)
-  - Click nodes to view detail panel
+  - Click nodes to view detail panel or drill down to sub-interests
   - Lasso mode: click-to-select multiple nodes (uses isLassoModeRef for dynamic behavior)
   - Circuit creation: select 2+ nodes and create named circuits from active graphData
   - Kill nodes: remove from graph permanently
@@ -78,11 +107,10 @@ Preferred communication style: Simple, everyday language.
 - Lens modes with smooth 300ms color transitions (no simulation restart):
   - Default: Grayscale (#9ca3af) for calm, low-stimulus viewing
   - Recency: Green (<7d), yellow (<30d), red (<90d), gray (>90d)
-  - Source: Color by content type - purple (book), pink (podcast), blue (article), amber (video), emerald (creator), indigo (topic), teal (tag)
   - Heat: Red (>80), amber (60-80), yellow (40-60), gray (<40) based on attention weight
 - Node detail panel: evidence (likes, saves, watch time, highlights), connected neighbors, timeline
 - Circuit display: Shows created circuits in controls panel with truncated names
-- GraphControls: Mobile-responsive with flex-wrap, shortened labels on small screens
+- GraphControls: Mobile-responsive with flex-wrap, shortened labels on small screens, back button when navigating subgraphs
 - Performance: Separated effects for lens color updates, selection stroke updates, and simulation - prevents unnecessary graph restarts
 - Key property ensures D3 simulation rebuilds when switching between Mine/Nearby Pulse
 
