@@ -1,5 +1,6 @@
-import { Eye, Flame, Clock, Box, Lasso, Plus } from 'lucide-react';
+import { Eye, Flame, Clock, Box, Lasso, Plus, Search } from 'lucide-react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 interface Circuit {
   id: string;
@@ -16,6 +17,9 @@ interface GraphControlsProps {
   selectedNodesCount: number;
   onCreateCircuit: () => void;
   circuits?: Circuit[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  matchingNodesCount: number;
 }
 
 export function GraphControls({ 
@@ -25,7 +29,10 @@ export function GraphControls({
   onLassoModeChange,
   selectedNodesCount,
   onCreateCircuit,
-  circuits = []
+  circuits = [],
+  searchQuery,
+  onSearchChange,
+  matchingNodesCount
 }: GraphControlsProps) {
   const lenses = [
     { id: 'none' as const, label: 'Default', icon: Eye },
@@ -36,6 +43,23 @@ export function GraphControls({
 
   return (
     <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-auto z-20 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3 max-w-full md:max-w-md">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search interests..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-9 h-9"
+          data-testid="input-search-graph"
+        />
+        {searchQuery && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            {matchingNodesCount} {matchingNodesCount === 1 ? 'match' : 'matches'}
+          </div>
+        )}
+      </div>
+      
       <div className="flex flex-wrap items-center gap-2">
         <Button
           size="sm"

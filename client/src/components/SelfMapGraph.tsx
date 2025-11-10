@@ -34,11 +34,20 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const [killedNodes, setKilledNodes] = useState<Set<string>>(new Set());
   const [pinnedNodes, setPinnedNodes] = useState<Set<string>>(new Set());
   const [circuits, setCircuits] = useState<Circuit[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null);
   const nodeGroupRef = useRef<d3.Selection<SVGGElement, D3Node, SVGGElement, unknown> | null>(null);
   const circlesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
   const zoomTransformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
   const isLassoModeRef = useRef(isLassoMode);
+
+  const matchingNodes = searchQuery.trim()
+    ? new Set(
+        graphData.nodes
+          .filter(n => !killedNodes.has(n.id) && n.label.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map(n => n.id)
+      )
+    : new Set<string>();
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -278,11 +287,27 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
 
   useEffect(() => {
     if (circlesRef.current) {
+      const matchingNodesArray = Array.from(matchingNodes);
+      const selectedNodesArray = Array.from(selectedNodes);
+      const pinnedNodesArray = Array.from(pinnedNodes);
+      
       circlesRef.current
-        .attr('stroke', (d: any) => selectedNodes.has(d.id) ? '#3b82f6' : pinnedNodes.has(d.id) ? '#10b981' : '#1f2937')
-        .attr('stroke-width', (d: any) => selectedNodes.has(d.id) || pinnedNodes.has(d.id) ? 3 : 1.5);
+        .attr('stroke', (d: any) => {
+          if (selectedNodesArray.includes(d.id)) return '#3b82f6';
+          if (matchingNodesArray.includes(d.id)) return '#f59e0b';
+          if (pinnedNodesArray.includes(d.id)) return '#10b981';
+          return '#1f2937';
+        })
+        .attr('stroke-width', (d: any) => {
+          if (selectedNodesArray.includes(d.id) || pinnedNodesArray.includes(d.id) || matchingNodesArray.includes(d.id)) return 3;
+          return 1.5;
+        })
+        .attr('opacity', (d: any) => {
+          if (searchQuery && !matchingNodesArray.includes(d.id)) return 0.3;
+          return 1;
+        });
     }
-  }, [selectedNodes, pinnedNodes]);
+  }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery]);
 
   const handleKillNode = (nodeId: string) => {
     setKilledNodes(prev => new Set([...prev, nodeId]));
@@ -336,6 +361,9 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         selectedNodesCount={selectedNodes.size}
         onCreateCircuit={handleCreateCircuit}
         circuits={circuits}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        matchingNodesCount={matchingNodes.size}
       />
       {selectedNode && (
         <NodeDetailPanel
