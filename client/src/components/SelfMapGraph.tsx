@@ -128,7 +128,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         }
       });
 
-    nodeGroupRef.current = nodeGroup;
+    nodeGroupRef.current = nodeGroup as any;
 
     const circles = nodeGroup.append('circle')
       .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6)
@@ -254,19 +254,6 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       return '#6b7280';
     }
     
-    if (mode === 'source') {
-      const sourceColors: Record<string, string> = {
-        book: '#8b5cf6',
-        podcast: '#ec4899',
-        article: '#3b82f6',
-        video: '#f59e0b',
-        creator: '#10b981',
-        topic: '#6366f1',
-        tag: '#14b8a6',
-      };
-      return sourceColors[node.type] || '#9ca3af';
-    }
-    
     if (mode === 'heat') {
       return node.attentionWeight > 80 ? '#ef4444' :
              node.attentionWeight > 60 ? '#f59e0b' :
@@ -310,7 +297,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery]);
 
   const handleKillNode = (nodeId: string) => {
-    setKilledNodes(prev => new Set([...prev, nodeId]));
+    setKilledNodes(prev => new Set([...Array.from(prev), nodeId]));
     setSelectedNode(null);
   };
 
