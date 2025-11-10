@@ -20,6 +20,7 @@ interface GraphControlsProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   matchingNodesCount: number;
+  anchorNodeId: string | null;
 }
 
 export function GraphControls({ 
@@ -32,7 +33,8 @@ export function GraphControls({
   circuits = [],
   searchQuery,
   onSearchChange,
-  matchingNodesCount
+  matchingNodesCount,
+  anchorNodeId
 }: GraphControlsProps) {
   const lenses = [
     { id: 'none' as const, label: 'Default', icon: Eye },
@@ -148,6 +150,15 @@ export function GraphControls({
               <div className="w-3 h-3 rounded-full bg-gray-400" />
               <span>&lt;40</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {anchorNodeId && (
+        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-amber-500 border-2 border-amber-500" style={{ boxShadow: '0 2px 8px rgba(245, 158, 11, 0.6)' }} />
+            <span>★ Anchor Node</span>
           </div>
         </div>
       )}

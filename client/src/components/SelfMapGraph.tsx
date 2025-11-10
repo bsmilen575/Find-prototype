@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { format } from 'date-fns';
+import { TrendingUp, Share2 } from 'lucide-react';
 import { type Node as GraphNode, type Edge as GraphEdge, type UserGraph } from '@shared/synthetic-data';
 import { NodeDetailPanel } from './NodeDetailPanel';
 import { GraphControls } from './GraphControls';
+import { Badge } from '@/components/ui/badge';
 
 interface D3Node extends d3.SimulationNodeDatum, GraphNode {
   x?: number;
@@ -28,6 +31,7 @@ interface SelfMapGraphProps {
 export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [tooltipData, setTooltipData] = useState<{node: GraphNode, x: number, y: number} | null>(null);
   const [lensMode, setLensMode] = useState<'none' | 'recency' | 'heat'>('none');
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [isLassoMode, setIsLassoMode] = useState(false);
@@ -35,6 +39,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const [pinnedNodes, setPinnedNodes] = useState<Set<string>>(new Set());
   const [circuits, setCircuits] = useState<Circuit[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [anchorNodeId, setAnchorNodeId] = useState<string | null>(null);
   const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null);
   const nodeGroupRef = useRef<d3.Selection<SVGGElement, D3Node, SVGGElement, unknown> | null>(null);
   const circlesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
@@ -49,6 +54,40 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       )
     : new Set<string>();
 
+  const calculateAnchorNode = (nodes: D3Node[], links: D3Link[]): string | null => {
+    if (nodes.length === 0) return null;
+
+    const degreeMap = new Map<string, number>();
+    nodes.forEach(node => degreeMap.set(node.id, 0));
+    
+    links.forEach(link => {
+      const sourceId = typeof link.source === 'object' ? (link.source as D3Node).id : String(link.source);
+      const targetId = typeof link.target === 'object' ? (link.target as D3Node).id : String(link.target);
+      degreeMap.set(sourceId, (degreeMap.get(sourceId) || 0) + 1);
+      degreeMap.set(targetId, (degreeMap.get(targetId) || 0) + 1);
+    });
+
+    const maxDegree = Math.max(...Array.from(degreeMap.values()));
+    const maxAttention = Math.max(...nodes.map(n => n.attentionWeight));
+
+    let maxCentrality = -1;
+    let anchorId: string | null = null;
+
+    nodes.forEach(node => {
+      const degree = degreeMap.get(node.id) || 0;
+      const normalizedDegree = maxDegree > 0 ? degree / maxDegree : 0;
+      const normalizedAttention = maxAttention > 0 ? node.attentionWeight / maxAttention : 0;
+      const centrality = (normalizedDegree * 0.6) + (normalizedAttention * 0.4);
+
+      if (centrality > maxCentrality) {
+        maxCentrality = centrality;
+        anchorId = node.id;
+      }
+    });
+
+    return anchorId;
+  };
+
   useEffect(() => {
     if (!svgRef.current) return;
 
@@ -57,6 +96,21 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
     const height = svgRef.current.clientHeight;
 
     svg.selectAll('*').remove();
+
+    const defs = svg.append('defs');
+    const filter = defs.append('filter')
+      .attr('id', 'anchor-shadow')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    filter.append('feDropShadow')
+      .attr('dx', 0)
+      .attr('dy', 2)
+      .attr('stdDeviation', 4)
+      .attr('flood-color', '#f59e0b')
+      .attr('flood-opacity', 0.6);
 
     const g = svg.append('g');
 
@@ -80,15 +134,51 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         target: nodes.find(n => n.id === e.target)!,
       }));
 
+    const anchorId = calculateAnchorNode(nodes, links);
+    setAnchorNodeId(anchorId);
+
+    const clusterChargeForce = () => {
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const nodeA = nodes[i];
+          const nodeB = nodes[j];
+          
+          const dx = nodeB.x! - nodeA.x!;
+          const dy = nodeB.y! - nodeA.y!;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance === 0) continue;
+          
+          const sameCluster = nodeA.cluster && nodeB.cluster && nodeA.cluster === nodeB.cluster;
+          const strength = sameCluster ? -150 : -350;
+          
+          const force = strength / (distance * distance);
+          const fx = (dx / distance) * force;
+          const fy = (dy / distance) * force;
+          
+          nodeA.vx = (nodeA.vx || 0) + fx;
+          nodeA.vy = (nodeA.vy || 0) + fy;
+          nodeB.vx = (nodeB.vx || 0) - fx;
+          nodeB.vy = (nodeB.vy || 0) - fy;
+        }
+      }
+    };
+
     const simulation = d3.forceSimulation<D3Node>(nodes)
       .force('link', d3.forceLink<D3Node, D3Link>(links)
         .id(d => d.id)
-        .distance(d => 80 + (1 - d.weight) * 40)
+        .distance(d => {
+          const sourceNode = d.source as D3Node;
+          const targetNode = d.target as D3Node;
+          const sameCluster = sourceNode.cluster && targetNode.cluster && sourceNode.cluster === targetNode.cluster;
+          return sameCluster ? 70 : 140;
+        })
         .strength(d => d.weight * 0.5)
       )
-      .force('charge', d3.forceManyBody().strength(-400))
+      .force('charge', clusterChargeForce)
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(d => Math.sqrt((d as D3Node).attentionWeight) * 0.6 + 5));
+      .force('collision', d3.forceCollide().radius(d => Math.sqrt((d as D3Node).attentionWeight) * 0.6 + 10))
+      .alphaDecay(0.01);
 
     simulationRef.current = simulation;
 
@@ -126,6 +216,13 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         } else {
           setSelectedNode(d);
         }
+      })
+      .on('mouseover', (event, d) => {
+        const [x, y] = d3.pointer(event, svgRef.current);
+        setTooltipData({ node: d, x, y });
+      })
+      .on('mouseout', () => {
+        setTooltipData(null);
       });
 
     nodeGroupRef.current = nodeGroup as any;
@@ -283,18 +380,24 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
           if (selectedNodesArray.includes(d.id)) return '#3b82f6';
           if (matchingNodesArray.includes(d.id)) return '#f59e0b';
           if (pinnedNodesArray.includes(d.id)) return '#10b981';
+          if (anchorNodeId === d.id) return '#f59e0b';
           return '#1f2937';
         })
         .attr('stroke-width', (d: any) => {
           if (selectedNodesArray.includes(d.id) || pinnedNodesArray.includes(d.id) || matchingNodesArray.includes(d.id)) return 3;
+          if (anchorNodeId === d.id) return 3;
           return 1.5;
+        })
+        .attr('filter', (d: any) => {
+          if (anchorNodeId === d.id) return 'url(#anchor-shadow)';
+          return null;
         })
         .attr('opacity', (d: any) => {
           if (searchQuery && !matchingNodesArray.includes(d.id)) return 0.3;
           return 1;
         });
     }
-  }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery]);
+  }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery, anchorNodeId]);
 
   const handleKillNode = (nodeId: string) => {
     setKilledNodes(prev => new Set([...Array.from(prev), nodeId]));
@@ -351,6 +454,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         matchingNodesCount={matchingNodes.size}
+        anchorNodeId={anchorNodeId}
       />
       {selectedNode && (
         <NodeDetailPanel
@@ -360,6 +464,56 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
           onPin={handlePinNode}
           isPinned={pinnedNodes.has(selectedNode.id)}
         />
+      )}
+      {tooltipData && (
+        <div
+          className="absolute pointer-events-none z-50"
+          style={{
+            left: `${tooltipData.x + 15}px`,
+            top: `${tooltipData.y - 10}px`,
+          }}
+          data-testid="node-tooltip"
+        >
+          <div className="bg-white rounded-lg shadow-lg p-4 pointer-events-auto" style={{ minWidth: '200px' }}>
+            <div className="font-bold text-gray-900 mb-2">{tooltipData.node.label}</div>
+            <div className="text-sm text-gray-600 mb-2">
+              Added {format(new Date(tooltipData.node.createdAt), 'MMM d, yyyy')}
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs text-gray-500">Activity:</span>
+              <Badge
+                variant={
+                  tooltipData.node.activityScore === 'High'
+                    ? 'default'
+                    : tooltipData.node.activityScore === 'Medium'
+                    ? 'secondary'
+                    : 'outline'
+                }
+                className={
+                  tooltipData.node.activityScore === 'High'
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : tooltipData.node.activityScore === 'Medium'
+                    ? 'bg-amber-500 hover:bg-amber-600'
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }
+              >
+                {tooltipData.node.activityScore}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+              <Share2 className="w-3 h-3" />
+              <span>{tooltipData.node.sharedCount} shares</span>
+            </div>
+            {tooltipData.node.trending && (
+              <div className="flex items-center gap-1 mt-2">
+                <Badge variant="default" className="bg-orange-500 hover:bg-orange-600">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  Trending
+                </Badge>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </>
   );
