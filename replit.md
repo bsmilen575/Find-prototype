@@ -18,9 +18,8 @@ Preferred communication style: Simple, everyday language.
 
 **Routing**: Wouter for client-side routing with key routes:
 - `/` - **Onboarding screen** with Find logo, feature icons (Users, MapPin, Upload), and "Upload your files, docs, and notes" text
-- `/home` - **Primary app screen** with 4-tab navigation (Mine, Nearby Pulse, Insights, Connections)
-  - **Mine**: User's personal interest graph (force-directed D3.js visualization)
-  - **Nearby Pulse**: Aggregated interest graph of local area
+- `/home` - **Primary app screen** with 3-tab navigation (Mine, Insights, Connections)
+  - **Mine**: User's personal interest graph (force-directed D3.js visualization) with optional Nearby Pulse toggle overlay
   - **Insights**: Interest patterns and analytics (placeholder)
   - **Connections**: Match cards with double-blind reveal
 - `/about` - Information about the platform and privacy features
@@ -42,11 +41,12 @@ Preferred communication style: Simple, everyday language.
 **Design Philosophy**: Privacy-first visual language drawing inspiration from Airbnb (location discovery), LinkedIn (professional profiles), Signal (privacy aesthetic), and Tinder (quick decision-making). Uses Inter as primary font and Space Grotesk for accent typography. Warm beige (#f5f3f0) background for calm, focused experience.
 
 **Home Screen Architecture** (/home):
-- **Mobile-first 4-tab navigation**: Top icon bar with Mine (User), Nearby Pulse (Activity), Insights (Lightbulb), Connections (Users)
-- **HomeHeader**: "Find" heading + "Open" toggle for discoverable status
+- **Mobile-first 3-tab navigation**: Top icon bar with Mine (User), Insights (Lightbulb), Connections (Users)
+- **HomeHeader**: "Find" heading + "Nearby Pulse" toggle (visible only on Mine tab) + "Open" toggle for discoverable status
+  - Nearby Pulse toggle: Amber when active, gray when inactive, shows overlay of local interests on Mine graph
 - **GraphTab**: Reusable wrapper for SelfMapGraph component
   - Mine tab: syntheticUserGraph (35 nodes: Fitness, TV, Travel, Cooking, Home, Music, Photography, Tech, Finance)
-  - Nearby Pulse tab: nearbyPulseGraph (27 nodes: Coffee Shops, Sports, Taylor Swift, Netflix, Pizza, Hiking, etc.)
+  - Optional overlay: When Nearby Pulse toggle is ON, shows ghost nodes and halos from nearbyPulseData
 - **ConnectionsTab**: Match cards with distance, shared interests, and reveal buttons
   - Fetches matches from API every 30 seconds when discoverable
   - Shows loading state and empty state
@@ -81,11 +81,12 @@ Preferred communication style: Simple, everyday language.
   - Nodes with children: Travel Destinations, Interior Design, Indie Music, TV Recommendations, Tech News
   - Preserves graph state (pins, kills, circuits) across navigation levels
   - "You" anchor maintained in subgraphs
-- **Nearby Pulse Integration** (Nearby Pulse tab only):
+- **Nearby Pulse Integration** (optional overlay on Mine tab, toggled via HomeHeader):
   - Ghost nodes: Popular local interests user doesn't have, with dashed outlines (#9ca3af), reduced opacity (0.6), lighter fill (#e5e7eb), "(nearby)" label suffix
   - Animated halos: Amber rings (#f59e0b) around user's overlapping interests, pulse animation (scale 1.0 to 1.15, 2s infinite loop)
   - Contextual legend: Shows "Ghost Node (Popular Nearby)" and "Halo (Also Popular Here)"
   - 15 ghost nodes, 12 overlap relationships from nearbyPulseData
+  - State flow: Home → HomeHeader toggle → GraphTab showNearbyPulse prop → SelfMapGraph conditional rendering
 - **Tuned D3 Force Simulation**: Optimized for stable, natural-looking clusters
   - Cluster-aware link distances (70px intra-cluster, 140px inter-cluster)
   - Cluster-aware charge forces (-150 intra-cluster, -350 inter-cluster)
@@ -95,7 +96,7 @@ Preferred communication style: Simple, everyday language.
   - Matching nodes highlighted with orange stroke (#f59e0b)
   - Non-matching nodes faded to 30% opacity
   - Match count displayed in search input
-  - Works on both Mine and Nearby Pulse tabs, across all navigation levels
+  - Works on Mine tab with or without Nearby Pulse overlay, across all navigation levels
 - Interactive features:
   - Drag nodes to reposition
   - Zoom and pan (tracked via zoomTransformRef for accurate selection)
@@ -112,7 +113,7 @@ Preferred communication style: Simple, everyday language.
 - Circuit display: Shows created circuits in controls panel with truncated names
 - GraphControls: Mobile-responsive with flex-wrap, shortened labels on small screens, back button when navigating subgraphs
 - Performance: Separated effects for lens color updates, selection stroke updates, and simulation - prevents unnecessary graph restarts
-- Key property ensures D3 simulation rebuilds when switching between Mine/Nearby Pulse
+- Key property ensures D3 simulation rebuilds when switching between Mine/Nearby Pulse overlay states
 
 ### Backend Architecture
 
