@@ -33,11 +33,11 @@ interface NavigationLevel {
 
 interface SelfMapGraphProps {
   graphData: UserGraph;
-  mode?: 'mine' | 'nearbyPulse';
+  showNearbyPulse?: boolean;
 }
 
-export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
-  const isNearbyPulse = mode === 'nearbyPulse';
+export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGraphProps) {
+  const isNearbyPulse = showNearbyPulse;
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [tooltipData, setTooltipData] = useState<{node: GraphNode, x: number, y: number} | null>(null);

@@ -1,6 +1,6 @@
-import { User, Activity, Lightbulb, Users } from 'lucide-react';
+import { User, Lightbulb, Users } from 'lucide-react';
 
-export type TabType = 'mine' | 'nearby' | 'insights' | 'connections';
+export type TabType = 'mine' | 'insights' | 'connections';
 
 interface HomeTabsProps {
   activeTab: TabType;
@@ -19,17 +19,6 @@ export function HomeTabs({ activeTab, onTabChange }: HomeTabsProps) {
       >
         <User className={`w-6 h-6 ${activeTab === 'mine' ? 'stroke-[2.5]' : 'stroke-2'}`} />
         <span className="text-xs font-medium">Mine</span>
-      </button>
-      
-      <button
-        onClick={() => onTabChange('nearby')}
-        className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-          activeTab === 'nearby' ? 'text-gray-900' : 'text-gray-400'
-        }`}
-        data-testid="tab-nearby"
-      >
-        <Activity className={`w-6 h-6 ${activeTab === 'nearby' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-        <span className="text-xs font-medium">Nearby Pulse</span>
       </button>
       
       <button
