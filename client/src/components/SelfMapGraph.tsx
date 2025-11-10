@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { format } from 'date-fns';
-import { TrendingUp, Share2 } from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
+import { Share2, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { type Node as GraphNode, type Edge as GraphEdge, type UserGraph } from '@shared/synthetic-data';
 import { NodeDetailPanel } from './NodeDetailPanel';
 import { GraphControls } from './GraphControls';
@@ -24,6 +24,11 @@ interface Circuit {
   createdAt: Date;
 }
 
+interface NavigationLevel {
+  nodeId: string;
+  label: string;
+}
+
 interface SelfMapGraphProps {
   graphData: UserGraph;
 }
@@ -40,6 +45,8 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
   const [circuits, setCircuits] = useState<Circuit[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [anchorNodeId, setAnchorNodeId] = useState<string | null>(null);
+  const [navigationStack, setNavigationStack] = useState<NavigationLevel[]>([{nodeId: 'root', label: 'Find'}]);
+  const [currentContext, setCurrentContext] = useState<string | null>(null);
   const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null);
   const nodeGroupRef = useRef<d3.Selection<SVGGElement, D3Node, SVGGElement, unknown> | null>(null);
   const circlesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
@@ -54,38 +61,31 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       )
     : new Set<string>();
 
-  const calculateAnchorNode = (nodes: D3Node[], links: D3Link[]): string | null => {
-    if (nodes.length === 0) return null;
+  const handleDrillDown = (node: GraphNode) => {
+    if (node.children && node.children.length > 0) {
+      setNavigationStack(prev => [...prev, { nodeId: node.id, label: node.label }]);
+      setCurrentContext(node.id);
+      setTooltipData(null);
+    } else {
+      setSelectedNode(node);
+    }
+  };
 
-    const degreeMap = new Map<string, number>();
-    nodes.forEach(node => degreeMap.set(node.id, 0));
-    
-    links.forEach(link => {
-      const sourceId = typeof link.source === 'object' ? (link.source as D3Node).id : String(link.source);
-      const targetId = typeof link.target === 'object' ? (link.target as D3Node).id : String(link.target);
-      degreeMap.set(sourceId, (degreeMap.get(sourceId) || 0) + 1);
-      degreeMap.set(targetId, (degreeMap.get(targetId) || 0) + 1);
-    });
+  const handleNavigateBack = () => {
+    if (navigationStack.length > 1) {
+      const newStack = navigationStack.slice(0, -1);
+      setNavigationStack(newStack);
+      const newContext = newStack.length === 1 ? null : newStack[newStack.length - 1].nodeId;
+      setCurrentContext(newContext);
+    }
+  };
 
-    const maxDegree = Math.max(...Array.from(degreeMap.values()));
-    const maxAttention = Math.max(...nodes.map(n => n.attentionWeight));
-
-    let maxCentrality = -1;
-    let anchorId: string | null = null;
-
-    nodes.forEach(node => {
-      const degree = degreeMap.get(node.id) || 0;
-      const normalizedDegree = maxDegree > 0 ? degree / maxDegree : 0;
-      const normalizedAttention = maxAttention > 0 ? node.attentionWeight / maxAttention : 0;
-      const centrality = (normalizedDegree * 0.6) + (normalizedAttention * 0.4);
-
-      if (centrality > maxCentrality) {
-        maxCentrality = centrality;
-        anchorId = node.id;
-      }
-    });
-
-    return anchorId;
+  const handleBreadcrumbClick = (index: number) => {
+    if (index === navigationStack.length - 1) return;
+    const newStack = navigationStack.slice(0, index + 1);
+    setNavigationStack(newStack);
+    const newContext = newStack.length === 1 ? null : newStack[newStack.length - 1].nodeId;
+    setCurrentContext(newContext);
   };
 
   useEffect(() => {
@@ -123,25 +123,44 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
 
     svg.call(zoom);
 
-    const nodes: D3Node[] = graphData.nodes
-      .filter(n => !killedNodes.has(n.id))
-      .map(n => ({ ...n }));
+    let interestNodes: D3Node[] = [];
+    if (currentContext) {
+      const contextNode = graphData.nodes.find(n => n.id === currentContext);
+      if (contextNode && contextNode.children) {
+        interestNodes = graphData.nodes
+          .filter(n => !killedNodes.has(n.id) && contextNode.children!.includes(n.id))
+          .map(n => ({ ...n }));
+      }
+    } else {
+      interestNodes = graphData.nodes
+        .filter(n => !killedNodes.has(n.id))
+        .map(n => ({ ...n }));
+    }
+
+    const nodes: D3Node[] = [...interestNodes];
+    const nodeIdSet = new Set(nodes.map(n => n.id));
     const links: D3Link[] = graphData.edges
-      .filter(e => !killedNodes.has(e.source) && !killedNodes.has(e.target))
+      .filter(e => 
+        !killedNodes.has(e.source) && 
+        !killedNodes.has(e.target) &&
+        nodeIdSet.has(e.source) && 
+        nodeIdSet.has(e.target)
+      )
       .map(e => ({
         ...e,
         source: nodes.find(n => n.id === e.source)!,
         target: nodes.find(n => n.id === e.target)!,
       }));
 
-    const anchorId = calculateAnchorNode(nodes, links);
-    setAnchorNodeId(anchorId);
+    setAnchorNodeId('user-anchor');
 
     const clusterChargeForce = () => {
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const nodeA = nodes[i];
           const nodeB = nodes[j];
+          
+          if (nodeA.id === 'user-anchor' || nodeB.id === 'user-anchor') continue;
           
           const dx = nodeB.x! - nodeA.x!;
           const dy = nodeB.y! - nodeA.y!;
@@ -182,7 +201,15 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
 
     simulationRef.current = simulation;
 
-    const link = g.append('g')
+    if (currentContext) {
+      const transition = d3.transition().duration(750);
+      svg.transition(transition as any)
+        .call(zoom.scaleTo as any, 1)
+        .call(zoom.translateTo as any, width / 2, height / 2);
+    }
+
+    const linkGroup = g.append('g');
+    const link = linkGroup
       .selectAll('line')
       .data(links)
       .join('line')
@@ -245,6 +272,11 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       .attr('dy', d => Math.sqrt(d.attentionWeight) * 0.6 + 14)
       .attr('pointer-events', 'none');
 
+    let anchorCreated = false;
+    let anchorNode: D3Node | null = null;
+    let anchorLinks: any = null;
+    let anchorGroup: any = null;
+
     simulation.on('tick', () => {
       link
         .attr('x1', d => (d.source as D3Node).x!)
@@ -252,7 +284,100 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         .attr('x2', d => (d.target as D3Node).x!)
         .attr('y2', d => (d.target as D3Node).y!);
 
+      if (anchorLinks) {
+        anchorLinks
+          .attr('x1', (d: any) => d.source.x!)
+          .attr('y1', (d: any) => d.source.y!)
+          .attr('x2', (d: any) => d.target.x!)
+          .attr('y2', (d: any) => d.target.y!);
+      }
+
       nodeGroup.attr('transform', d => `translate(${d.x},${d.y})`);
+      
+      if (anchorGroup && anchorNode) {
+        anchorGroup.attr('transform', `translate(${anchorNode.x},${anchorNode.y})`);
+      }
+    });
+
+    simulation.on('end', () => {
+      if (anchorCreated || interestNodes.length === 0) return;
+      
+      const centroidX = d3.mean(interestNodes, d => d.x!) || width / 2;
+      const centroidY = d3.mean(interestNodes, d => d.y!) || height / 2;
+      
+      anchorNode = {
+        id: 'user-anchor',
+        label: 'You',
+        type: 'topic',
+        cluster: undefined,
+        createdAt: new Date().toISOString(),
+        lastActive: new Date().toISOString(),
+        firstSeen: new Date().toISOString(),
+        attentionWeight: 50,
+        sharedCount: 0,
+        trending: false,
+        activityScore: 'High',
+        source: 'internal',
+        evidence: {},
+        x: centroidX,
+        y: centroidY,
+        fx: centroidX,
+        fy: centroidY,
+      } as D3Node;
+      
+      nodes.push(anchorNode);
+      
+      const anchorEdges = interestNodes.map(node => ({
+        source: node,
+        target: anchorNode!,
+        weight: 0.05,
+        type: 'anchor',
+      }));
+      
+      anchorLinks = linkGroup
+        .selectAll('line.anchor-link')
+        .data(anchorEdges)
+        .join('line')
+        .attr('class', 'anchor-link')
+        .attr('stroke', '#d1d5db')
+        .attr('stroke-opacity', 0.15)
+        .attr('stroke-width', 0.5)
+        .attr('x1', d => d.source.x!)
+        .attr('y1', d => d.source.y!)
+        .attr('x2', d => d.target.x!)
+        .attr('y2', d => d.target.y!);
+      
+      anchorGroup = g.append('g')
+        .attr('transform', `translate(${centroidX},${centroidY})`)
+        .attr('cursor', 'default')
+        .attr('data-testid', 'node-user-anchor');
+      
+      anchorGroup.append('circle')
+        .attr('r', 15)
+        .attr('fill', '#f59e0b')
+        .attr('stroke', '#f59e0b')
+        .attr('stroke-width', 3)
+        .attr('filter', 'url(#anchor-shadow)');
+      
+      anchorGroup.append('text')
+        .text('★')
+        .attr('font-size', '16px')
+        .attr('font-family', 'Inter, sans-serif')
+        .attr('fill', 'white')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.35em')
+        .attr('pointer-events', 'none');
+      
+      anchorGroup.append('text')
+        .text('You')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, sans-serif')
+        .attr('fill', '#374151')
+        .attr('text-anchor', 'middle')
+        .attr('dy', 28)
+        .attr('pointer-events', 'none');
+      
+      anchorCreated = true;
     });
 
     function dragstarted(event: d3.D3DragEvent<SVGGElement, D3Node, D3Node>) {
@@ -282,7 +407,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
     return () => {
       simulation.stop();
     };
-  }, [graphData, killedNodes, pinnedNodes]);
+  }, [graphData, killedNodes, pinnedNodes, currentContext]);
 
   useEffect(() => {
     isLassoModeRef.current = isLassoMode;
@@ -380,24 +505,18 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
           if (selectedNodesArray.includes(d.id)) return '#3b82f6';
           if (matchingNodesArray.includes(d.id)) return '#f59e0b';
           if (pinnedNodesArray.includes(d.id)) return '#10b981';
-          if (anchorNodeId === d.id) return '#f59e0b';
           return '#1f2937';
         })
         .attr('stroke-width', (d: any) => {
           if (selectedNodesArray.includes(d.id) || pinnedNodesArray.includes(d.id) || matchingNodesArray.includes(d.id)) return 3;
-          if (anchorNodeId === d.id) return 3;
           return 1.5;
-        })
-        .attr('filter', (d: any) => {
-          if (anchorNodeId === d.id) return 'url(#anchor-shadow)';
-          return null;
         })
         .attr('opacity', (d: any) => {
           if (searchQuery && !matchingNodesArray.includes(d.id)) return 0.3;
           return 1;
         });
     }
-  }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery, anchorNodeId]);
+  }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery]);
 
   const handleKillNode = (nodeId: string) => {
     setKilledNodes(prev => new Set([...Array.from(prev), nodeId]));
@@ -443,6 +562,29 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         style={{ backgroundColor: '#f5f3f0' }}
         data-testid="graph-svg"
       />
+      {navigationStack.length > 0 && (
+        <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow px-3 py-2 flex items-center gap-2" data-testid="breadcrumb-navigation">
+          {navigationStack.map((level, index) => (
+            <div key={level.nodeId} className="flex items-center gap-2">
+              <button
+                onClick={() => handleBreadcrumbClick(index)}
+                className={`text-sm ${
+                  index === navigationStack.length - 1
+                    ? 'font-semibold text-gray-900'
+                    : 'text-gray-600 hover-elevate rounded px-2 py-1'
+                }`}
+                data-testid={`breadcrumb-${level.nodeId}`}
+                disabled={index === navigationStack.length - 1}
+              >
+                {level.label}
+              </button>
+              {index < navigationStack.length - 1 && (
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       <GraphControls
         lensMode={lensMode}
         onLensModeChange={setLensMode}
@@ -455,6 +597,8 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         onSearchChange={setSearchQuery}
         matchingNodesCount={matchingNodes.size}
         anchorNodeId={anchorNodeId}
+        showBackButton={navigationStack.length > 1}
+        onNavigateBack={handleNavigateBack}
       />
       {selectedNode && (
         <NodeDetailPanel
@@ -475,42 +619,35 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
           data-testid="node-tooltip"
         >
           <div className="bg-white rounded-lg shadow-lg p-4 pointer-events-auto" style={{ minWidth: '200px' }}>
-            <div className="font-bold text-gray-900 mb-2">{tooltipData.node.label}</div>
-            <div className="text-sm text-gray-600 mb-2">
-              Added {format(new Date(tooltipData.node.createdAt), 'MMM d, yyyy')}
+            <div className="mb-3">
+              <div className="text-xs text-gray-700 mb-1">Interest</div>
+              <div className="font-semibold text-gray-900">{tooltipData.node.label}</div>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs text-gray-500">Activity:</span>
-              <Badge
-                variant={
-                  tooltipData.node.activityScore === 'High'
-                    ? 'default'
-                    : tooltipData.node.activityScore === 'Medium'
-                    ? 'secondary'
-                    : 'outline'
-                }
-                className={
-                  tooltipData.node.activityScore === 'High'
-                    ? 'bg-green-500 hover:bg-green-600'
-                    : tooltipData.node.activityScore === 'Medium'
-                    ? 'bg-amber-500 hover:bg-amber-600'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }
-              >
-                {tooltipData.node.activityScore}
-              </Badge>
-            </div>
-            <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
-              <Share2 className="w-3 h-3" />
-              <span>{tooltipData.node.sharedCount} shares</span>
-            </div>
-            {tooltipData.node.trending && (
-              <div className="flex items-center gap-1 mt-2">
-                <Badge variant="default" className="bg-orange-500 hover:bg-orange-600">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  Trending
-                </Badge>
+            <div className="mb-3">
+              <div className="text-xs text-gray-700 mb-1">Last Interaction</div>
+              <div className="text-sm text-gray-900">
+                {formatDistanceToNow(new Date(tooltipData.node.lastActive), { addSuffix: true })}
               </div>
+            </div>
+            <div className="mb-3">
+              <div className="text-xs text-gray-700 mb-1 flex items-center gap-1">
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Shared Nearby</span>
+              </div>
+              <div className="text-sm text-gray-900">{tooltipData.node.sharedCount} users</div>
+            </div>
+            {tooltipData.node.children && tooltipData.node.children.length > 0 && (
+              <button
+                className="w-full mt-2 pt-2 border-t border-gray-200 flex items-center justify-center gap-1 text-xs text-gray-600 hover-elevate"
+                data-testid="button-expand-node"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDrillDown(tooltipData.node);
+                }}
+              >
+                <MoreHorizontal className="w-3.5 h-3.5" />
+                <span>Expand</span>
+              </button>
             )}
           </div>
         </div>

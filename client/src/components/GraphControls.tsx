@@ -1,4 +1,4 @@
-import { Eye, Flame, Clock, Lasso, Plus, Search } from 'lucide-react';
+import { Eye, Flame, Clock, Lasso, Plus, Search, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -21,6 +21,8 @@ interface GraphControlsProps {
   onSearchChange: (query: string) => void;
   matchingNodesCount: number;
   anchorNodeId: string | null;
+  showBackButton?: boolean;
+  onNavigateBack?: () => void;
 }
 
 export function GraphControls({ 
@@ -34,7 +36,9 @@ export function GraphControls({
   searchQuery,
   onSearchChange,
   matchingNodesCount,
-  anchorNodeId
+  anchorNodeId,
+  showBackButton = false,
+  onNavigateBack
 }: GraphControlsProps) {
   const lenses = [
     { id: 'none' as const, label: 'Default', icon: Eye },
@@ -44,6 +48,18 @@ export function GraphControls({
 
   return (
     <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-auto z-20 bg-white rounded-xl border border-gray-300 shadow-lg p-3 space-y-3 max-w-full md:max-w-md">
+      {showBackButton && onNavigateBack && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onNavigateBack}
+          className="gap-1.5 w-full"
+          data-testid="button-back"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back</span>
+        </Button>
+      )}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
@@ -158,7 +174,7 @@ export function GraphControls({
         <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-amber-500 border-2 border-amber-500" style={{ boxShadow: '0 2px 8px rgba(245, 158, 11, 0.6)' }} />
-            <span>★ Anchor Node</span>
+            <span>★ You</span>
           </div>
         </div>
       )}
