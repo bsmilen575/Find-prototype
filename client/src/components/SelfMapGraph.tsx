@@ -54,6 +54,7 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
   const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null);
   const nodeGroupRef = useRef<d3.Selection<SVGGElement, D3Node, SVGGElement, unknown> | null>(null);
   const circlesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
+  const ghostCirclesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
   const zoomTransformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
   const isLassoModeRef = useRef(isLassoMode);
 
@@ -229,9 +230,55 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
       .attr('stroke-opacity', d => d.weight * 0.4 + 0.1)
       .attr('stroke-width', d => d.weight * 2);
 
-    const nodeGroup = g.append('g')
+    // Separate ghost and regular nodes
+    const ghostNodes = nodes.filter(d => (d as D3Node).isGhost);
+    const regularNodes = nodes.filter(d => !(d as D3Node).isGhost);
+
+    // Ghost nodes layer (rendered first, will be behind regular nodes)
+    const ghostNodeGroup = g.append('g')
+      .attr('class', 'ghost-nodes')
       .selectAll('g')
-      .data(nodes)
+      .data(ghostNodes)
+      .join('g')
+      .attr('cursor', 'pointer')
+      .on('click', (event, d) => {
+        event.stopPropagation();
+        setSelectedNode(d);
+      })
+      .on('mouseover', (event, d) => {
+        const [x, y] = d3.pointer(event, svgRef.current);
+        setTooltipData({ node: d, x, y });
+      })
+      .on('mouseout', () => {
+        setTooltipData(null);
+      });
+
+    const ghostCircles = ghostNodeGroup.append('circle')
+      .attr('class', 'ghost-node')
+      .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6)
+      .attr('fill', '#e5e7eb')
+      .attr('stroke', '#9ca3af')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '4,2')
+      .attr('opacity', 0.6)
+      .attr('data-testid', d => `node-${d.id}`);
+
+    ghostCirclesRef.current = ghostCircles;
+
+    ghostNodeGroup.append('text')
+      .text(d => `${d.label} (nearby)`)
+      .attr('font-size', '11px')
+      .attr('font-family', 'Inter, sans-serif')
+      .attr('fill', '#6b7280')
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => Math.sqrt(d.attentionWeight) * 0.6 + 14)
+      .attr('pointer-events', 'none');
+
+    // Regular nodes layer (rendered on top)
+    const nodeGroup = g.append('g')
+      .attr('class', 'regular-nodes')
+      .selectAll('g')
+      .data(regularNodes)
       .join('g')
       .attr('cursor', 'pointer')
       .call(
@@ -264,7 +311,9 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
         setTooltipData(null);
       });
 
-    nodeGroupRef.current = nodeGroup as any;
+    // Combine both ghost and regular node groups for lasso selection
+    const allNodeGroups = g.selectAll<SVGGElement, D3Node>('.ghost-nodes g, .regular-nodes g');
+    nodeGroupRef.current = allNodeGroups as any;
 
     // Add halos for overlapping nodes
     const overlappingNodeIds = new Set(nearbyPulseData.overlaps.map(o => o.userNodeId));
@@ -284,20 +333,18 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
 
     const circles = nodeGroup.append('circle')
       .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6)
-      .attr('fill', d => (d as D3Node).isGhost ? '#e5e7eb' : getNodeColor(d, lensMode))
-      .attr('stroke', d => (d as D3Node).isGhost ? '#9ca3af' : '#1f2937')
-      .attr('stroke-width', d => (d as D3Node).isGhost ? 1.5 : 1.5)
-      .attr('stroke-dasharray', d => (d as D3Node).isGhost ? '4,2' : 'none')
-      .attr('opacity', d => (d as D3Node).isGhost ? 0.6 : 1)
+      .attr('fill', d => getNodeColor(d, lensMode))
+      .attr('stroke', '#1f2937')
+      .attr('stroke-width', 1.5)
       .attr('data-testid', d => `node-${d.id}`);
 
     circlesRef.current = circles;
 
     const labels = nodeGroup.append('text')
-      .text(d => (d as D3Node).isGhost ? `${d.label} (nearby)` : d.label)
+      .text(d => d.label)
       .attr('font-size', '11px')
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', d => (d as D3Node).isGhost ? '#6b7280' : '#374151')
+      .attr('fill', '#374151')
       .attr('text-anchor', 'middle')
       .attr('dy', d => Math.sqrt(d.attentionWeight) * 0.6 + 14)
       .attr('pointer-events', 'none');
@@ -322,6 +369,7 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
           .attr('y2', (d: any) => d.target.y!);
       }
 
+      ghostNodeGroup.attr('transform', d => `translate(${d.x},${d.y})`);
       nodeGroup.attr('transform', d => `translate(${d.x},${d.y})`);
       
       if (anchorGroup && anchorNode) {
@@ -525,14 +573,15 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
         .duration(300)
         .attr('fill', (d: any) => getNodeColor(d, lensMode));
     }
+    // Ghost nodes always keep their fixed color regardless of lens mode
   }, [lensMode]);
 
   useEffect(() => {
+    const matchingNodesArray = Array.from(matchingNodes);
+    const selectedNodesArray = Array.from(selectedNodes);
+    const pinnedNodesArray = Array.from(pinnedNodes);
+    
     if (circlesRef.current) {
-      const matchingNodesArray = Array.from(matchingNodes);
-      const selectedNodesArray = Array.from(selectedNodes);
-      const pinnedNodesArray = Array.from(pinnedNodes);
-      
       circlesRef.current
         .attr('stroke', (d: any) => {
           if (selectedNodesArray.includes(d.id)) return '#3b82f6';
@@ -547,6 +596,24 @@ export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
         .attr('opacity', (d: any) => {
           if (searchQuery && !matchingNodesArray.includes(d.id)) return 0.3;
           return 1;
+        });
+    }
+    
+    if (ghostCirclesRef.current) {
+      ghostCirclesRef.current
+        .attr('stroke', (d: any) => {
+          if (selectedNodesArray.includes(d.id)) return '#3b82f6';
+          if (matchingNodesArray.includes(d.id)) return '#f59e0b';
+          if (pinnedNodesArray.includes(d.id)) return '#10b981';
+          return '#9ca3af';
+        })
+        .attr('stroke-width', (d: any) => {
+          if (selectedNodesArray.includes(d.id) || pinnedNodesArray.includes(d.id) || matchingNodesArray.includes(d.id)) return 3;
+          return 1.5;
+        })
+        .attr('opacity', (d: any) => {
+          if (searchQuery && !matchingNodesArray.includes(d.id)) return 0.2;
+          return 0.6;
         });
     }
   }, [selectedNodes, pinnedNodes, matchingNodes, searchQuery]);
