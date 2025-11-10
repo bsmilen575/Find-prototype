@@ -23,6 +23,7 @@ interface GraphControlsProps {
   anchorNodeId: string | null;
   showBackButton?: boolean;
   onNavigateBack?: () => void;
+  isNearbyPulse?: boolean;
 }
 
 export function GraphControls({ 
@@ -38,7 +39,8 @@ export function GraphControls({
   matchingNodesCount,
   anchorNodeId,
   showBackButton = false,
-  onNavigateBack
+  onNavigateBack,
+  isNearbyPulse = false
 }: GraphControlsProps) {
   const lenses = [
     { id: 'none' as const, label: 'Default', icon: Eye },
@@ -175,6 +177,43 @@ export function GraphControls({
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-amber-500 border-2 border-amber-500" style={{ boxShadow: '0 2px 8px rgba(245, 158, 11, 0.6)' }} />
             <span>★ You</span>
+          </div>
+        </div>
+      )}
+
+      {isNearbyPulse && (
+        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
+          <h4 className="text-xs font-medium text-gray-700 mb-2">Nearby Pulse Legend</h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5">
+              <svg width="16" height="16" viewBox="0 0 16 16" className="flex-shrink-0">
+                <circle 
+                  cx="8" 
+                  cy="8" 
+                  r="6" 
+                  fill="#e5e7eb" 
+                  stroke="#9ca3af" 
+                  strokeWidth="1.5" 
+                  strokeDasharray="3,1.5"
+                  opacity="0.6"
+                />
+              </svg>
+              <span>Ghost Node (Popular Nearby)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg width="16" height="16" viewBox="0 0 16 16" className="flex-shrink-0">
+                <circle 
+                  cx="8" 
+                  cy="8" 
+                  r="7" 
+                  fill="none" 
+                  stroke="#f59e0b" 
+                  strokeWidth="2"
+                  opacity="0.6"
+                />
+              </svg>
+              <span>Halo (Also Popular Here)</span>
+            </div>
           </div>
         </div>
       )}

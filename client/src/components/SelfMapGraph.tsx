@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Share2, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { type Node as GraphNode, type Edge as GraphEdge, type UserGraph } from '@shared/synthetic-data';
+import { nearbyPulseData, nearbyPulseGraph } from '@shared/nearby-pulse-data';
 import { NodeDetailPanel } from './NodeDetailPanel';
 import { GraphControls } from './GraphControls';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 interface D3Node extends d3.SimulationNodeDatum, GraphNode {
   x?: number;
   y?: number;
+  isGhost?: boolean;
 }
 
 interface D3Link extends d3.SimulationLinkDatum<D3Node> {
@@ -31,9 +33,11 @@ interface NavigationLevel {
 
 interface SelfMapGraphProps {
   graphData: UserGraph;
+  mode?: 'mine' | 'nearbyPulse';
 }
 
-export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
+export function SelfMapGraph({ graphData, mode = 'mine' }: SelfMapGraphProps) {
+  const isNearbyPulse = mode === 'nearbyPulse';
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [tooltipData, setTooltipData] = useState<{node: GraphNode, x: number, y: number} | null>(null);
@@ -135,6 +139,14 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       interestNodes = graphData.nodes
         .filter(n => !killedNodes.has(n.id))
         .map(n => ({ ...n }));
+    }
+
+    // Add ghost nodes when in nearbyPulse mode
+    if (isNearbyPulse && !currentContext) {
+      const ghostNodeData = nearbyPulseGraph.nodes
+        .filter(n => nearbyPulseData.ghostNodes.includes(n.id))
+        .map(n => ({ ...n, isGhost: true }));
+      interestNodes = [...interestNodes, ...ghostNodeData];
     }
 
     const nodes: D3Node[] = [...interestNodes];
@@ -254,20 +266,38 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
 
     nodeGroupRef.current = nodeGroup as any;
 
+    // Add halos for overlapping nodes
+    const overlappingNodeIds = new Set(nearbyPulseData.overlaps.map(o => o.userNodeId));
+    const haloGroup = nodeGroup.filter((d: any) => isNearbyPulse && overlappingNodeIds.has(d.id));
+    
+    haloGroup.append('circle')
+      .attr('class', 'halo-ring')
+      .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6 + 6)
+      .attr('fill', 'none')
+      .attr('stroke', '#f59e0b')
+      .attr('stroke-width', 2)
+      .attr('stroke-opacity', d => {
+        const overlap = nearbyPulseData.overlaps.find(o => o.userNodeId === d.id);
+        return overlap ? overlap.overlapScore * 0.7 : 0.6;
+      })
+      .style('animation', 'pulse-halo 2s ease-in-out infinite');
+
     const circles = nodeGroup.append('circle')
       .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6)
-      .attr('fill', d => getNodeColor(d, lensMode))
-      .attr('stroke', '#1f2937')
-      .attr('stroke-width', 1.5)
+      .attr('fill', d => (d as D3Node).isGhost ? '#e5e7eb' : getNodeColor(d, lensMode))
+      .attr('stroke', d => (d as D3Node).isGhost ? '#9ca3af' : '#1f2937')
+      .attr('stroke-width', d => (d as D3Node).isGhost ? 1.5 : 1.5)
+      .attr('stroke-dasharray', d => (d as D3Node).isGhost ? '4,2' : 'none')
+      .attr('opacity', d => (d as D3Node).isGhost ? 0.6 : 1)
       .attr('data-testid', d => `node-${d.id}`);
 
     circlesRef.current = circles;
 
     const labels = nodeGroup.append('text')
-      .text(d => d.label)
+      .text(d => (d as D3Node).isGhost ? `${d.label} (nearby)` : d.label)
       .attr('font-size', '11px')
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', '#374151')
+      .attr('fill', d => (d as D3Node).isGhost ? '#6b7280' : '#374151')
       .attr('text-anchor', 'middle')
       .attr('dy', d => Math.sqrt(d.attentionWeight) * 0.6 + 14)
       .attr('pointer-events', 'none');
@@ -327,12 +357,15 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
       
       nodes.push(anchorNode);
       
-      const anchorEdges = interestNodes.map(node => ({
-        source: node,
-        target: anchorNode!,
-        weight: 0.05,
-        type: 'anchor',
-      }));
+      // Only connect non-ghost nodes to the anchor
+      const anchorEdges = interestNodes
+        .filter(node => !(node as D3Node).isGhost)
+        .map(node => ({
+          source: node,
+          target: anchorNode!,
+          weight: 0.05,
+          type: 'anchor',
+        }));
       
       anchorLinks = linkGroup
         .selectAll('line.anchor-link')
@@ -407,7 +440,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
     return () => {
       simulation.stop();
     };
-  }, [graphData, killedNodes, pinnedNodes, currentContext]);
+  }, [graphData, killedNodes, pinnedNodes, currentContext, isNearbyPulse]);
 
   useEffect(() => {
     isLassoModeRef.current = isLassoMode;
@@ -599,6 +632,7 @@ export function SelfMapGraph({ graphData }: SelfMapGraphProps) {
         anchorNodeId={anchorNodeId}
         showBackButton={navigationStack.length > 1}
         onNavigateBack={handleNavigateBack}
+        isNearbyPulse={isNearbyPulse}
       />
       {selectedNode && (
         <NodeDetailPanel

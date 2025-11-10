@@ -99,3 +99,38 @@ export const nearbyPulseGraph: UserGraph = {
     { id: 'c9', name: 'Nightlife & Social', nodeIds: ['p25', 'p26', 'p27'] },
   ],
 };
+
+// Ghost nodes: popular nearby interests that the user doesn't have yet
+export const nearbyPulseData = {
+  ghostNodes: [
+    'p1',  // Coffee Shops
+    'p2',  // Local Brunch
+    'p3',  // Dog Parks
+    'p4',  // Warriors Games
+    'p5',  // NFL Playoffs
+    'p6',  // Sports Bars
+    'p7',  // Taylor Swift
+    'p8',  // The Eras Tour
+    'p9',  // Concert Tickets
+    'p16', // Hiking Trails
+    'p17', // Weekend Plans
+    'p18', // Beach Day
+    'p25', // Happy Hour
+    'p26', // Date Night
+    'p27', // Wine Tasting
+  ],
+  overlaps: [
+    { userNodeId: 'n30', nearbyNodeId: 'p22', overlapScore: 0.85 }, // Tech News ↔ iPhone
+    { userNodeId: 'n31', nearbyNodeId: 'p22', overlapScore: 0.92 }, // iPhone Tips ↔ iPhone
+    { userNodeId: 'n32', nearbyNodeId: 'p24', overlapScore: 0.78 }, // MKBHD ↔ Tech Reviews
+    { userNodeId: 'n1', nearbyNodeId: 'p19', overlapScore: 0.88 },  // Home Workouts ↔ Gym Motivation
+    { userNodeId: 'n2', nearbyNodeId: 'p19', overlapScore: 0.75 },  // Chloe Ting ↔ Gym Motivation
+    { userNodeId: 'n1', nearbyNodeId: 'p20', overlapScore: 0.82 },  // Home Workouts ↔ New Years Resolutions
+    { userNodeId: 'n6', nearbyNodeId: 'p10', overlapScore: 0.79 },  // The Bear ↔ Netflix Shows
+    { userNodeId: 'n7', nearbyNodeId: 'p10', overlapScore: 0.76 },  // Succession ↔ Netflix Shows
+    { userNodeId: 'n8', nearbyNodeId: 'p10', overlapScore: 0.91 },  // TV Recommendations ↔ Netflix Shows
+    { userNodeId: 'n9', nearbyNodeId: 'p12', overlapScore: 0.87 },  // Weekend Binge ↔ Binge Watching
+    { userNodeId: 'n16', nearbyNodeId: 'p13', overlapScore: 0.71 }, // Baking ↔ Pizza Places
+    { userNodeId: 'n18', nearbyNodeId: 'p14', overlapScore: 0.73 }, // Recipe Videos ↔ Food Delivery
+  ],
+};
