@@ -10,6 +10,8 @@ export function SignUpScreen() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [locationGranted, setLocationGranted] = useState(false);
+  const [name, setName] = useState('');
+  const [interests, setInterests] = useState('');
 
   const handleLocationAccess = () => {
     navigator.geolocation.getCurrentPosition(
@@ -31,6 +33,24 @@ export function SignUpScreen() {
   };
 
   const handleConnect = () => {
+    if (!name.trim()) {
+      toast({
+        title: "Name required",
+        description: "Please enter your name to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!interests.trim()) {
+      toast({
+        title: "Interests required",
+        description: "Please tell Find about your interests to get better connections.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!locationGranted) {
       toast({
         title: "Location required",
@@ -39,6 +59,7 @@ export function SignUpScreen() {
       });
       return;
     }
+
     setLocation('/home');
   };
 
@@ -53,17 +74,24 @@ export function SignUpScreen() {
         </div>
         
         <div className="mb-5">
-          <label className="block text-gray-700 mb-2">Your Name</label>
+          <label className="block text-gray-700 mb-2">
+            Your Name <span className="text-red-500">*</span>
+          </label>
           <Input 
             type="text" 
             placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="h-12 rounded-xl border-2 border-black"
             data-testid="input-name"
+            required
           />
         </div>
         
         <div className="mb-6">
-          <h3 className="text-gray-900 mb-3" data-testid="heading-pod">Set up your Pod</h3>
+          <h3 className="text-gray-900 mb-3" data-testid="heading-pod">
+            Set up your Pod <span className="text-gray-400 text-sm font-normal">(Optional)</span>
+          </h3>
           <p className="text-gray-500 text-sm mb-4">Connect your accounts to build your private interest graph</p>
           
           <div className="grid grid-cols-4 gap-2">
@@ -117,7 +145,9 @@ export function SignUpScreen() {
         </div>
         
         <div className="mb-6">
-          <label className="block text-gray-700 mb-3">Talk to Find</label>
+          <label className="block text-gray-700 mb-3">
+            Talk to Find <span className="text-red-500">*</span>
+          </label>
           <p className="text-gray-500 text-sm mb-3 leading-relaxed">
             Tell Find about whatever is important to you - niche interests, things you're excited about, questions, anything you need.
             <br />
@@ -144,8 +174,11 @@ export function SignUpScreen() {
             </div>
             <Textarea 
               placeholder=""
+              value={interests}
+              onChange={(e) => setInterests(e.target.value)}
               className="min-h-[180px] rounded-xl border-2 border-black resize-none pl-11"
               data-testid="textarea-interests"
+              required
             />
           </div>
         </div>

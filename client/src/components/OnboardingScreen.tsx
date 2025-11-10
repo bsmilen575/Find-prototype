@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
+import { Users, MapPin, Upload } from 'lucide-react';
 import findLogo from '@assets/Find_logo-removebg-preview_1762715955146.png';
 
 export function OnboardingScreen() {
@@ -20,8 +21,30 @@ export function OnboardingScreen() {
         <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }} data-testid="text-title">
           Find
         </h1>
-        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '3rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }} data-testid="text-description">
+        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '2rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }} data-testid="text-description">
           Discover people or things nearby that you might like.
+        </p>
+        
+        <div className="flex items-center justify-center gap-8 mb-4">
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-2">
+              <Users className="w-6 h-6 text-black/60" />
+            </div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-2">
+              <MapPin className="w-6 h-6 text-black/60" />
+            </div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-2">
+              <Upload className="w-6 h-6 text-black/60" />
+            </div>
+          </div>
+        </div>
+        
+        <p style={{ color: '#9b9b9b', textAlign: 'center', fontSize: '0.875rem', maxWidth: '20rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.5' }} data-testid="text-upload-description">
+          Upload your files, docs, and notes
         </p>
       </div>
       
