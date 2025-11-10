@@ -12,7 +12,6 @@ import MatchNotification from "@/pages/MatchNotification";
 import ProfileMatch from "@/pages/ProfileMatch";
 import Settings from "@/pages/Settings";
 import SignUp from "@/pages/SignUp";
-import SelfMap from "@/pages/SelfMap";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -26,7 +25,6 @@ function Router() {
       <Route path="/profile/:id" component={ProfileMatch} />
       <Route path="/settings" component={Settings} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/map" component={SelfMap} />
       <Route component={NotFound} />
     </Switch>
   );

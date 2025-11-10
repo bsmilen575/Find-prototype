@@ -39,7 +39,7 @@ export function SignUpScreen() {
       });
       return;
     }
-    setLocation('/map');
+    setLocation('/home');
   };
 
   return (
