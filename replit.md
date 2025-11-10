@@ -17,15 +17,18 @@ Preferred communication style: Simple, everyday language.
 **Framework**: React with TypeScript using Vite as the build tool
 
 **Routing**: Wouter for client-side routing with key routes:
-- `/` - Welcome screen with minimalist spheres image
+- `/` - **Onboarding screen** with Find logo, feature icons (Users, MapPin, Upload), and "Upload your files, docs, and notes" text
 - `/home` - **Primary app screen** with 4-tab navigation (Mine, Nearby Pulse, Insights, Connections)
   - **Mine**: User's personal interest graph (force-directed D3.js visualization)
   - **Nearby Pulse**: Aggregated interest graph of local area
   - **Insights**: Interest patterns and analytics (placeholder)
   - **Connections**: Match cards with double-blind reveal
 - `/about` - Information about the platform and privacy features
-- `/onboarding` - Single-page profile creation (name + 5 interests)
-- `/signup` - Detailed signup with location permission, navigates to /home on completion
+- `/signup` - **Detailed signup** with mandatory name and interests fields, optional Pod connections, and location permission
+  - Required fields: Name, Talk to Find (interests)
+  - Optional: Social media pod connections (Facebook, Twitter, Instagram, Google)
+  - Location access handled gracefully - proceeds even if network lookup fails after permission granted
+  - Navigates to /home on completion
 
 **State Management**:
 - TanStack React Query for server state management and caching
@@ -57,6 +60,11 @@ Preferred communication style: Simple, everyday language.
 - D3.js force-directed graph showing interests as nodes
 - Node size scaled by attention weight (time-weighted engagement)
 - Edges represent relationships (co-occur, sequential, semantic, temporal)
+- **Search functionality**: Real-time filtering of nodes by label
+  - Matching nodes highlighted with orange stroke (#f59e0b)
+  - Non-matching nodes faded to 30% opacity
+  - Match count displayed in search input
+  - Works on both Mine and Nearby Pulse tabs
 - Interactive features:
   - Drag nodes to reposition
   - Zoom and pan (tracked via zoomTransformRef for accurate selection)

@@ -23,11 +23,19 @@ export function SignUpScreen() {
         });
       },
       (error) => {
-        toast({
-          title: "Location access denied",
-          description: "Please enable location access to use Find.",
-          variant: "destructive",
-        });
+        if (error.code === error.PERMISSION_DENIED) {
+          toast({
+            title: "Location access denied",
+            description: "Please enable location access to use Find.",
+            variant: "destructive",
+          });
+        } else {
+          setLocationGranted(true);
+          toast({
+            title: "Location permission granted",
+            description: "Network location lookup failed, but you can continue.",
+          });
+        }
       }
     );
   };
