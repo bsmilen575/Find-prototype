@@ -197,33 +197,14 @@ export function SignUpScreen() {
             <span className="font-semibold">Tip:</span> the more detail you give, the better your connections will be.
           </p>
           
-          <div className="relative">
-            <div className="absolute top-3 left-3 flex items-center gap-1 pointer-events-none">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <circle cx="9" cy="12" r="7" fill="url(#circle-gradient-1)" opacity="0.8" />
-                <circle cx="15" cy="12" r="7" fill="url(#circle-gradient-2)" opacity="0.8" />
-                <defs>
-                  <linearGradient id="circle-gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#a78bfa' }} />
-                    <stop offset="100%" style={{ stopColor: '#ec4899' }} />
-                  </linearGradient>
-                  <linearGradient id="circle-gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#60a5fa' }} />
-                    <stop offset="100%" style={{ stopColor: '#a78bfa' }} />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span className="text-gray-400">...</span>
-            </div>
-            <Textarea 
-              placeholder=""
-              value={interests}
-              onChange={(e) => setInterests(e.target.value)}
-              className="min-h-[180px] rounded-xl border-2 border-black resize-none pl-11"
-              data-testid="textarea-interests"
-              required
-            />
-          </div>
+          <Textarea 
+            placeholder="..."
+            value={interests}
+            onChange={(e) => setInterests(e.target.value)}
+            className="min-h-[180px] rounded-xl border-2 border-black resize-none"
+            data-testid="textarea-interests"
+            required
+          />
         </div>
         
         <div className="mt-auto space-y-3">
