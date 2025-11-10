@@ -24,9 +24,11 @@ Preferred communication style: Simple, everyday language.
   - **Insights**: Interest patterns and analytics (placeholder)
   - **Connections**: Match cards with double-blind reveal
 - `/about` - Information about the platform and privacy features
-- `/signup` - **Detailed signup** with mandatory name and interests fields, optional Pod connections, and location permission
+- `/signup` - **Detailed signup** with mandatory name and interests fields, optional Pod connections, file upload, and location permission
   - Required fields: Name, Talk to Find (interests)
-  - Optional: Social media pod connections (Facebook, Twitter, Instagram, Google)
+  - Optional sections:
+    - Pod setup: 6 social media connections (Facebook, Twitter, Instagram, Google, Gmail, TikTok) in 3x2 grid
+    - File upload: Dashed border upload area for files, docs, and notes
   - Location access handled gracefully - proceeds even if network lookup fails after permission granted
   - Navigates to /home on completion
 
