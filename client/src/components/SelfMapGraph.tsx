@@ -558,9 +558,9 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
     }
     
     if (mode === 'heat') {
-      return node.attentionWeight > 80 ? '#ef4444' :
-             node.attentionWeight > 60 ? '#f59e0b' :
-             node.attentionWeight > 40 ? '#fbbf24' : '#9ca3af';
+      return node.attentionWeight > 80 ? '#1e40af' :
+             node.attentionWeight > 60 ? '#3b82f6' :
+             node.attentionWeight > 40 ? '#60a5fa' : '#bfdbfe';
     }
     
     return '#9ca3af';

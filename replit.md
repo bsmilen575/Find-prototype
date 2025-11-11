@@ -108,7 +108,7 @@ Preferred communication style: Simple, everyday language.
 - Lens modes with smooth 300ms color transitions (no simulation restart):
   - Default: Grayscale (#9ca3af) for calm, low-stimulus viewing
   - Recency: Green (<7d), yellow (<30d), red (<90d), gray (>90d)
-  - Heat: Red (>80), amber (60-80), yellow (40-60), gray (<40) based on attention weight
+  - Heat: Dark blue (>80), medium blue (60-80), light blue (40-60), very light blue (<40) based on attention weight - darker indicates higher interest
 - Node detail panel: evidence (likes, saves, watch time, highlights), connected neighbors, timeline
 - Circuit display: Shows created circuits in controls panel with truncated names
 - GraphControls: Mobile-responsive with flex-wrap, shortened labels on small screens, back button when navigating subgraphs
