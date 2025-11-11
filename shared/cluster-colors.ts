@@ -69,3 +69,51 @@ export const clusters: ClusterInfo[] = [
 export function getClusterColor(clusterId: number): string {
   return clusterPalette[clusterId] || clusterPalette[0];
 }
+
+// Manual cluster category metadata for UI display
+// Update these labels as needed based on semantic clustering results
+export interface ClusterCategory {
+  id: number;
+  name: string;
+  color: string;
+  examples: string[];
+}
+
+export const clusterCategoryMetadata: ClusterCategory[] = [
+  { 
+    id: 0, 
+    name: "Food & Entertainment", 
+    color: "#8CCB9B", 
+    examples: ["Baking", "Netflix", "Wine Tasting"]
+  },
+  { 
+    id: 1, 
+    name: "Lifestyle & Travel", 
+    color: "#F5C06E", 
+    examples: ["Travel", "Interior Design", "Hiking"]
+  },
+  { 
+    id: 2, 
+    name: "Health Foods", 
+    color: "#9C8ADE", 
+    examples: ["Protein", "Taco Tuesday"]
+  },
+  { 
+    id: 3, 
+    name: "Sports & Pop Culture", 
+    color: "#74A8E4", 
+    examples: ["Warriors", "Taylor Swift", "The Bear"]
+  },
+  { 
+    id: 4, 
+    name: "Wellness & Hobbies", 
+    color: "#E7A26F", 
+    examples: ["Home Workouts", "Yoga", "Coffee Shops"]
+  },
+  { 
+    id: 5, 
+    name: "Photography & Tech", 
+    color: "#F28B82", 
+    examples: ["Concert Photos", "iPhone", "Tech Reviews"]
+  },
+];
