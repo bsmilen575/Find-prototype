@@ -153,19 +153,19 @@ export function GraphControls({
         <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <div className="w-3 h-3 rounded-full bg-blue-800" />
               <span>&gt;80</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-amber-500" />
+              <div className="w-3 h-3 rounded-full bg-blue-500" />
               <span>60-80</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-yellow-400" />
+              <div className="w-3 h-3 rounded-full bg-blue-400" />
               <span>40-60</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-gray-400" />
+              <div className="w-3 h-3 rounded-full bg-blue-200" />
               <span>&lt;40</span>
             </div>
           </div>
