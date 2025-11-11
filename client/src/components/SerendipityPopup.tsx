@@ -32,7 +32,7 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
           </button>
         </div>
         <p className="text-sm text-gray-700 mb-3 leading-relaxed">
-          Someone {match.distance} away also loves <strong>{match.sharedThemes[0]}</strong>.
+          {match.nearbyUser.alias} ({match.distance} away)
         </p>
         <div className="flex gap-2">
           <Button

@@ -32,11 +32,15 @@ Key UI/UX decisions include:
 - The `SelfMapGraph` component uses D3.js for interactive interest visualization, including a central "You" anchor node, hover tooltips, drill-down navigation, and lens modes (Recency, Heat).
 - **Serendipity Notifications**: A real-time notification system that simulates detecting nearby users with overlapping interests. Implemented via:
   - `SerendipityPopup` component with three-stage flow: teaser → revealed → matched
-  - Synthetic encounter data in `shared/serendipity-data.ts` with first names for each user
+  - Synthetic encounter data in `shared/serendipity-data.ts` with four diverse scenarios:
+    1. **Technical cofounder search** (Maya - Startups & Product Design)
+    2. **Couch for sale** (Alex - Sustainable Living & Minimalism)
+    3. **Film<>AI meet-and-greet invitation** (Jordan - Film Theory & Creative AI)
+    4. **Wellness connection** (Sam - Wellness & Craft)
   - Auto-trigger after 12 seconds (simulating "entering a coffee shop")
   - Manual "Simulate" button in header for demo purposes
   - Three-stage reveal flow:
-    1. **Teaser**: Initial notification with "Find out who?" and "Ignore" buttons
+    1. **Teaser**: Initial notification with alias description and distance (e.g., "Someone nearby is looking for a technical cofounder")
     2. **Revealed**: Shared interests details with "Simulate Mutual Match" button (waiting for both users to say yes)
     3. **Matched**: Reveals first name with connection options ("Tap Phones" or "Add to Network")
 

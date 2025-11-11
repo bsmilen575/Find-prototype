@@ -15,49 +15,49 @@ export const fakeEncounters: FakeEncounter[] = [
   {
     id: "match1",
     location: "Coffee Shop",
-    sharedThemes: ["Speculative Fiction", "Psychological Realism"],
-    sharedNodes: ["Island of Dr. Moreau", "Annihilation"],
-    distance: "12m",
+    sharedThemes: ["Startups", "Product Design"],
+    sharedNodes: ["Web3", "AI/ML", "User Research"],
+    distance: "18m",
     nearbyUser: {
-      alias: "Someone nearby",
+      alias: "Someone nearby is looking for a technical cofounder",
       firstName: "Maya",
-      overlapPercent: 0.82
+      overlapPercent: 0.84
     }
   },
   {
     id: "match2",
+    location: "Your Neighborhood",
+    sharedThemes: ["Sustainable Living", "Minimalism"],
+    sharedNodes: ["Vintage Furniture", "Local Exchange"],
+    distance: "45m",
+    nearbyUser: {
+      alias: "Someone nearby is looking to sell their couch",
+      firstName: "Alex",
+      overlapPercent: 0.68
+    }
+  },
+  {
+    id: "match3",
+    location: "Creative Hub",
+    sharedThemes: ["Film Theory", "Creative AI"],
+    sharedNodes: ["Generative Art", "Cinema Vérité", "AI Ethics"],
+    distance: "25m",
+    nearbyUser: {
+      alias: "Someone nearby is hosting a meet-and-greet in your city and is looking to invite people interested in the film<>AI space",
+      firstName: "Jordan",
+      overlapPercent: 0.91
+    }
+  },
+  {
+    id: "match4",
     location: "Park",
     sharedThemes: ["Wellness", "Craft & Ritual"],
     sharedNodes: ["Yoga", "Sourdough Bread"],
     distance: "35m",
     nearbyUser: {
       alias: "A runner nearby",
-      firstName: "Alex",
-      overlapPercent: 0.76
-    }
-  },
-  {
-    id: "match3",
-    location: "Library",
-    sharedThemes: ["Indie Music", "Art Curation"],
-    sharedNodes: ["Bon Iver", "Contemporary Art Museums"],
-    distance: "8m",
-    nearbyUser: {
-      alias: "A reader nearby",
-      firstName: "Jordan",
-      overlapPercent: 0.88
-    }
-  },
-  {
-    id: "match4",
-    location: "Gym",
-    sharedThemes: ["Fitness", "Mindfulness"],
-    sharedNodes: ["Running", "Meditation"],
-    distance: "22m",
-    nearbyUser: {
-      alias: "An athlete nearby",
       firstName: "Sam",
-      overlapPercent: 0.71
+      overlapPercent: 0.76
     }
   }
 ];
