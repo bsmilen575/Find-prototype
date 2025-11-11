@@ -117,7 +117,7 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
       data-testid="serendipity-popup-matched"
     >
       <div className="flex justify-between items-start mb-3">
-        <h3 className="font-semibold text-gray-900 text-base">It's a Match!</h3>
+        <h3 className="font-semibold text-gray-900 text-base">Connection established.</h3>
         <button 
           onClick={onDismiss}
           className="text-gray-400 hover:text-gray-600 -mt-1 -mr-1"
@@ -130,7 +130,7 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
       <div className="space-y-4">
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
           <p className="text-sm text-gray-700 mb-1">
-            Meet <strong className="text-gray-900 text-base">{match.nearbyUser.firstName}</strong>
+            This curiosity is shared with <strong className="text-gray-900 text-base">{match.nearbyUser.firstName}</strong>.
           </p>
           <p className="text-xs text-gray-600">
             {match.distance} away · {Math.round(match.nearbyUser.overlapPercent * 100)}% overlap
@@ -143,7 +143,7 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
         </div>
         
         <div className="space-y-2">
-          <p className="text-xs font-medium text-gray-700 mb-2">Connect:</p>
+          <p className="text-xs font-medium text-gray-700 mb-2">Continue:</p>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -160,7 +160,7 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
               data-testid="button-add-network"
             >
               <UserPlus className="w-4 h-4" />
-              Add to Network
+              Open Exchange
             </Button>
           </div>
         </div>

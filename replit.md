@@ -42,7 +42,8 @@ Key UI/UX decisions include:
   - Three-stage reveal flow:
     1. **Teaser**: Initial notification with alias description and distance (e.g., "Someone nearby is looking for a technical cofounder")
     2. **Revealed**: Shared interests details with "Simulate Mutual Match" button (waiting for both users to say yes)
-    3. **Matched**: Reveals first name with connection options ("Tap Phones" or "Add to Network")
+    3. **Matched**: "Connection established" reveals first name with purposeful language ("This curiosity is shared with Maya") and connection options ("Tap Phones" or "Open Exchange")
+  - Language philosophy: Intentionally avoids dating-app terminology (no "It's a match!" or "Meet [name]") in favor of calm, contextual, purposeful language that emphasizes shared curiosity over romantic connection
 
 ### Backend
 
