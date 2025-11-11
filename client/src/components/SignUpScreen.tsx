@@ -251,27 +251,6 @@ export function SignUpScreen() {
         </div>
         
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">
-            Talk to Find (optional)
-          </label>
-          <p className="text-gray-500 text-sm mb-3">
-            Tell us what you're interested in - topics, hobbies, curiosities. Separate with commas or new lines.
-          </p>
-          <Textarea
-            placeholder="artificial intelligence, film production, rock climbing, sourdough baking..."
-            value={manualInterestsText}
-            onChange={(e) => setManualInterestsText(e.target.value)}
-            className="min-h-32 rounded-xl border-2 border-gray-300 resize-none"
-            data-testid="textarea-interests"
-          />
-          {manualInterestsText.trim() && (
-            <p className="text-gray-500 text-xs mt-2">
-              {parseManualInterests(manualInterestsText).length} interests entered
-            </p>
-          )}
-        </div>
-        
-        <div className="mb-6">
           <h3 className="text-gray-900 text-2xl mb-3" data-testid="heading-pod">
             Set up your Pod
           </h3>
@@ -391,30 +370,53 @@ export function SignUpScreen() {
             )}
           </button>
           
-          {(extractedInterests.length > 0 || manualInterestsText.trim()) && (
-            <div className="mt-4 p-4 rounded-xl bg-white border border-gray-200" data-testid="extracted-interests">
-              <p className="text-gray-700 text-sm font-medium mb-2">
-                Your interests ({getMergedInterests().length}):
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {getMergedInterests().map((interest, idx) => (
-                  <span 
-                    key={idx}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                    data-testid={`interest-${idx}`}
-                  >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-              {getMergedInterests().length >= 15 && (
-                <p className="text-orange-600 text-xs mt-2">
-                  Maximum of 15 interests reached
-                </p>
-              )}
-            </div>
+        </div>
+        
+        <div className="mb-6">
+          <h3 className="text-gray-700 text-base mb-2" data-testid="heading-talk-to-find">
+            Talk to Find <span className="text-red-500">*</span>
+          </h3>
+          <p className="text-gray-500 text-sm mb-3">
+            Tell Find about whatever is important to you - niche interests, things you're excited about, questions, anything you need.<br />
+            Tip: the more detail you give, the better your connections will be.
+          </p>
+          <Textarea
+            placeholder=""
+            value={manualInterestsText}
+            onChange={(e) => setManualInterestsText(e.target.value)}
+            className="min-h-32 rounded-xl border-2 border-gray-300 resize-none"
+            data-testid="textarea-interests"
+          />
+          {manualInterestsText.trim() && (
+            <p className="text-gray-500 text-xs mt-2">
+              {parseManualInterests(manualInterestsText).length} interests entered
+            </p>
           )}
         </div>
+        
+        {(extractedInterests.length > 0 || manualInterestsText.trim()) && (
+          <div className="mb-6 p-4 rounded-xl bg-white border border-gray-200" data-testid="extracted-interests">
+            <p className="text-gray-700 text-sm font-medium mb-2">
+              Your interests ({getMergedInterests().length}):
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {getMergedInterests().map((interest, idx) => (
+                <span 
+                  key={idx}
+                  className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                  data-testid={`interest-${idx}`}
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
+            {getMergedInterests().length >= 15 && (
+              <p className="text-orange-600 text-xs mt-2">
+                Maximum of 15 interests reached
+              </p>
+            )}
+          </div>
+        )}
         
         <div className="mt-auto space-y-3">
           <Button 
