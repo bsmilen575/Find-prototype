@@ -47,11 +47,30 @@ Key UI/UX decisions include:
 
 ### Backend
 
-The backend uses Express.js with TypeScript, providing a RESTful API for profile management, location updates, discoverability toggling, and match retrieval. It implements a simple matching engine based on shared interests (2+ required) and a 100-meter geographic radius using the Haversine formula. Currently, it uses in-memory storage with an interface designed for future database integration.
+The backend uses Express.js with TypeScript, providing a RESTful API for profile management, location updates, discoverability toggling, and match retrieval. It implements a simple matching engine based on shared interests (2+ required) and a 100-meter geographic radius using the Haversine formula.
+
+**Authentication:**
+- Integrated Replit Auth (OIDC) with multi-domain support via Passport.js
+- Session-based authentication with PostgreSQL session store (connect-pg-simple)
+- Protected API routes via `isAuthenticated` middleware
+- Auth flow: Landing page → Login → Profile creation (if new user) → Main app
+- Logout properly destroys both Passport session and database session
+
+**User Flow:**
+1. Unauthenticated users see a landing page with login button
+2. After authentication, new users complete onboarding (name, 5 interests, location)
+3. Profile creation requires exactly 5 interests and browser geolocation access
+4. Authenticated users with profiles access the full Find experience
 
 ### Data Storage
 
-PostgreSQL, managed via Neon serverless driver and Drizzle ORM, is used for data persistence. The schema includes tables for `profiles`, `nodes`, `edges`, and `clusters` to support interest graph data and future advanced matching capabilities. Zod is used for schema validation.
+PostgreSQL, managed via Neon serverless driver and Drizzle ORM, is used for data persistence. The schema includes:
+- **users**: Replit Auth user records (id, email, firstName, lastName, profileImageUrl)
+- **sessions**: PostgreSQL session store for authentication persistence
+- **profiles**: User profiles linked to users via userId foreign key (name, interests array, discoverable flag, latitude/longitude, graphData)
+- **nodes**, **edges**, **clusters**: Interest graph data for advanced matching capabilities
+
+All storage operations use the DatabaseStorage interface with proper type safety via Drizzle ORM and Zod validation.
 
 ### Core Matching Algorithm
 
