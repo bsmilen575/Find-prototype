@@ -13,7 +13,23 @@ export function SignUpScreen() {
   const [name, setName] = useState('');
   const [interests, setInterests] = useState('');
 
-  const handleLocationAccess = () => {
+  const handleLocationAccess = async () => {
+    try {
+      if ('permissions' in navigator) {
+        const permission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+        if (permission.state === 'granted') {
+          setLocationGranted(true);
+          toast({
+            title: "Location access granted",
+            description: "You're all set to discover nearby connections!",
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('Permissions API not available, using getCurrentPosition');
+    }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocationGranted(true);
@@ -36,7 +52,8 @@ export function SignUpScreen() {
             description: "Network location lookup failed, but you can continue.",
           });
         }
-      }
+      },
+      { timeout: 5000 }
     );
   };
 
