@@ -1,6 +1,7 @@
-import { TrendingUp, Plus, Sparkles, BookOpen, Video, FileText, Mic, Calendar, Film, Code, Brain, Dog, Users, Music, Leaf, Laugh } from 'lucide-react';
+import { TrendingUp, Plus, BookOpen, Video, FileText, Mic, Calendar, Dog, Users, Music, Leaf, Laugh } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import findLogo from '@assets/Find_logo-removebg-preview_1762715955146.png';
 
 export function InsightsTab() {
   return (
@@ -11,7 +12,7 @@ export function InsightsTab() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">Your Attention Map</h1>
           <p className="text-sm text-gray-600">
-            Your current attention orbit — topics with the highest recent interaction weight and centrality
+            Topics you're engaging with most right now.
           </p>
         </div>
 
@@ -19,42 +20,27 @@ export function InsightsTab() {
         <div className="space-y-4">
           <AttentionCluster
             title="Healthy Habits & Nutrition"
-            cluster="Cluster 2 (Purple — Health & Wellness)"
             color="#9C8ADE"
-            nodes={["Protein Recipes", "Taco Tuesday", "Meal Prep"]}
-            theme="sustainable eating patterns, nutrition as daily practice"
           />
           
           <AttentionCluster
             title="Sports, Music & Live Experiences"
-            cluster="Cluster 3 (Blue — Sports & Music)"
             color="#74A8E4"
-            nodes={["The Bear", "Warriors Games", "Taylor Swift"]}
-            theme="What makes live shared experiences more memorable than solo ones?"
           />
           
           <AttentionCluster
             title="Home & Personal Wellness"
-            cluster="Cluster 4 (Orange — Lifestyle)"
             color="#E7A26F"
-            nodes={["Home Workouts", "Yoga", "Indie Music"]}
-            theme="creating intentional routines, space as self-care"
           />
           
           <AttentionCluster
             title="Food Culture & Entertainment"
-            cluster="Cluster 0 (Green — Food & Entertainment)"
             color="#8CCB9B"
-            nodes={["Baking", "Netflix Shows", "Wine Tasting"]}
-            theme="comfort rituals, shared enjoyment"
           />
           
           <AttentionCluster
             title="Travel & New Experiences"
-            cluster="Cluster 1 (Yellow — Adventures)"
             color="#F5C06E"
-            nodes={["Travel Destinations", "Interior Design", "Hiking Trails"]}
-            theme="Why does exploration feel restorative?"
           />
         </div>
 
@@ -69,57 +55,36 @@ export function InsightsTab() {
             <Suggestion
               icon={<BookOpen className="w-4 h-4" />}
               title='"The Left Hand of Darkness" — Ursula K. Le Guin'
-              reason="High cosine overlap with Succession × Indie Music cluster → explores empathy and power in strange societies"
+              reason="Because you like Succession and Indie Music"
               tags={["Book", "Speculative Fiction"]}
             />
             
             <Suggestion
               icon={<Video className="w-4 h-4" />}
               title='"Architectural Digest – Small Spaces Series"'
-              reason="Semantically near Sustainable Decor but distinct color cluster (Orange → Green)"
+              reason="Because you're interested in sustainable decor"
               tags={["Video Series", "Design"]}
             />
             
             <Suggestion
               icon={<FileText className="w-4 h-4" />}
               title='"AI and the Aesthetics of Taste" by K. Crawford'
-              reason="Bridges Tech + Arts embeddings"
+              reason="Because you recently read about art curation and AI"
               tags={["Essay", "AI Ethics"]}
             />
             
             <Suggestion
               icon={<Mic className="w-4 h-4" />}
               title={`"Mindful Strength" Podcast Ep. 214 — 'Rest as Resistance'`}
-              reason="From Fitness cluster but opposite valence (rest instead of effort)"
+              reason="Because you are starting up a new fitness regimen and have had difficulties with recovery"
               tags={["Podcast", "Wellness"]}
             />
             
             <Suggestion
               icon={<Calendar className="w-4 h-4" />}
               title="Local Workshop: Intro to Analog Photography"
-              reason="0.78 similarity with Vinyl Collection"
+              reason="Because you have a growing vinyl collection"
               tags={["Event", "Hands-On Craft"]}
-            />
-            
-            <Suggestion
-              icon={<Film className="w-4 h-4" />}
-              title='"Bo Burnham: Inside"'
-              reason='Shares "performative introspection" vector with The Bear / Succession'
-              tags={["Film", "Satire"]}
-            />
-            
-            <Suggestion
-              icon={<Code className="w-4 h-4" />}
-              title='"SOLID Pods" Overview'
-              reason="From Tech cluster — connects to curiosity about data ownership"
-              tags={["Tech Spec", "Privacy"]}
-            />
-            
-            <Suggestion
-              icon={<Brain className="w-4 h-4" />}
-              title='"Philosophy Tube – The Meaning of Life"'
-              reason="Weak-tie recommendation across multiple clusters (absurdism + media)"
-              tags={["Video Essay", "Philosophy"]}
             />
           </div>
         </div>
@@ -149,7 +114,7 @@ export function InsightsTab() {
                   icon={<Dog className="w-4 h-4" />}
                   change="+14%"
                   changeType="up"
-                  relation="New (Cluster 4 adjacent)"
+                  relation="New trend among your neighbors"
                 />
                 <TrendRow
                   rank={2}
@@ -157,7 +122,7 @@ export function InsightsTab() {
                   icon={<Users className="w-4 h-4" />}
                   change="+11%"
                   changeType="up"
-                  relation="Overlaps with Fitness cluster (Blue)"
+                  relation="Popular with people who also like fitness"
                 />
                 <TrendRow
                   rank={3}
@@ -165,7 +130,7 @@ export function InsightsTab() {
                   icon={<Music className="w-4 h-4" />}
                   change="+9%"
                   changeType="up"
-                  relation="Direct overlap with Indie Music cluster (Purple)"
+                  relation="Related to your music interests"
                 />
                 <TrendRow
                   rank={4}
@@ -173,7 +138,7 @@ export function InsightsTab() {
                   icon={<Leaf className="w-4 h-4" />}
                   change="+7%"
                   changeType="up"
-                  relation="Direct overlap with Lifestyle cluster (Orange)"
+                  relation="Related to your lifestyle interests"
                 />
                 <TrendRow
                   rank={5}
@@ -181,7 +146,7 @@ export function InsightsTab() {
                   icon={<Laugh className="w-4 h-4" />}
                   change="+5%"
                   changeType="up"
-                  relation="New cross-cluster discovery (Arts × Community)"
+                  relation="New discovery for you"
                 />
               </tbody>
             </table>
@@ -193,9 +158,9 @@ export function InsightsTab() {
 
         {/* Magic Section */}
         <div className="mt-12 mb-8">
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200 p-6">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border border-blue-200 p-6">
             <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <img src={findLogo} alt="Find" className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Magic</h3>
                 <p className="text-sm text-gray-700 mb-2">
@@ -219,13 +184,10 @@ export function InsightsTab() {
 
 interface AttentionClusterProps {
   title: string;
-  cluster: string;
   color: string;
-  nodes: string[];
-  theme: string;
 }
 
-function AttentionCluster({ title, cluster, color, nodes, theme }: AttentionClusterProps) {
+function AttentionCluster({ title, color }: AttentionClusterProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4" data-testid={`attention-cluster-${title.toLowerCase().replace(/\s+/g, '-')}`}>
       <div className="flex items-start gap-3">
@@ -234,14 +196,7 @@ function AttentionCluster({ title, cluster, color, nodes, theme }: AttentionClus
           style={{ backgroundColor: color }}
         />
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-          <p className="text-xs text-gray-500 mb-2">• {cluster}</p>
-          <p className="text-sm text-gray-700 mb-2">
-            <span className="font-medium">Core nodes:</span> {nodes.join(', ')}
-          </p>
-          <p className="text-sm text-gray-600 italic">
-            {theme.includes('?') ? `Question in focus: ${theme}` : `Underlying themes: ${theme}`}
-          </p>
+          <h3 className="font-semibold text-gray-900">{title}</h3>
         </div>
       </div>
     </div>
