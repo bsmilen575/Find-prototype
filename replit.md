@@ -16,6 +16,38 @@ Find is a fully functional mobile application that can be installed on iOS and A
 
 Preferred communication style: Simple, everyday language.
 
+## Dual-Mode Architecture
+
+Find operates in two distinct modes:
+
+### DEMO Mode
+- **Access**: Click "Try Demo" on landing page → instant access with synthetic data
+- **Authentication**: None required
+- **Profile**: Pre-loaded demo profile with sample interests
+- **Purpose**: Allow users to explore the app's interface and features without commitment
+- **Visual Indicator**: "Demo Mode" badge in header with exit option (X icon)
+- **Data**: Uses synthetic profile and graph data from `shared/synthetic-data.ts`
+- **Exit**: Click badge → returns to landing page at `/landing`
+
+### PROTOTYPE Mode
+- **Access**: Click "Create Your Profile" → redirects to Replit Auth login
+- **Authentication**: Required via Replit Auth (OIDC)
+- **Profile**: User creates real profile through signup flow
+- **Purpose**: Collect real user data for testing matching algorithms
+- **Visual Indicator**: Shows logout button instead of demo badge
+- **Data**: Stores real user profiles, interests, and match data in PostgreSQL
+- **Exit**: Standard logout via logout button
+
+### Implementation
+- **State Management**: Centralized in `client/src/lib/demoMode.ts`
+  - `isDemoMode()`: Checks URL param `?mode=demo` and localStorage `findMode`
+  - `setDemoMode(boolean)`: Sets or clears demo flag
+  - `setPrototypeMode()`: Sets prototype flag
+- **Routing**: `App.tsx` conditionally renders based on mode
+  - Demo: Bypasses authentication, shows Home directly
+  - Prototype: Enforces authentication, shows SignUp if no profile
+- **Components**: All use centralized utility to avoid divergence
+
 ## System Architecture
 
 ### Frontend

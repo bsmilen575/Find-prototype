@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import findLogo from '@assets/Find_logo-removebg-preview_1762715955146.png';
+import { setDemoMode, setPrototypeMode } from "@/lib/demoMode";
 
 export default function Landing() {
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
@@ -56,7 +57,7 @@ export default function Landing() {
               fontFamily: 'Georgia, Garamond, serif'
             }}
             onClick={() => {
-              localStorage.setItem('findMode', 'demo');
+              setDemoMode(true);
               window.location.href = "/?mode=demo";
             }}
             data-testid="button-demo"
@@ -78,7 +79,7 @@ export default function Landing() {
               color: '#1a1a1a'
             }}
             onClick={() => {
-              localStorage.setItem('findMode', 'prototype');
+              setPrototypeMode();
               window.location.href = "/api/login";
             }}
             data-testid="button-prototype"

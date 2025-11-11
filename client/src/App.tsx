@@ -5,19 +5,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { isDemoMode } from "@/lib/demoMode";
 import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
-  
-  const isDemoMode = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const modeFromUrl = urlParams.get('mode');
-    const modeFromStorage = localStorage.getItem('findMode');
-    return modeFromUrl === 'demo' || modeFromStorage === 'demo';
-  };
 
   if (isLoading && !isDemoMode()) {
     return (

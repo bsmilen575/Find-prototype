@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { Profile } from '@shared/schema';
+import { isDemoMode } from '@/lib/demoMode';
 import { syntheticUserGraph } from '@shared/synthetic-data';
 import { fakeEncounters, type FakeEncounter } from '@shared/serendipity-data';
 import { HomeHeader } from '@/components/HomeHeader';
@@ -33,14 +34,6 @@ export default function Home() {
   const [serendipityStage, setSerendipityStage] = useState<SerendipityStage>('teaser');
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
-
-  // Check if we're in demo mode
-  const isDemoMode = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const modeFromUrl = urlParams.get('mode');
-    const modeFromStorage = localStorage.getItem('findMode');
-    return modeFromUrl === 'demo' || modeFromStorage === 'demo';
-  };
 
   const demoProfile: Profile = {
     id: 'demo-profile-001',

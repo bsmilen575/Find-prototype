@@ -1,6 +1,7 @@
 import { Sparkles, LogOut, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { setDemoMode } from '@/lib/demoMode';
 
 interface HomeHeaderProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ export function HomeHeader({
   isDemoMode = false
 }: HomeHeaderProps) {
   const handleExitDemo = () => {
-    localStorage.removeItem('findMode');
+    setDemoMode(false);
     window.location.href = '/landing';
   };
 
