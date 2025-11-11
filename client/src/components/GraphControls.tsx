@@ -1,6 +1,7 @@
 import { Eye, Flame, Clock, Lasso, Plus, Search, ArrowLeft, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { clusterCategoryMetadata } from '@/shared/cluster-colors';
 
 interface Circuit {
   id: string;
@@ -169,6 +170,32 @@ export function GraphControls({
               <div className="w-3 h-3 rounded-full bg-blue-200" />
               <span>&lt;40</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {lensMode === 'category' && (
+        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
+          <h4 className="text-xs font-medium text-gray-700 mb-2">Semantic Categories</h4>
+          <div className="space-y-1.5">
+            {clusterCategoryMetadata.map((category) => (
+              <div 
+                key={category.id} 
+                className="flex items-start gap-1.5"
+                data-testid={`legend-category-${category.id}`}
+              >
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5" 
+                  style={{ backgroundColor: category.color }}
+                />
+                <div>
+                  <span className="font-medium">{category.name}</span>
+                  <span className="text-gray-500 ml-1">
+                    ({category.examples.slice(0, 2).join(', ')})
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
