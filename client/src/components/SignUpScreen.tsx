@@ -391,11 +391,13 @@ export function SignUpScreen() {
             )}
           </button>
           
-          {extractedInterests.length > 0 && (
+          {(extractedInterests.length > 0 || manualInterestsText.trim()) && (
             <div className="mt-4 p-4 rounded-xl bg-white border border-gray-200" data-testid="extracted-interests">
-              <p className="text-gray-700 text-sm font-medium mb-2">Extracted interests ({extractedInterests.length}):</p>
+              <p className="text-gray-700 text-sm font-medium mb-2">
+                Your interests ({getMergedInterests().length}):
+              </p>
               <div className="flex flex-wrap gap-2">
-                {extractedInterests.map((interest, idx) => (
+                {getMergedInterests().map((interest, idx) => (
                   <span 
                     key={idx}
                     className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
@@ -405,6 +407,11 @@ export function SignUpScreen() {
                   </span>
                 ))}
               </div>
+              {getMergedInterests().length >= 15 && (
+                <p className="text-orange-600 text-xs mt-2">
+                  Maximum of 15 interests reached
+                </p>
+              )}
             </div>
           )}
         </div>
