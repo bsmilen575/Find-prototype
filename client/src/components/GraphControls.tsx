@@ -1,7 +1,7 @@
 import { Eye, Flame, Clock, Lasso, Plus, Search, ArrowLeft, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { clusterCategoryMetadata } from '@/shared/cluster-colors';
+import { clusterCategoryMetadata, type ClusterCategory } from '../../../shared/cluster-colors';
 
 interface Circuit {
   id: string;

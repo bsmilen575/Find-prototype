@@ -71,7 +71,7 @@ export function getClusterColor(clusterId: number): string {
 }
 
 // Manual cluster category metadata for UI display
-// Update these labels as needed based on semantic clustering results
+// Labels based on actual K-Means clustering results from embeddings-output.json
 export interface ClusterCategory {
   id: number;
   name: string;
@@ -84,31 +84,31 @@ export const clusterCategoryMetadata: ClusterCategory[] = [
     id: 0, 
     name: "Food & Entertainment", 
     color: "#8CCB9B", 
-    examples: ["Baking", "Netflix", "Wine Tasting"]
+    examples: ["Baking", "Netflix Shows", "Wine Tasting"]
   },
   { 
     id: 1, 
-    name: "Lifestyle & Travel", 
+    name: "Lifestyle & Adventures", 
     color: "#F5C06E", 
-    examples: ["Travel", "Interior Design", "Hiking"]
+    examples: ["Travel Destinations", "Interior Design", "Hiking Trails"]
   },
   { 
     id: 2, 
-    name: "Health Foods", 
+    name: "Healthy Eating", 
     color: "#9C8ADE", 
-    examples: ["Protein", "Taco Tuesday"]
+    examples: ["Protein Recipes", "Taco Tuesday"]
   },
   { 
     id: 3, 
-    name: "Sports & Pop Culture", 
+    name: "Entertainment & Sports", 
     color: "#74A8E4", 
-    examples: ["Warriors", "Taylor Swift", "The Bear"]
+    examples: ["The Bear", "Warriors Games", "Taylor Swift"]
   },
   { 
     id: 4, 
-    name: "Wellness & Hobbies", 
+    name: "Wellness & Lifestyle", 
     color: "#E7A26F", 
-    examples: ["Home Workouts", "Yoga", "Coffee Shops"]
+    examples: ["Home Workouts", "Yoga", "Indie Music"]
   },
   { 
     id: 5, 
