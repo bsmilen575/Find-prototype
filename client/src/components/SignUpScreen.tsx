@@ -265,14 +265,16 @@ export function SignUpScreen() {
         
         <div className="mb-6">
           <label className="block text-gray-700 mb-3">
-            Your Interests <span className="text-red-500">*</span>
+            Talk to Find <span className="text-red-500">*</span>
           </label>
           <p className="text-gray-500 text-sm mb-3 leading-relaxed">
-            Enter at least 5 interests, one per line. These help Find connect you with people nearby who share your curiosities.
+            Tell Find about whatever is important to you - niche interests, things you're excited about, questions, anything you need.
+            <br />
+            <span className="font-semibold">Tip:</span> the more detail you give, the better your connections will be.
           </p>
           
           <Textarea 
-            placeholder={"Sustainable architecture\nAI ethics\nJazz fusion\nUrban gardening\nFilm photography"}
+            placeholder="..."
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             className="min-h-[180px] rounded-xl border-2 border-black resize-none"
