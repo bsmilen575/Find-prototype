@@ -46,19 +46,25 @@ Key UI/UX decisions include:
   - "Magic" section with Find logo and light blue gradient showing shared reading insights
 - A detailed signup process for name, interests, optional social media connections (Pods), and file uploads.
 - The `SelfMapGraph` component uses D3.js for interactive interest visualization, including a central "You" anchor node, hover tooltips, drill-down navigation, and lens modes (Recency, Heat).
-- **Serendipity Notifications**: A real-time notification system that simulates detecting nearby users with overlapping interests. Implemented via:
-  - `SerendipityPopup` component with three-stage flow: teaser → revealed → matched
+- **Serendipity Notifications**: A real-time notification system with two distinct flows for private interest matching vs. public postings:
+  - **Two-Flow Architecture**:
+    - **Private matches** (Maya cofounder, Sam runner): Three-stage flow with double-blind reveal and mutual consent (teaser → revealed → matched)
+    - **Public postings** (Jordan event, Alex marketplace): Two-stage flow skipping mutual consent (teaser → matched directly) since they're intentionally broadcasting
+  - Implemented via `SerendipityPopup` component with type discriminator (`type: 'private' | 'public'`)
   - Synthetic encounter data in `shared/serendipity-data.ts` with four diverse scenarios:
-    1. **Technical cofounder search** (Maya - Startups & Product Design)
-    2. **Couch for sale** (Alex - Sustainable Living & Minimalism)
-    3. **Film<>AI meet-and-greet invitation** (Jordan - Film Theory & Creative AI)
-    4. **Wellness connection** (Sam - Wellness & Craft)
+    1. **Technical cofounder search** (Maya - type: private, Startups & Product Design)
+    2. **Couch for sale** (Alex - type: public, marketplace listing with description)
+    3. **Film×AI meet-and-greet invitation** (Jordan - type: public, event posting with details)
+    4. **Wellness connection** (Sam - type: private, Wellness & Craft)
   - Auto-trigger after 12 seconds (simulating "entering a coffee shop")
   - Manual "Simulate" button in header for demo purposes
-  - Three-stage reveal flow:
-    1. **Teaser**: Initial notification with alias description and distance (e.g., "Someone nearby is looking for a technical cofounder")
-    2. **Revealed**: Shared interests details with "Simulate Mutual Match" button (waiting for both users to say yes)
-    3. **Matched**: "Connection established" reveals first name with purposeful language ("This curiosity is shared with Maya") and connection options ("Tap Phones" or "Open Exchange")
+  - **Private match flow** (three stages):
+    1. **Teaser**: "Someone nearby is looking for a technical cofounder" (distance)
+    2. **Revealed**: "Shared Curiosity" with shared interests, overlap %, "Simulate Mutual Match" button (waiting for mutual consent)
+    3. **Matched**: "Connection established" reveals first name ("This curiosity is shared with Maya") with "Tap Phones" and "Open Exchange" options
+  - **Public posting flow** (two stages):
+    1. **Teaser**: "Someone nearby is hosting a Film×AI meet-and-greet" (distance)
+    2. **Matched**: Event/item title as heading, "Posted by Jordan", description text, "Open Exchange" button (skips revealed stage)
   - Language philosophy: Intentionally avoids dating-app terminology (no "It's a match!" or "Meet [name]") in favor of calm, contextual, purposeful language that emphasizes shared curiosity over romantic connection
 
 ### Backend
@@ -76,6 +82,8 @@ The backend uses Express.js with TypeScript, providing a RESTful API for profile
 1. Unauthenticated users see a landing page with login button
 2. After authentication, new users complete onboarding (name, 5 interests, location)
 3. Profile creation requires exactly 5 interests and browser geolocation access
+   - 3-second timeout fallback ensures profile creation proceeds even if geolocation API hangs
+   - Profiles can be created with or without coordinates (coordinates enable proximity matching)
 4. Authenticated users with profiles access the full Find experience
 
 ### Data Storage

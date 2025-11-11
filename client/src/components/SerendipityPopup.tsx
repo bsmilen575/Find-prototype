@@ -58,6 +58,10 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
   }
 
   if (stage === 'revealed') {
+    if (match.type === 'public') {
+      return null;
+    }
+
     return (
       <div 
         className="fixed bottom-6 right-6 bg-white shadow-lg border border-gray-200 rounded-2xl p-5 w-96 animate-in fade-in slide-in-from-bottom-4 duration-500"
@@ -110,7 +114,68 @@ export function SerendipityPopup({ match, stage, onFindOutWho, onMatched, onDism
     );
   }
 
-  // Stage 3: Matched - both users said yes
+  // Stage 3: Matched - both users said yes (or public posting revealed)
+  if (match.type === 'public' && match.publicPosting) {
+    return (
+      <div 
+        className="fixed bottom-6 right-6 bg-white shadow-lg border border-gray-200 rounded-2xl p-5 w-96 animate-in fade-in slide-in-from-bottom-4 duration-500"
+        data-testid="serendipity-popup-matched"
+      >
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="font-semibold text-gray-900 text-base">{match.publicPosting.title}</h3>
+          <button 
+            onClick={onDismiss}
+            className="text-gray-400 hover:text-gray-600 -mt-1 -mr-1"
+            data-testid="button-dismiss-matched"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+            <p className="text-sm text-gray-700 mb-1">
+              Posted by <strong className="text-gray-900 text-base">{match.nearbyUser.firstName}</strong>
+            </p>
+            <p className="text-xs text-gray-600">{match.distance} away</p>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <p className="text-sm text-gray-800">{match.publicPosting.description}</p>
+          </div>
+          
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-gray-700 mb-2">Connect:</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                size="sm"
+                data-testid="button-tap-phones"
+              >
+                <Smartphone className="w-4 h-4" />
+                Tap Phones
+              </Button>
+              <Button
+                className="flex-1 gap-2"
+                size="sm"
+                data-testid="button-add-network"
+              >
+                <UserPlus className="w-4 h-4" />
+                Open Exchange
+              </Button>
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-400 italic pt-2 border-t border-gray-100">
+            (Simulated posting — demo only)
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Private match - both users said yes
   return (
     <div 
       className="fixed bottom-6 right-6 bg-white shadow-lg border border-gray-200 rounded-2xl p-5 w-96 animate-in fade-in slide-in-from-bottom-4 duration-500"

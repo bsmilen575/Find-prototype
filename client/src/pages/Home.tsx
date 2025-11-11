@@ -76,7 +76,11 @@ export default function Home() {
   };
 
   const handleFindOutWho = () => {
-    setSerendipityStage('revealed');
+    if (serendipityMatch?.type === 'public') {
+      setSerendipityStage('matched');
+    } else {
+      setSerendipityStage('revealed');
+    }
   };
 
   const handleMatched = () => {

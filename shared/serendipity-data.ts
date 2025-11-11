@@ -1,5 +1,6 @@
 export interface FakeEncounter {
   id: string;
+  type: 'private' | 'public';
   location: string;
   sharedThemes: string[];
   sharedNodes: string[];
@@ -9,11 +10,16 @@ export interface FakeEncounter {
     firstName: string;
     overlapPercent: number;
   };
+  publicPosting?: {
+    title: string;
+    description: string;
+  };
 }
 
 export const fakeEncounters: FakeEncounter[] = [
   {
     id: "match1",
+    type: "private",
     location: "Coffee Shop",
     sharedThemes: ["Startups", "Product Design"],
     sharedNodes: ["Web3", "AI/ML", "User Research"],
@@ -26,30 +32,41 @@ export const fakeEncounters: FakeEncounter[] = [
   },
   {
     id: "match2",
+    type: "public",
     location: "Your Neighborhood",
-    sharedThemes: ["Sustainable Living", "Minimalism"],
-    sharedNodes: ["Vintage Furniture", "Local Exchange"],
+    sharedThemes: [],
+    sharedNodes: [],
     distance: "45m",
     nearbyUser: {
-      alias: "Someone nearby is looking to sell their couch",
+      alias: "Someone nearby is selling a couch",
       firstName: "Alex",
-      overlapPercent: 0.68
+      overlapPercent: 0
+    },
+    publicPosting: {
+      title: "Vintage couch for sale",
+      description: "Beautiful mid-century couch, $200. Moving next week — needs a new home!"
     }
   },
   {
     id: "match3",
+    type: "public",
     location: "Creative Hub",
-    sharedThemes: ["Film Theory", "Creative AI"],
-    sharedNodes: ["Generative Art", "Cinema Vérité", "AI Ethics"],
+    sharedThemes: [],
+    sharedNodes: [],
     distance: "25m",
     nearbyUser: {
-      alias: "Someone nearby is hosting a meet-and-greet in your city and is looking to invite people interested in the film<>AI space",
+      alias: "Someone nearby is hosting a Film×AI meet-and-greet",
       firstName: "Jordan",
-      overlapPercent: 0.91
+      overlapPercent: 0
+    },
+    publicPosting: {
+      title: "Film×AI Meet-and-Greet",
+      description: "Casual gathering for filmmakers and AI enthusiasts. Thursday 7pm at the Creative Hub. Bring your questions and projects!"
     }
   },
   {
     id: "match4",
+    type: "private",
     location: "Park",
     sharedThemes: ["Wellness", "Craft & Ritual"],
     sharedNodes: ["Yoga", "Sourdough Bread"],

@@ -127,9 +127,18 @@ export function SignUpScreen() {
       return;
     }
 
-    // Get current location
+    // Get current location with timeout
+    const timeoutId = setTimeout(() => {
+      // Timeout fallback - create without coordinates
+      createProfileMutation.mutate({
+        name: name.trim(),
+        interests: interestArray.slice(0, 5),
+      });
+    }, 3000);
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        clearTimeout(timeoutId);
         createProfileMutation.mutate({
           name: name.trim(),
           interests: interestArray.slice(0, 5),
@@ -138,12 +147,14 @@ export function SignUpScreen() {
         });
       },
       () => {
+        clearTimeout(timeoutId);
         // If location fails, create without coordinates
         createProfileMutation.mutate({
           name: name.trim(),
           interests: interestArray.slice(0, 5),
         });
-      }
+      },
+      { timeout: 2000 }
     );
   };
 
