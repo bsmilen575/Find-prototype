@@ -1,7 +1,19 @@
 import { TrendingUp, Plus, BookOpen, Video, FileText, Mic, Calendar, Dog, Users, Music, Leaf, Laugh } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import findLogo from '@assets/Find_logo-removebg-preview_1762715955146.png';
+
+// Synthetic 7-day engagement data
+const attentionDriftData = [
+  { day: 'Mon', health: 12, sports: 8, home: 15, food: 6, travel: 4 },
+  { day: 'Tue', health: 15, sports: 10, home: 12, food: 8, travel: 3 },
+  { day: 'Wed', health: 18, sports: 12, home: 10, food: 7, travel: 5 },
+  { day: 'Thu', health: 14, sports: 15, home: 9, food: 10, travel: 6 },
+  { day: 'Fri', health: 16, sports: 18, home: 11, food: 12, travel: 8 },
+  { day: 'Sat', health: 10, sports: 20, home: 14, food: 15, travel: 12 },
+  { day: 'Sun', health: 11, sports: 14, home: 16, food: 9, travel: 10 },
+];
 
 export function InsightsTab() {
   return (
@@ -42,6 +54,52 @@ export function InsightsTab() {
             title="Travel & New Experiences"
             color="#F5C06E"
           />
+        </div>
+
+        {/* Attention Drift */}
+        <div className="mt-12">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Attention Drift</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Your engagement across clusters over the last 7 days
+          </p>
+          
+          <div className="bg-white rounded-lg border border-gray-200 p-6" data-testid="attention-drift-chart">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={attentionDriftData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis 
+                  dataKey="day" 
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  axisLine={{ stroke: '#d1d5db' }}
+                />
+                <YAxis 
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  axisLine={{ stroke: '#d1d5db' }}
+                  label={{ value: 'Interactions', angle: -90, position: 'insideLeft', style: { fill: '#6b7280', fontSize: 12 } }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#ffffff', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '6px',
+                    fontSize: '12px'
+                  }}
+                />
+                <Legend 
+                  wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }}
+                  iconType="circle"
+                />
+                <Bar dataKey="health" name="Health & Wellness" fill="#9C8ADE" />
+                <Bar dataKey="sports" name="Sports & Music" fill="#74A8E4" />
+                <Bar dataKey="home" name="Home & Wellness" fill="#E7A26F" />
+                <Bar dataKey="food" name="Food & Culture" fill="#8CCB9B" />
+                <Bar dataKey="travel" name="Travel" fill="#F5C06E" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Tracking how your attention shifts helps you understand what truly matters to you.
+          </p>
         </div>
 
         {/* Things You Might Like */}
