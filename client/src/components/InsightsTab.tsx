@@ -164,7 +164,7 @@ export function InsightsTab() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Magic</h3>
                 <p className="text-sm text-gray-700 mb-2">
-                  You and <strong>1,842</strong> other people worldwide recently revisited "The Myth of Sisyphus."
+                  You and <strong>1,842</strong> other people worldwide recently read "The Myth of Sisyphus."
                 </p>
                 <p className="text-sm text-gray-600 mb-1">
                   Shared live themes: <span className="font-medium">Absurdism · Persistence · Agency under Constraint</span>
