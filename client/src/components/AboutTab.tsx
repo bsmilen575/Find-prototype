@@ -56,17 +56,13 @@ export function AboutTab() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">How to Use It</h2>
           <div className="space-y-3 text-gray-700 leading-relaxed">
             <p>
-              Keep a quiet dialogue with Find.
+              Keep an ongoing dialogue with Find:
             </p>
-            <p>
-              Upload what's inspiring or confusing you (articles, notes, playlists, places).
-            </p>
-            <p>
-              Tag or describe what's pulling your attention this week.
-            </p>
-            <p>
-              Let it observe patterns, build your interest graph, and suggest both reflections and people whose paths align.
-            </p>
+            <ul className="space-y-2 ml-6 list-disc">
+              <li>Upload what's inspiring or confusing you (articles, notes, playlists, places).</li>
+              <li>Tag or describe what's pulling your attention this week.</li>
+              <li>Let it observe patterns, build your interest graph, and suggest both reflections and people whose paths align.</li>
+            </ul>
             <p className="font-medium">
               The more context you share, the more Find can return something rare.
             </p>
