@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +13,13 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Clear demo mode flag if user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && localStorage.getItem('findMode') === 'demo') {
+      localStorage.removeItem('findMode');
+    }
+  }, [isAuthenticated]);
 
   if (isLoading && !isDemoMode()) {
     return (
