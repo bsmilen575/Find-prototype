@@ -174,3 +174,7 @@ export const syntheticUserGraph: UserGraph = {
     { id: 'c9', name: 'Personal Finance', nodeIds: ['n33', 'n34', 'n35'] },
   ],
 };
+
+// Augment nodes with embeddings and cluster data
+import { augmentNodesWithEmbeddings } from './embedding-helpers';
+syntheticUserGraph.nodes = augmentNodesWithEmbeddings(syntheticUserGraph.nodes);

@@ -4,6 +4,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Share2, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { type Node as GraphNode, type Edge as GraphEdge, type UserGraph } from '@shared/synthetic-data';
 import { nearbyPulseData, nearbyPulseGraph } from '@shared/nearby-pulse-data';
+import { cosineSimilarity } from '@shared/embedding-helpers';
 import { NodeDetailPanel } from './NodeDetailPanel';
 import { GraphControls } from './GraphControls';
 import { Badge } from '@/components/ui/badge';
@@ -97,7 +98,30 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
   };
 
   const findNearestPersonalNode = (ghost: D3Node, personalNodes: D3Node[]): D3Node | null => {
-    if (!ghost.x || !ghost.y || personalNodes.length === 0) return null;
+    if (personalNodes.length === 0) return null;
+    
+    // Use semantic similarity if embeddings are available
+    if (ghost.embedding) {
+      const nodesWithEmbeddings = personalNodes.filter(n => n.embedding);
+      
+      if (nodesWithEmbeddings.length > 0) {
+        let maxSimilarity = -1;
+        let nearest: D3Node | null = null;
+
+        nodesWithEmbeddings.forEach(node => {
+          const similarity = cosineSimilarity(ghost.embedding!, node.embedding!);
+          if (similarity > maxSimilarity) {
+            maxSimilarity = similarity;
+            nearest = node;
+          }
+        });
+
+        return nearest;
+      }
+    }
+    
+    // Fallback to spatial distance if embeddings not available
+    if (!ghost.x || !ghost.y) return null;
     
     let minDist = Infinity;
     let nearest: D3Node | null = null;

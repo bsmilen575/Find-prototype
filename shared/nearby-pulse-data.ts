@@ -134,3 +134,7 @@ export const nearbyPulseData = {
     { userNodeId: 'n18', nearbyNodeId: 'p14', overlapScore: 0.73 }, // Recipe Videos ↔ Food Delivery
   ],
 };
+
+// Augment ghost nodes with embeddings and cluster data
+import { augmentNodesWithEmbeddings } from './embedding-helpers';
+nearbyPulseGraph.nodes = augmentNodesWithEmbeddings(nearbyPulseGraph.nodes);
