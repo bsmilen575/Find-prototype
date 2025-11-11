@@ -4,6 +4,14 @@
 
 Find is a hyper-local, real-time matching platform designed to connect individuals within a 100-meter radius based on shared interests. Its core purpose is to facilitate spontaneous, meaningful connections while prioritizing user privacy through a double-blind reveal mechanism and granular control over discoverability. The platform aims to create a calm, focused user experience, drawing inspiration from leading design systems to foster a privacy-first visual language.
 
+**Progressive Web App (PWA):**
+Find is a fully functional mobile application that can be installed on iOS and Android devices. Users can add Find to their home screen for an app-like experience with:
+- Offline support via service workers
+- Native app feel without browser UI
+- Push notification capability (future integration)
+- Optimized for mobile with safe area support and haptic feedback
+- Install prompt on compatible browsers
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -12,7 +20,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 
-The frontend is built with React and TypeScript, using Vite for development. It features a mobile-first design with `shadcn/ui` components, Tailwind CSS, and a custom "New York" theme. `Wouter` handles client-side routing. State management is a hybrid approach, utilizing `TanStack React Query` for server state, `Zustand` for local profile data, and React Context for UI themes.
+The frontend is built as a Progressive Web App (PWA) using React and TypeScript with Vite for development. It features a mobile-first design with `shadcn/ui` components, Tailwind CSS, and a custom "New York" theme. `Wouter` handles client-side routing. State management is a hybrid approach, utilizing `TanStack React Query` for server state, `Zustand` for local profile data, and React Context for UI themes.
+
+**PWA Features:**
+- `vite-plugin-pwa` for service worker generation and offline support
+- Web App Manifest with app icons (192x192, 512x512, Apple touch icon)
+- Install prompt hook (`usePWAInstall`) for seamless app installation
+- Haptic feedback hook (`useHapticFeedback`) for native-like interactions
+- Mobile-optimized CSS with safe area support for notched devices
+- Viewport configuration preventing zoom and pull-to-refresh
 
 Key UI/UX decisions include:
 - A warm beige background for a calm user experience.
