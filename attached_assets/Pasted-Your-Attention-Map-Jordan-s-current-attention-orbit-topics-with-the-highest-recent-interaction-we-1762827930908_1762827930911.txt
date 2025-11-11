@@ -1,0 +1,60 @@
+Your Attention Map
+
+Jordan’s current attention orbit — topics with the highest recent interaction weight and centrality:
+
+Indie Music & Cultural Aesthetics
+• Cluster 2 (Purple — Arts & Media)
+• Core nodes: Phoebe Bridgers, The Eras Tour, Vinyl Collection
+• Underlying themes: nostalgia, identity through sound, communal emotion
+
+Home Fitness & Body Energy
+• Cluster 3 (Blue — Fitness / Health)
+• Core nodes: Yoga, Chloe Ting Workouts, Meal Prep
+• Question in focus: What routines sustain motivation after novelty fades?
+
+Design & Lifestyle Minimalism
+• Cluster 4 (Orange — Lifestyle / Decor / Tech)
+• Core nodes: Interior Design, Sustainable Decor, Studio McGee
+• Theme: aesthetics as self-regulation
+
+Technology & Everyday Tools
+• Cluster 0 / 1 (Green / Yellow — Tech / Shows)
+• Core nodes: iPhone Tips, Tech News, MKBHD
+• Theme: interface literacy, calm computing
+
+Streaming & Shared Story Worlds
+• Cluster 1 / 2 mix (Yellow–Purple)
+• Core nodes: Succession, The Bear, Netflix Shows
+• Question: Why do imperfect characters feel more real than heroes?
+
+Things You Might Like Exploring
+
+Curated from latent-space neighbors two hops away from Jordan’s graph.
+
+Suggestion	Why it surfaced	Tags
+“The Left Hand of Darkness” — Ursula K. Le Guin	High cosine overlap with Succession × Indie Music cluster → explores empathy and power in strange societies	Book Speculative Fiction
+“Architectural Digest – Small Spaces Series”	Semantically near Sustainable Decor but distinct color cluster (Orange → Green)	Video Series Design
+“AI and the Aesthetics of Taste” by K. Crawford	Bridges Tech + Arts embeddings	Essay AI Ethics
+“Mindful Strength” Podcast Ep. 214 — ‘Rest as Resistance’	From Fitness cluster but opposite valence (rest instead of effort)	Podcast Wellness
+Local Workshop: Intro to Analog Photography	0.78 similarity with Vinyl Collection	Event Hands-On Craft
+“Bo Burnham: Inside”	Shares “performative introspection” vector with The Bear / Succession	Film Satire
+“SOLID Pods” Overview	From Tech cluster — connects to curiosity about data ownership	Tech Spec Privacy
+“Philosophy Tube – The Meaning of Life”	Weak-tie recommendation across multiple clusters (absurdism + media)	Video Essay Philosophy
+Insights on Your Neighborhood
+
+Top aggregated interests from nearby Pulse data (within 3 km), merged with Jordan’s clusters:
+
+Rank	Trend	Change	Relation
+1	Dog Parks & Adopt-a-Pet Events 🐕	▲ +14 %	New (Cluster 4 adjacent)
+2	Local Run Clubs 🏃‍♀️	▲ +11 %	Overlaps with Fitness cluster (Blue)
+3	Pop-Up Vinyl Fair @ Mission Yards 🎶	▲ +9 %	Direct overlap with Indie Music cluster (Purple)
+4	Sustainable Home Markets 🌿	▲ +7 %	Direct overlap with Lifestyle cluster (Orange)
+5	Comedy Open Mic Nights 🎤	▲ +5 %	New cross-cluster discovery (Arts × Community)
+
+(Tap “Add” to turn a trend into a ghost node and connect it to your graph.)
+
+Magic
+
+✨ You and 1 842 other people worldwide recently revisited “The Myth of Sisyphus.”
+Shared live themes: Absurdism · Persistence · Agency under Constraint.
+— 6 others within 1 km read it this week.
