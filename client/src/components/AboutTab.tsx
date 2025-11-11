@@ -11,7 +11,7 @@ export function AboutTab() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">The Problem</h2>
           <div className="space-y-3 text-gray-700 leading-relaxed">
             <p>
-              Most social platforms today are optimized for engagement, not growth. They are engineered with good intentions, but they ultimately keep people on screens instead of in the physical world.
+              It is well known that most social platforms optimize for engagement, not individual user benefits. They are engineered with good intentions, but they ultimately keep people on screens instead of in the physical world.
             </p>
             <p>
               But, there is enough data to invert the paradigm so that networks serve their users, not the other way around. Enter Find.
