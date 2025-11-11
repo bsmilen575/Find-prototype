@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react';
+import { Sparkles, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface HomeHeaderProps {
@@ -22,6 +22,16 @@ export function HomeHeader({
     <header className="flex items-center justify-between px-4 pt-4 pb-2">
       <h1 className="text-2xl font-semibold text-gray-900" data-testid="heading-find">Find</h1>
       <div className="flex items-center gap-3">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => window.location.href = '/api/logout'}
+          className="w-8 h-8"
+          data-testid="button-logout"
+          title="Logout"
+        >
+          <LogOut className="w-4 h-4" />
+        </Button>
         {onSimulateSerendipity && (
           <Button
             size="sm"
