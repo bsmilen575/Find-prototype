@@ -24,11 +24,18 @@ Key UI/UX decisions include:
 - A "Connections" tab for match cards, implementing a double-blind reveal.
 - An "Insights" tab with simplified, human-digestible content:
   - "Your Attention Map" showing 5 semantic clusters with just titles and color dots
+  - "Attention Drift" - a 7-day bar chart showing engagement across clusters using Recharts
   - "Things You Might Like Exploring" with 5 curated suggestions using conversational "Because you..." reasoning
   - "Insights on Your Neighborhood" with natural language relation descriptions
-  - "Magic" section with Find logo and light blue gradient
+  - "Magic" section with Find logo and light blue gradient showing shared reading insights
 - A detailed signup process for name, interests, optional social media connections (Pods), and file uploads.
 - The `SelfMapGraph` component uses D3.js for interactive interest visualization, including a central "You" anchor node, hover tooltips, drill-down navigation, and lens modes (Recency, Heat).
+- **Serendipity Notifications**: A real-time notification system that simulates detecting nearby users with overlapping interests. Implemented via:
+  - `SerendipityPopup` component with initial and revealed states
+  - Synthetic encounter data in `shared/serendipity-data.ts`
+  - Auto-trigger after 12 seconds (simulating "entering a coffee shop")
+  - Manual "Simulate" button in header for demo purposes
+  - Two-stage reveal: initial teaser → full shared interests details
 
 ### Backend
 

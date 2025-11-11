@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { syntheticUserGraph } from '@shared/synthetic-data';
+import { fakeEncounters, type FakeEncounter } from '@shared/serendipity-data';
 import { HomeHeader } from '@/components/HomeHeader';
 import { HomeTabs, TabType } from '@/components/HomeTabs';
 import { AboutTab } from '@/components/AboutTab';
@@ -8,6 +9,7 @@ import { GraphTab } from '@/components/GraphTab';
 import { ConnectionsTab } from '@/components/ConnectionsTab';
 import { InsightsTab } from '@/components/InsightsTab';
 import { MatchNotificationModal } from '@/components/MatchNotificationModal';
+import { SerendipityPopup } from '@/components/SerendipityPopup';
 import { useProfile } from '@/lib/useProfile';
 
 interface Match {
@@ -24,6 +26,8 @@ export default function Home() {
   const [showNearbyPulse, setShowNearbyPulse] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [latestMatch, setLatestMatch] = useState<Match | null>(null);
+  const [serendipityMatch, setSerendipityMatch] = useState<FakeEncounter | null>(null);
+  const [serendipityRevealed, setSerendipityRevealed] = useState(false);
   const { profileId } = useProfile();
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
@@ -58,6 +62,31 @@ export default function Home() {
     setActiveTab('connections');
   };
 
+  const triggerSerendipity = () => {
+    const randomMatch = fakeEncounters[Math.floor(Math.random() * fakeEncounters.length)];
+    setSerendipityMatch(randomMatch);
+    setSerendipityRevealed(false);
+  };
+
+  const handleRevealSerendipity = () => {
+    setSerendipityRevealed(true);
+  };
+
+  const handleDismissSerendipity = () => {
+    setSerendipityMatch(null);
+    setSerendipityRevealed(false);
+  };
+
+  useEffect(() => {
+    if (serendipityMatch !== null) return;
+
+    const timer = setTimeout(() => {
+      triggerSerendipity();
+    }, 12000);
+
+    return () => clearTimeout(timer);
+  }, [serendipityMatch]);
+
   return (
     <div className="h-screen w-full flex flex-col" style={{ backgroundColor: '#f5f3f0' }}>
       <HomeHeader 
@@ -66,6 +95,7 @@ export default function Home() {
         showNearbyPulse={showNearbyPulse}
         onToggleNearbyPulse={() => setShowNearbyPulse(!showNearbyPulse)}
         showNearbyPulseControl={activeTab === 'mine'}
+        onSimulateSerendipity={triggerSerendipity}
       />
       <HomeTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -86,6 +116,13 @@ export default function Home() {
         open={showModal}
         onClose={() => setShowModal(false)}
         onViewMatch={handleViewMatch}
+      />
+
+      <SerendipityPopup
+        match={serendipityMatch}
+        revealed={serendipityRevealed}
+        onReveal={handleRevealSerendipity}
+        onDismiss={handleDismissSerendipity}
       />
     </div>
   );
