@@ -1,4 +1,4 @@
-import { Eye, Flame, Clock, Lasso, Plus, Search, ArrowLeft } from 'lucide-react';
+import { Eye, Flame, Clock, Lasso, Plus, Search, ArrowLeft, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -10,8 +10,8 @@ interface Circuit {
 }
 
 interface GraphControlsProps {
-  lensMode: 'none' | 'recency' | 'heat';
-  onLensModeChange: (mode: 'none' | 'recency' | 'heat') => void;
+  lensMode: 'none' | 'recency' | 'heat' | 'category';
+  onLensModeChange: (mode: 'none' | 'recency' | 'heat' | 'category') => void;
   isLassoMode: boolean;
   onLassoModeChange: (enabled: boolean) => void;
   selectedNodesCount: number;
@@ -46,6 +46,7 @@ export function GraphControls({
     { id: 'none' as const, label: 'Default', icon: Eye },
     { id: 'recency' as const, label: 'Recency', icon: Clock },
     { id: 'heat' as const, label: 'Heat', icon: Flame },
+    { id: 'category' as const, label: 'Category', icon: Palette },
   ];
 
   return (

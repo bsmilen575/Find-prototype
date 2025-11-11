@@ -42,7 +42,7 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [tooltipData, setTooltipData] = useState<{node: GraphNode, x: number, y: number} | null>(null);
-  const [lensMode, setLensMode] = useState<'none' | 'recency' | 'heat'>('none');
+  const [lensMode, setLensMode] = useState<'none' | 'recency' | 'heat' | 'category'>('none');
   const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   const [isLassoMode, setIsLassoMode] = useState(false);
   const [killedNodes, setKilledNodes] = useState<Set<string>>(new Set());
@@ -684,6 +684,10 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
       return node.attentionWeight > 80 ? '#1e40af' :
              node.attentionWeight > 60 ? '#3b82f6' :
              node.attentionWeight > 40 ? '#60a5fa' : '#bfdbfe';
+    }
+    
+    if (mode === 'category') {
+      return node.categoryColor || '#9ca3af';
     }
     
     return '#9ca3af';
