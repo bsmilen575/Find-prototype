@@ -13,9 +13,35 @@ export function SignUpScreen() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [locationGranted, setLocationGranted] = useState(false);
   const [name, setName] = useState('');
+  const [manualInterestsText, setManualInterestsText] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [extractedInterests, setExtractedInterests] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const parseManualInterests = (text: string): string[] => {
+    if (!text.trim()) return [];
+    
+    return text
+      .split(/[\n,]+/)
+      .map(item => item.trim())
+      .filter(item => item.length > 0)
+      .slice(0, 30);
+  };
+
+  const getMergedInterests = (): string[] => {
+    const manual = parseManualInterests(manualInterestsText);
+    const combined = [...manual, ...extractedInterests];
+    
+    const seen = new Set<string>();
+    const deduped = combined.filter(interest => {
+      const lower = interest.toLowerCase();
+      if (seen.has(lower)) return false;
+      seen.add(lower);
+      return true;
+    });
+    
+    return deduped.slice(0, 15);
+  };
 
   const handleLocationAccess = async () => {
     try {
@@ -148,10 +174,12 @@ export function SignUpScreen() {
       return;
     }
 
-    if (extractedInterests.length < 5) {
+    const mergedInterests = getMergedInterests();
+    
+    if (mergedInterests.length < 5) {
       toast({
         title: "Interests required",
-        description: "Please upload a document to extract at least 5 interests.",
+        description: "Please enter at least 5 interests (type manually or upload a document).",
         variant: "destructive",
       });
       return;
@@ -171,7 +199,7 @@ export function SignUpScreen() {
       // Timeout fallback - create without coordinates
       createProfileMutation.mutate({
         name: name.trim(),
-        interests: extractedInterests.slice(0, 15),
+        interests: mergedInterests,
       });
     }, 3000);
 
@@ -180,7 +208,7 @@ export function SignUpScreen() {
         clearTimeout(timeoutId);
         createProfileMutation.mutate({
           name: name.trim(),
-          interests: extractedInterests.slice(0, 15),
+          interests: mergedInterests,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
@@ -190,7 +218,7 @@ export function SignUpScreen() {
         // If location fails, create without coordinates
         createProfileMutation.mutate({
           name: name.trim(),
-          interests: extractedInterests.slice(0, 15),
+          interests: mergedInterests,
         });
       },
       { timeout: 2000 }
@@ -220,6 +248,27 @@ export function SignUpScreen() {
             data-testid="input-name"
             required
           />
+        </div>
+        
+        <div className="mb-6">
+          <label className="block text-gray-700 mb-2">
+            Talk to Find (optional)
+          </label>
+          <p className="text-gray-500 text-sm mb-3">
+            Tell us what you're interested in - topics, hobbies, curiosities. Separate with commas or new lines.
+          </p>
+          <Textarea
+            placeholder="artificial intelligence, film production, rock climbing, sourdough baking..."
+            value={manualInterestsText}
+            onChange={(e) => setManualInterestsText(e.target.value)}
+            className="min-h-32 rounded-xl border-2 border-gray-300 resize-none"
+            data-testid="textarea-interests"
+          />
+          {manualInterestsText.trim() && (
+            <p className="text-gray-500 text-xs mt-2">
+              {parseManualInterests(manualInterestsText).length} interests entered
+            </p>
+          )}
         </div>
         
         <div className="mb-6">
