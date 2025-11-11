@@ -74,7 +74,7 @@ export const insertProfileSchema = createInsertSchema(profiles).omit({
   lastActive: true,
   userId: true,
 }).extend({
-  interests: z.array(z.string()).min(5).max(5),
+  interests: z.array(z.string()).min(5).max(15),
 });
 
 export type UpsertUser = typeof users.$inferInsert;
