@@ -226,7 +226,7 @@ export function GraphControls({
                   opacity="0.6"
                 />
               </svg>
-              <span>Ghost Node (Popular Nearby)</span>
+              <span>New to you & Popular nearby</span>
             </div>
             <div className="flex items-center gap-1.5">
               <svg width="16" height="16" viewBox="0 0 16 16" className="flex-shrink-0">
@@ -240,7 +240,7 @@ export function GraphControls({
                   opacity="0.6"
                 />
               </svg>
-              <span>Halo (Also Popular Here)</span>
+              <span>Common in your area</span>
             </div>
           </div>
         </div>
