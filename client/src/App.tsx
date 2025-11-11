@@ -4,28 +4,38 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/Home";
-import About from "@/pages/About";
-import Onboarding from "@/pages/Onboarding";
-import Welcome from "@/pages/Welcome";
-import MatchNotification from "@/pages/MatchNotification";
-import ProfileMatch from "@/pages/ProfileMatch";
-import Settings from "@/pages/Settings";
-import SignUp from "@/pages/SignUp";
+import Landing from "@/pages/Landing";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      <Route path="/" component={Welcome} />
-      <Route path="/home" component={Home} />
-      <Route path="/about" component={About} />
-      <Route path="/onboarding" component={Onboarding} />
-      <Route path="/match" component={MatchNotification} />
-      <Route path="/profile/:id" component={ProfileMatch} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/signup" component={SignUp} />
-      <Route component={NotFound} />
+      {!isAuthenticated ? (
+        <>
+          <Route path="/" component={Landing} />
+          <Route component={Landing} />
+        </>
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route component={NotFound} />
+        </>
+      )}
     </Switch>
   );
 }

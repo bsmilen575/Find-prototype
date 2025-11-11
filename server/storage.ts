@@ -1,33 +1,62 @@
-import { type Profile, type InsertProfile } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type Profile, type InsertProfile, type User, type UpsertUser, users, profiles } from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
+  // User operations (required for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
+  // Profile operations
   getProfile(id: string): Promise<Profile | undefined>;
+  getProfileByUserId(userId: string): Promise<Profile | undefined>;
   getAllProfiles(): Promise<Profile[]>;
   getProfilesNearby(latitude: number, longitude: number, radiusKm: number): Promise<Profile[]>;
-  createProfile(profile: InsertProfile): Promise<Profile>;
+  createProfile(profile: InsertProfile, userId: string): Promise<Profile>;
   updateProfileLocation(id: string, latitude: number, longitude: number): Promise<Profile | undefined>;
   updateDiscoverable(id: string, discoverable: boolean): Promise<Profile | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private profiles: Map<string, Profile>;
-
-  constructor() {
-    this.profiles = new Map();
+export class DatabaseStorage implements IStorage {
+  // User operations (required for Replit Auth)
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Profile operations
   async getProfile(id: string): Promise<Profile | undefined> {
-    return this.profiles.get(id);
+    const [profile] = await db.select().from(profiles).where(eq(profiles.id, id));
+    return profile;
+  }
+
+  async getProfileByUserId(userId: string): Promise<Profile | undefined> {
+    const [profile] = await db.select().from(profiles).where(eq(profiles.userId, userId));
+    return profile;
   }
 
   async getAllProfiles(): Promise<Profile[]> {
-    return Array.from(this.profiles.values());
+    return await db.select().from(profiles);
   }
 
   async getProfilesNearby(latitude: number, longitude: number, radiusKm: number): Promise<Profile[]> {
-    const profiles = Array.from(this.profiles.values());
-    return profiles.filter(profile => {
+    const allProfiles = await db.select().from(profiles);
+    return allProfiles.filter(profile => {
       if (!profile.latitude || !profile.longitude) return false;
       const distance = this.calculateDistance(
         latitude,
@@ -57,47 +86,41 @@ export class MemStorage implements IStorage {
     return degrees * (Math.PI / 180);
   }
 
-  async createProfile(insertProfile: InsertProfile): Promise<Profile> {
-    const id = randomUUID();
-    const profile: Profile = {
-      id,
-      name: insertProfile.name,
-      interests: insertProfile.interests || [],
-      discoverable: insertProfile.discoverable ?? true,
-      latitude: insertProfile.latitude || null,
-      longitude: insertProfile.longitude || null,
-      lastActive: new Date(),
-    };
-    this.profiles.set(id, profile);
+  async createProfile(insertProfile: InsertProfile, userId: string): Promise<Profile> {
+    const [profile] = await db
+      .insert(profiles)
+      .values({
+        ...insertProfile,
+        userId,
+      })
+      .returning();
     return profile;
   }
 
   async updateProfileLocation(id: string, latitude: number, longitude: number): Promise<Profile | undefined> {
-    const profile = this.profiles.get(id);
-    if (!profile) return undefined;
-    
-    const updated = {
-      ...profile,
-      latitude,
-      longitude,
-      lastActive: new Date(),
-    };
-    this.profiles.set(id, updated);
+    const [updated] = await db
+      .update(profiles)
+      .set({
+        latitude,
+        longitude,
+        lastActive: new Date(),
+      })
+      .where(eq(profiles.id, id))
+      .returning();
     return updated;
   }
 
   async updateDiscoverable(id: string, discoverable: boolean): Promise<Profile | undefined> {
-    const profile = this.profiles.get(id);
-    if (!profile) return undefined;
-    
-    const updated = {
-      ...profile,
-      discoverable,
-      lastActive: new Date(),
-    };
-    this.profiles.set(id, updated);
+    const [updated] = await db
+      .update(profiles)
+      .set({
+        discoverable,
+        lastActive: new Date(),
+      })
+      .where(eq(profiles.id, id))
+      .returning();
     return updated;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

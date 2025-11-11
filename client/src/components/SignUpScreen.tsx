@@ -2,13 +2,14 @@ import { MapPin, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useLocation } from 'wouter';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 export function SignUpScreen() {
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [locationGranted, setLocationGranted] = useState(false);
   const [name, setName] = useState('');
   const [interests, setInterests] = useState('');
@@ -57,7 +58,34 @@ export function SignUpScreen() {
     );
   };
 
-  const handleConnect = () => {
+  const createProfileMutation = useMutation({
+    mutationFn: async (data: { name: string; interests: string[]; latitude?: number; longitude?: number }) => {
+      const response = await apiRequest('POST', '/api/profiles', {
+        name: data.name,
+        interests: data.interests,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        discoverable: true,
+      });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/profile/me'] });
+      toast({
+        title: "Profile created!",
+        description: "Welcome to Find. Let's discover nearby connections.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error creating profile",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleConnect = async () => {
     if (!name.trim()) {
       toast({
         title: "Name required",
@@ -70,7 +98,21 @@ export function SignUpScreen() {
     if (!interests.trim()) {
       toast({
         title: "Interests required",
-        description: "Please tell Find about your interests to get better connections.",
+        description: "Please enter at least 5 interests, one per line.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const interestArray = interests
+      .split('\n')
+      .map(i => i.trim())
+      .filter(i => i.length > 0);
+
+    if (interestArray.length < 5) {
+      toast({
+        title: "More interests needed",
+        description: "Please enter at least 5 interests, one per line.",
         variant: "destructive",
       });
       return;
@@ -85,7 +127,24 @@ export function SignUpScreen() {
       return;
     }
 
-    setLocation('/home');
+    // Get current location
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        createProfileMutation.mutate({
+          name: name.trim(),
+          interests: interestArray.slice(0, 5),
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      () => {
+        // If location fails, create without coordinates
+        createProfileMutation.mutate({
+          name: name.trim(),
+          interests: interestArray.slice(0, 5),
+        });
+      }
+    );
   };
 
   return (
@@ -206,16 +265,14 @@ export function SignUpScreen() {
         
         <div className="mb-6">
           <label className="block text-gray-700 mb-3">
-            Talk to Find <span className="text-red-500">*</span>
+            Your Interests <span className="text-red-500">*</span>
           </label>
           <p className="text-gray-500 text-sm mb-3 leading-relaxed">
-            Tell Find about whatever is important to you - niche interests, things you're excited about, questions, anything you need.
-            <br />
-            <span className="font-semibold">Tip:</span> the more detail you give, the better your connections will be.
+            Enter at least 5 interests, one per line. These help Find connect you with people nearby who share your curiosities.
           </p>
           
           <Textarea 
-            placeholder="..."
+            placeholder={"Sustainable architecture\nAI ethics\nJazz fusion\nUrban gardening\nFilm photography"}
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             className="min-h-[180px] rounded-xl border-2 border-black resize-none"
@@ -238,9 +295,10 @@ export function SignUpScreen() {
           <Button 
             className="w-full h-14 rounded-2xl bg-black text-white"
             onClick={handleConnect}
+            disabled={createProfileMutation.isPending}
             data-testid="button-connect"
           >
-            I'm ready to connect
+            {createProfileMutation.isPending ? 'Creating your profile...' : "I'm ready to connect"}
           </Button>
         </div>
       </div>

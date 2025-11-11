@@ -3,21 +3,50 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertProfileSchema } from "@shared/schema";
 import { findSharedInterests, isMatch } from "./matching";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Create profile
-  app.post("/api/profiles", async (req, res) => {
+  // Setup Replit Auth
+  await setupAuth(app);
+
+  // Auth route - get current user
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Create profile (protected)
+  app.post("/api/profiles", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
       const validatedData = insertProfileSchema.parse(req.body);
-      const profile = await storage.createProfile(validatedData);
+      const profile = await storage.createProfile(validatedData, userId);
       res.json(profile);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
   });
 
+  // Get current user's profile
+  app.get("/api/profile/me", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getProfileByUserId(userId);
+      res.json(profile || null);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+
   // Get profile
-  app.get("/api/profiles/:id", async (req, res) => {
+  app.get("/api/profiles/:id", isAuthenticated, async (req, res) => {
     const profile = await storage.getProfile(req.params.id);
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
@@ -25,8 +54,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(profile);
   });
 
-  // Update location
-  app.post("/api/profiles/:id/location", async (req, res) => {
+  // Update location (protected)
+  app.post("/api/profiles/:id/location", isAuthenticated, async (req, res) => {
     const { latitude, longitude } = req.body;
     
     if (typeof latitude !== "number" || typeof longitude !== "number") {
@@ -41,8 +70,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(profile);
   });
 
-  // Toggle discoverable status
-  app.post("/api/profiles/:id/discoverable", async (req, res) => {
+  // Toggle discoverable status (protected)
+  app.post("/api/profiles/:id/discoverable", isAuthenticated, async (req, res) => {
     const { discoverable } = req.body;
     
     if (typeof discoverable !== "boolean") {
@@ -57,8 +86,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(profile);
   });
 
-  // Find matches (simple interest-based matching within 100m)
-  app.get("/api/profiles/:id/matches", async (req, res) => {
+  // Find matches (simple interest-based matching within 100m, protected)
+  app.get("/api/profiles/:id/matches", isAuthenticated, async (req, res) => {
     try {
       const profile = await storage.getProfile(req.params.id);
       if (!profile) {

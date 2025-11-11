@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import type { Profile } from '@shared/schema';
 import { syntheticUserGraph } from '@shared/synthetic-data';
 import { fakeEncounters, type FakeEncounter } from '@shared/serendipity-data';
 import { HomeHeader } from '@/components/HomeHeader';
@@ -10,7 +11,7 @@ import { ConnectionsTab } from '@/components/ConnectionsTab';
 import { InsightsTab } from '@/components/InsightsTab';
 import { MatchNotificationModal } from '@/components/MatchNotificationModal';
 import { SerendipityPopup } from '@/components/SerendipityPopup';
-import { useProfile } from '@/lib/useProfile';
+import { SignUpScreen } from '@/components/SignUpScreen';
 
 interface Match {
   profileId: string;
@@ -30,13 +31,17 @@ export default function Home() {
   const [latestMatch, setLatestMatch] = useState<Match | null>(null);
   const [serendipityMatch, setSerendipityMatch] = useState<FakeEncounter | null>(null);
   const [serendipityStage, setSerendipityStage] = useState<SerendipityStage>('teaser');
-  const { profileId } = useProfile();
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
 
+  // Check if user has a profile
+  const { data: profile, isLoading: isLoadingProfile } = useQuery<Profile | null>({
+    queryKey: ['/api/profile/me'],
+  });
+
   const { data: matches = [] } = useQuery<Match[]>({
-    queryKey: [`/api/profiles/${profileId}/matches`],
-    enabled: !!profileId && isOpen,
+    queryKey: [`/api/profiles/${profile?.id}/matches`],
+    enabled: !!profile?.id && isOpen,
     refetchInterval: 30000,
   });
 
@@ -92,6 +97,29 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, [serendipityMatch]);
+
+  // Show loading while checking for profile
+  if (isLoadingProfile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }}>
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show signup if no profile
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }}>
+        <div className="w-full h-screen max-w-md mx-auto">
+          <SignUpScreen />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full flex flex-col" style={{ backgroundColor: '#f5f3f0' }}>
