@@ -78,14 +78,34 @@ The backend uses Express.js with TypeScript, providing a RESTful API for profile
 - Auth flow: Landing page → Login → Profile creation (if new user) → Main app
 - Logout properly destroys both Passport session and database session
 
-**Document Upload & Interest Extraction:**
-- Users can upload text files (.txt, .md) during signup to automatically extract interests
-- Backend endpoint POST `/api/analyze-document` uses OpenAI `gpt-4o-mini` model
-- Analyzes up to 8000 characters (~2k tokens) per document
-- Extracts 10-15 key interests grouped into 3-5 thematic clusters
-- Privacy notice: "Text is analyzed via OpenAI's API for topic extraction. Data is not stored or shared."
-- Real-time feedback with loading spinner and success toasts
-- Extracted interests displayed as pills with option to upload different file
+**Interest Input Methods:**
+Find offers three flexible ways for users to input their interests during signup:
+
+1. **"Talk to Find" Manual Entry** (optional):
+   - Textarea where users can type interests directly
+   - Accepts comma-separated or newline-separated interests
+   - Live counter showing number of interests entered
+   - Parses up to 30 raw entries before deduplication
+
+2. **Document Upload & AI Extraction** (optional):
+   - Users can upload text files (.txt, .md) for automatic interest extraction
+   - Backend endpoint POST `/api/analyze-document` uses OpenAI `gpt-4o-mini` model
+   - Analyzes up to 8000 characters (~2k tokens) per document
+   - Extracts 10-15 key interests grouped into 3-5 thematic clusters
+   - Privacy notice: "Text is analyzed via OpenAI's API for topic extraction. Data is not stored or shared."
+   - Real-time feedback with loading spinner and success toasts
+
+3. **Combined Approach**:
+   - Users can type manual interests AND upload a document
+   - Interests are intelligently merged and deduplicated (case-insensitive)
+   - Manual entries appear first, followed by AI-extracted interests
+   - Maximum of 15 interests enforced for profile creation
+   - Live display shows all merged interests as interactive pills
+
+**Validation:**
+- Minimum 5 interests required (from any combination of methods)
+- Maximum 15 interests allowed
+- Clear error messages guide users if requirements not met
 
 **User Flow:**
 1. Unauthenticated users see a landing page with login button
