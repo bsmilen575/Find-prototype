@@ -14,7 +14,7 @@ export function AboutTab() {
               Most social platforms today are optimized for engagement, not growth. They are engineered with good intentions, but they ultimately keep people on screens instead of in the physical world.
             </p>
             <p>
-              Today, there is enough data to invert the paradigm so that networks serve their users, not the other way around. Enter Find.
+              But, there is enough data to invert the paradigm so that networks serve their users, not the other way around. Enter Find.
             </p>
           </div>
         </section>
