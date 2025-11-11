@@ -34,16 +34,42 @@ export default function Home() {
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
 
-  // Check if user has a profile
+  // Check if we're in demo mode
+  const isDemoMode = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeFromUrl = urlParams.get('mode');
+    const modeFromStorage = localStorage.getItem('findMode');
+    return modeFromUrl === 'demo' || modeFromStorage === 'demo';
+  };
+
+  const demoProfile: Profile = {
+    id: 'demo-profile-001',
+    userId: 'demo-user-001',
+    name: 'Demo User',
+    interests: ['Artificial Intelligence', 'Film Production', 'Rock Climbing', 'Sourdough Baking', 'Product Design'],
+    discoverable: true,
+    latitude: null,
+    longitude: null,
+    graphData: null,
+    lastActive: new Date(),
+    signature: null,
+    uploadedFiles: null,
+  };
+
+  // Check if user has a profile (skip in demo mode)
   const { data: profile, isLoading: isLoadingProfile } = useQuery<Profile | null>({
     queryKey: ['/api/profile/me'],
+    enabled: !isDemoMode(),
   });
 
   const { data: matches = [] } = useQuery<Match[]>({
     queryKey: [`/api/profiles/${profile?.id}/matches`],
-    enabled: !!profile?.id && isOpen,
+    enabled: !!profile?.id && isOpen && !isDemoMode(),
     refetchInterval: 30000,
   });
+
+  // Use demo profile or real profile
+  const activeProfile = isDemoMode() ? demoProfile : profile;
 
   useEffect(() => {
     const currentMatchIds = new Set(matches.map(m => m.profileId));
@@ -102,8 +128,8 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [serendipityMatch]);
 
-  // Show loading while checking for profile
-  if (isLoadingProfile) {
+  // Show loading while checking for profile (skip in demo mode)
+  if (isLoadingProfile && !isDemoMode()) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }}>
         <div className="text-center space-y-4">
@@ -114,8 +140,8 @@ export default function Home() {
     );
   }
 
-  // Show signup if no profile
-  if (!profile) {
+  // Show signup if no profile (skip in demo mode)
+  if (!activeProfile && !isDemoMode()) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }}>
         <div className="w-full h-screen max-w-md mx-auto">

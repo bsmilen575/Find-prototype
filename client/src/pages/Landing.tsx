@@ -30,7 +30,7 @@ export default function Landing() {
         </p>
       </div>
       
-      <div className="p-6 pb-10 space-y-3">
+      <div className="p-6 pb-10 space-y-4">
         {canInstall && (
           <Button 
             variant="outline"
@@ -46,21 +46,53 @@ export default function Landing() {
             Install App
           </Button>
         )}
-        <Button 
-          className="w-full h-14 rounded-2xl"
-          style={{ 
-            backgroundColor: '#000000', 
-            color: '#ffffff',
-            fontFamily: 'Georgia, Garamond, serif'
-          }}
-          onClick={() => window.location.href = "/api/login"}
-          data-testid="button-login"
-        >
-          Get Started
-        </Button>
+        
+        <div className="space-y-3">
+          <Button 
+            className="w-full h-14 rounded-2xl"
+            style={{ 
+              backgroundColor: '#000000', 
+              color: '#ffffff',
+              fontFamily: 'Georgia, Garamond, serif'
+            }}
+            onClick={() => {
+              localStorage.setItem('findMode', 'demo');
+              window.location.href = "/?mode=demo";
+            }}
+            data-testid="button-demo"
+          >
+            Try Demo
+          </Button>
+          <p className="text-center text-xs text-gray-500 px-4" style={{ fontFamily: 'Georgia, Garamond, serif' }}>
+            Explore with pre-loaded sample data
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <Button 
+            variant="outline"
+            className="w-full h-14 rounded-2xl"
+            style={{ 
+              fontFamily: 'Georgia, Garamond, serif',
+              borderColor: '#1a1a1a',
+              color: '#1a1a1a'
+            }}
+            onClick={() => {
+              localStorage.setItem('findMode', 'prototype');
+              window.location.href = "/api/login";
+            }}
+            data-testid="button-prototype"
+          >
+            Create Your Profile
+          </Button>
+          <p className="text-center text-xs text-gray-500 px-4" style={{ fontFamily: 'Georgia, Garamond, serif' }}>
+            Build your own interest graph with real data
+          </p>
+        </div>
+        
         {isInstalled && (
-          <p className="text-center text-sm text-gray-500" style={{ fontFamily: 'Georgia, Garamond, serif' }}>
-            App installed - Sign in to continue
+          <p className="text-center text-sm text-gray-500 pt-2" style={{ fontFamily: 'Georgia, Garamond, serif' }}>
+            App installed ✓
           </p>
         )}
       </div>
