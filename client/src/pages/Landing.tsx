@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Info, MapPin, Shield, Zap, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import findLogo from '@assets/Find_logo-removebg-preview_1762715955146.png';
 
 export default function Landing() {
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
@@ -10,85 +11,58 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f5f3f0] to-[#e8e6e1] flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
-        <div className="max-w-2xl space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-5xl font-bold text-gray-900 tracking-tight">
-              Find
-            </h1>
-            <p className="text-xl text-gray-700 leading-relaxed">
-              Hyper-local connections within 100 meters.
-              <br />
-              Meet people nearby who share your curiosities.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3 text-left">
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Hyper-Local</h3>
-              <p className="text-sm text-gray-600">
-                Connect with people within 100m. Coffee shop encounters, not endless scrolling.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Privacy-First</h3>
-              <p className="text-sm text-gray-600">
-                Double-blind reveal. Control exactly when and what you share.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Serendipity</h3>
-              <p className="text-sm text-gray-600">
-                Real-time notifications when interesting people enter your radius.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4 pt-4">
-            {canInstall && (
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full max-w-sm text-lg h-12 gap-2"
-                onClick={handleInstall}
-                data-testid="button-install-app"
-              >
-                <Download className="w-5 h-5" />
-                Install App
-              </Button>
-            )}
-            <Button
-              size="lg"
-              className="w-full max-w-sm text-lg h-12"
-              onClick={() => window.location.href = "/api/login"}
-              data-testid="button-login"
-            >
-              Get Started
-            </Button>
-            <p className="text-sm text-gray-500">
-              {isInstalled ? "App installed - Sign in to continue" : "Sign in with Google, GitHub, or email to continue"}
-            </p>
-          </div>
-
-          <div className="pt-8 flex items-center justify-center gap-2 text-sm text-gray-500">
-            <Info className="w-4 h-4" />
-            <p>
-              Find uses location only when active. You control your discoverability.
-            </p>
-          </div>
+    <div className="w-full h-full min-h-screen flex flex-col" style={{ backgroundColor: '#f5f3f0', fontFamily: 'Georgia, Garamond, serif' }} data-testid="landing-screen">
+      <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16 pb-8">
+        <div className="relative w-72 h-auto mb-12" data-testid="logo-container">
+          <img 
+            src={findLogo} 
+            alt="Find Logo" 
+            className="w-full h-auto"
+            data-testid="img-logo"
+          />
         </div>
+        
+        <h1 style={{ color: '#1a1a1a', textAlign: 'center', marginBottom: '1rem', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '3rem', fontWeight: '600', letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)' }} data-testid="text-title">
+          Find
+        </h1>
+        <p style={{ color: '#6b6b6b', textAlign: 'center', marginBottom: '3rem', maxWidth: '24rem', paddingLeft: '1rem', paddingRight: '1rem', fontFamily: 'Georgia, Garamond, serif', lineHeight: '1.6' }} data-testid="text-description">
+          Discover people or things nearby that you might like.
+        </p>
+      </div>
+      
+      <div className="p-6 pb-10 space-y-3">
+        {canInstall && (
+          <Button 
+            variant="outline"
+            className="w-full h-14 rounded-2xl gap-2"
+            style={{ 
+              fontFamily: 'Georgia, Garamond, serif',
+              borderColor: '#d0d0d0'
+            }}
+            onClick={handleInstall}
+            data-testid="button-install-app"
+          >
+            <Download className="w-5 h-5" />
+            Install App
+          </Button>
+        )}
+        <Button 
+          className="w-full h-14 rounded-2xl"
+          style={{ 
+            backgroundColor: '#000000', 
+            color: '#ffffff',
+            fontFamily: 'Georgia, Garamond, serif'
+          }}
+          onClick={() => window.location.href = "/api/login"}
+          data-testid="button-login"
+        >
+          Get Started
+        </Button>
+        {isInstalled && (
+          <p className="text-center text-sm text-gray-500" style={{ fontFamily: 'Georgia, Garamond, serif' }}>
+            App installed - Sign in to continue
+          </p>
+        )}
       </div>
     </div>
   );
