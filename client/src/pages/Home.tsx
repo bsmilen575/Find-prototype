@@ -160,6 +160,7 @@ export default function Home() {
         onToggleNearbyPulse={() => setShowNearbyPulse(!showNearbyPulse)}
         showNearbyPulseControl={activeTab === 'mine'}
         onSimulateSerendipity={triggerSerendipity}
+        isDemoMode={isDemoMode()}
       />
       <HomeTabs activeTab={activeTab} onTabChange={setActiveTab} />
 

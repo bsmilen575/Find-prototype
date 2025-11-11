@@ -1,5 +1,6 @@
-import { Sparkles, LogOut } from 'lucide-react';
+import { Sparkles, LogOut, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 interface HomeHeaderProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface HomeHeaderProps {
   onToggleNearbyPulse?: () => void;
   showNearbyPulseControl?: boolean;
   onSimulateSerendipity?: () => void;
+  isDemoMode?: boolean;
 }
 
 export function HomeHeader({ 
@@ -16,22 +18,43 @@ export function HomeHeader({
   showNearbyPulse = false, 
   onToggleNearbyPulse,
   showNearbyPulseControl = false,
-  onSimulateSerendipity
+  onSimulateSerendipity,
+  isDemoMode = false
 }: HomeHeaderProps) {
+  const handleExitDemo = () => {
+    localStorage.removeItem('findMode');
+    window.location.href = '/landing';
+  };
+
   return (
     <header className="flex items-center justify-between px-4 pt-4 pb-2">
-      <h1 className="text-2xl font-semibold text-gray-900" data-testid="heading-find">Find</h1>
       <div className="flex items-center gap-3">
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => window.location.href = '/api/logout'}
-          className="w-8 h-8"
-          data-testid="button-logout"
-          title="Logout"
-        >
-          <LogOut className="w-4 h-4" />
-        </Button>
+        <h1 className="text-2xl font-semibold text-gray-900" data-testid="heading-find">Find</h1>
+        {isDemoMode && (
+          <Badge 
+            variant="outline" 
+            className="gap-1.5 cursor-pointer"
+            onClick={handleExitDemo}
+            data-testid="badge-demo-mode"
+          >
+            Demo Mode
+            <X className="w-3 h-3" />
+          </Badge>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        {!isDemoMode && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => window.location.href = '/api/logout'}
+            className="w-8 h-8"
+            data-testid="button-logout"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+          </Button>
+        )}
         {onSimulateSerendipity && (
           <Button
             size="sm"

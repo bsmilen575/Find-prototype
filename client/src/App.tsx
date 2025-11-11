@@ -33,6 +33,7 @@ function Router() {
   if (isDemoMode()) {
     return (
       <Switch>
+        <Route path="/landing" component={Landing} />
         <Route path="/" component={Home} />
         <Route component={NotFound} />
       </Switch>
@@ -43,11 +44,13 @@ function Router() {
     <Switch>
       {!isAuthenticated ? (
         <>
+          <Route path="/landing" component={Landing} />
           <Route path="/" component={Landing} />
           <Route component={NotFound} />
         </>
       ) : (
         <>
+          <Route path="/landing" component={Landing} />
           <Route path="/" component={Home} />
           <Route component={NotFound} />
         </>
