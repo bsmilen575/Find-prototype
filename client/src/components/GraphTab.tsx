@@ -9,12 +9,10 @@ interface GraphTabProps {
 
 export function GraphTab({ graphData, tabKey, showNearbyPulse = false }: GraphTabProps) {
   return (
-    <div className="h-full w-full">
-      <SelfMapGraph 
-        key={tabKey}
-        graphData={graphData}
-        showNearbyPulse={showNearbyPulse}
-      />
-    </div>
+    <SelfMapGraph 
+      key={tabKey}
+      graphData={graphData}
+      showNearbyPulse={showNearbyPulse}
+    />
   );
 }

@@ -82,11 +82,16 @@ Preferred communication style: Simple, everyday language.
   - Preserves graph state (pins, kills, circuits) across navigation levels
   - "You" anchor maintained in subgraphs
 - **Nearby Pulse Integration** (optional overlay on Mine tab, toggled via HomeHeader):
-  - Ghost nodes: Popular local interests user doesn't have, with dashed outlines (#9ca3af), reduced opacity (0.6), lighter fill (#e5e7eb), "(nearby)" label suffix
+  - Ghost nodes: Popular local interests user doesn't have, with orange dashed outlines (#f5a623), no fill, reduced opacity (0.35), "(nearby)" label suffix
+  - Ghost-to-personal connections: Each ghost node connects to nearest personal node via dashed gray line (#bbb, opacity 0.4), computed after force simulation stabilizes
+  - Enhanced tooltips for ghosts: "Trending nearby • Popular with X users in your area" + click-to-add prompt
+  - Click-to-promote: Clicking ghost node converts it to personal interest, removes dashed styling, keeps node in graph
+  - Promoted ghost state: Managed via React state (`promotedGhosts` Set + `promotedGhostNodes` array), triggers re-render
   - Animated halos: Amber rings (#f59e0b) around user's overlapping interests, pulse animation (scale 1.0 to 1.15, 2s infinite loop)
   - Contextual legend: Shows "Ghost Node (Popular Nearby)" and "Halo (Also Popular Here)"
   - 15 ghost nodes, 12 overlap relationships from nearbyPulseData
   - State flow: Home → HomeHeader toggle → GraphTab showNearbyPulse prop → SelfMapGraph conditional rendering
+  - Technical: Ghost links computed via Euclidean distance in simulation.on('end'), positions updated on tick, no force participation
 - **Tuned D3 Force Simulation**: Optimized for stable, natural-looking clusters
   - Cluster-aware link distances (70px intra-cluster, 140px inter-cluster)
   - Cluster-aware charge forces (-150 intra-cluster, -350 inter-cluster)

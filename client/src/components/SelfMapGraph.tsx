@@ -51,10 +51,13 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
   const [anchorNodeId, setAnchorNodeId] = useState<string | null>(null);
   const [navigationStack, setNavigationStack] = useState<NavigationLevel[]>([{nodeId: 'root', label: 'Find'}]);
   const [currentContext, setCurrentContext] = useState<string | null>(null);
+  const [promotedGhosts, setPromotedGhosts] = useState<Set<string>>(new Set());
+  const [promotedGhostNodes, setPromotedGhostNodes] = useState<GraphNode[]>([]);
   const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null);
   const nodeGroupRef = useRef<d3.Selection<SVGGElement, D3Node, SVGGElement, unknown> | null>(null);
   const circlesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
   const ghostCirclesRef = useRef<d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | null>(null);
+  const ghostLinksRef = useRef<Map<string, string>>(new Map());
   const zoomTransformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
   const isLassoModeRef = useRef(isLassoMode);
 
@@ -91,6 +94,50 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
     setNavigationStack(newStack);
     const newContext = newStack.length === 1 ? null : newStack[newStack.length - 1].nodeId;
     setCurrentContext(newContext);
+  };
+
+  const findNearestPersonalNode = (ghost: D3Node, personalNodes: D3Node[]): D3Node | null => {
+    if (!ghost.x || !ghost.y || personalNodes.length === 0) return null;
+    
+    let minDist = Infinity;
+    let nearest: D3Node | null = null;
+
+    personalNodes.forEach(node => {
+      if (node.x !== undefined && node.y !== undefined) {
+        const dx = ghost.x! - node.x;
+        const dy = ghost.y! - node.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = node;
+        }
+      }
+    });
+
+    return nearest;
+  };
+
+  const handlePromoteGhost = (ghostId: string) => {
+    // Find the ghost node in nearbyPulseGraph
+    const ghostNode = nearbyPulseGraph.nodes.find(n => n.id === ghostId);
+    if (!ghostNode) return;
+
+    // Add to promoted ghosts set (to filter out from ghost rendering)
+    setPromotedGhosts(prev => new Set([...Array.from(prev), ghostId]));
+    
+    // Clone as personal node: explicitly remove isGhost and ghost-specific properties
+    const personalNode: GraphNode = {
+      ...ghostNode,
+      // Ensure no ghost flag
+    };
+    // @ts-ignore - Remove isGhost property if it exists
+    delete (personalNode as any).isGhost;
+    
+    setPromotedGhostNodes(prev => [...prev, personalNode]);
+    
+    setTooltipData(null);
+    // Optional: persist to backend
+    // addNodeToUserGraph(ghostId);
   };
 
   useEffect(() => {
@@ -137,15 +184,16 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
           .map(n => ({ ...n }));
       }
     } else {
-      interestNodes = graphData.nodes
-        .filter(n => !killedNodes.has(n.id))
-        .map(n => ({ ...n }));
+      interestNodes = [
+        ...graphData.nodes.filter(n => !killedNodes.has(n.id)).map(n => ({ ...n })),
+        ...promotedGhostNodes.filter(n => !killedNodes.has(n.id)).map(n => ({ ...n }))
+      ];
     }
 
-    // Add ghost nodes when in nearbyPulse mode
+    // Add ghost nodes when in nearbyPulse mode (excluding promoted ones)
     if (isNearbyPulse && !currentContext) {
       const ghostNodeData = nearbyPulseGraph.nodes
-        .filter(n => nearbyPulseData.ghostNodes.includes(n.id))
+        .filter(n => nearbyPulseData.ghostNodes.includes(n.id) && !promotedGhosts.has(n.id))
         .map(n => ({ ...n, isGhost: true }));
       interestNodes = [...interestNodes, ...ghostNodeData];
     }
@@ -234,6 +282,10 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
     const ghostNodes = nodes.filter(d => (d as D3Node).isGhost);
     const regularNodes = nodes.filter(d => !(d as D3Node).isGhost);
 
+    // Ghost-to-personal links layer (below ghost nodes)
+    const ghostLinkGroup = g.append('g')
+      .attr('class', 'ghost-links');
+
     // Ghost nodes layer (rendered first, will be behind regular nodes)
     const ghostNodeGroup = g.append('g')
       .attr('class', 'ghost-nodes')
@@ -243,7 +295,7 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
       .attr('cursor', 'pointer')
       .on('click', (event, d) => {
         event.stopPropagation();
-        setSelectedNode(d);
+        handlePromoteGhost(d.id);
       })
       .on('mouseover', (event, d) => {
         const [x, y] = d3.pointer(event, svgRef.current);
@@ -256,11 +308,12 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
     const ghostCircles = ghostNodeGroup.append('circle')
       .attr('class', 'ghost-node')
       .attr('r', d => Math.sqrt(d.attentionWeight) * 0.6)
-      .attr('fill', '#e5e7eb')
-      .attr('stroke', '#9ca3af')
+      .attr('fill', 'none')
+      .attr('stroke', '#f5a623')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4,2')
-      .attr('opacity', 0.6)
+      .attr('opacity', 0.35)
+      .attr('pointer-events', 'all')
       .attr('data-testid', d => `node-${d.id}`);
 
     ghostCirclesRef.current = ghostCircles;
@@ -350,11 +403,13 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
       .attr('pointer-events', 'none');
 
     let anchorCreated = false;
+    let ghostLinksCreated = false;
     let anchorNode: D3Node | null = null;
     let anchorLinks: any = null;
     let anchorGroup: any = null;
 
     simulation.on('tick', () => {
+      // Update link positions
       link
         .attr('x1', d => (d.source as D3Node).x!)
         .attr('y1', d => (d.source as D3Node).y!)
@@ -369,96 +424,140 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
           .attr('y2', (d: any) => d.target.y!);
       }
 
+      // Update ghost link positions
+      ghostLinkGroup.selectAll('line.ghost-link')
+        .attr('x1', (d: any) => d.source.x!)
+        .attr('y1', (d: any) => d.source.y!)
+        .attr('x2', (d: any) => d.target.x!)
+        .attr('y2', (d: any) => d.target.y!);
+
+      // Update node positions
       ghostNodeGroup.attr('transform', d => `translate(${d.x},${d.y})`);
       nodeGroup.attr('transform', d => `translate(${d.x},${d.y})`);
       
       if (anchorGroup && anchorNode) {
         anchorGroup.attr('transform', `translate(${anchorNode.x},${anchorNode.y})`);
       }
-    });
 
-    simulation.on('end', () => {
-      if (anchorCreated || interestNodes.length === 0) return;
-      
-      const centroidX = d3.mean(interestNodes, d => d.x!) || width / 2;
-      const centroidY = d3.mean(interestNodes, d => d.y!) || height / 2;
-      
-      anchorNode = {
-        id: 'user-anchor',
-        label: 'You',
-        type: 'topic',
-        cluster: undefined,
-        createdAt: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-        firstSeen: new Date().toISOString(),
-        attentionWeight: 50,
-        sharedCount: 0,
-        trending: false,
-        activityScore: 'High',
-        source: 'internal',
-        evidence: {},
-        x: centroidX,
-        y: centroidY,
-        fx: centroidX,
-        fy: centroidY,
-      } as D3Node;
-      
-      nodes.push(anchorNode);
-      
-      // Only connect non-ghost nodes to the anchor
-      const anchorEdges = interestNodes
-        .filter(node => !(node as D3Node).isGhost)
-        .map(node => ({
-          source: node,
-          target: anchorNode!,
-          weight: 0.05,
-          type: 'anchor',
-        }));
-      
-      anchorLinks = linkGroup
-        .selectAll('line.anchor-link')
-        .data(anchorEdges)
-        .join('line')
-        .attr('class', 'anchor-link')
-        .attr('stroke', '#d1d5db')
-        .attr('stroke-opacity', 0.15)
-        .attr('stroke-width', 0.5)
-        .attr('x1', d => d.source.x!)
-        .attr('y1', d => d.source.y!)
-        .attr('x2', d => d.target.x!)
-        .attr('y2', d => d.target.y!);
-      
-      anchorGroup = g.append('g')
-        .attr('transform', `translate(${centroidX},${centroidY})`)
-        .attr('cursor', 'default')
-        .attr('data-testid', 'node-user-anchor');
-      
-      anchorGroup.append('circle')
-        .attr('r', 15)
-        .attr('fill', '#f59e0b')
-        .attr('stroke', '#f59e0b')
-        .attr('stroke-width', 3)
-        .attr('filter', 'url(#anchor-shadow)');
-      
-      anchorGroup.append('text')
-        .text('★')
-        .attr('font-size', '16px')
-        .attr('font-family', 'Inter, sans-serif')
-        .attr('fill', 'white')
-        .attr('text-anchor', 'middle')
-        .attr('dy', '0.35em')
-        .attr('pointer-events', 'none');
-      
-      anchorGroup.append('text')
-        .text('You')
-        .attr('font-size', '11px')
-        .attr('font-family', 'Inter, sans-serif')
-        .attr('fill', '#374151')
-        .attr('text-anchor', 'middle')
-        .attr('dy', 28)
-        .attr('pointer-events', 'none');
-      
-      anchorCreated = true;
+      // Post-settling operations: create anchor and ghost links once before freezing
+      if (!anchorCreated && simulation.alpha() < 0.005 && interestNodes.length > 0) {
+        // Create anchor node at centroid
+        const centroidX = d3.mean(interestNodes, d => d.x!) || width / 2;
+        const centroidY = d3.mean(interestNodes, d => d.y!) || height / 2;
+        
+        anchorNode = {
+          id: 'user-anchor',
+          label: 'You',
+          type: 'topic',
+          cluster: undefined,
+          createdAt: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          firstSeen: new Date().toISOString(),
+          attentionWeight: 50,
+          sharedCount: 0,
+          trending: false,
+          activityScore: 'High',
+          source: 'internal',
+          evidence: {},
+          x: centroidX,
+          y: centroidY,
+          fx: centroidX,
+          fy: centroidY,
+        } as D3Node;
+        
+        nodes.push(anchorNode);
+        
+        // Connect non-ghost nodes to the anchor
+        const anchorEdges = interestNodes
+          .filter(node => !(node as D3Node).isGhost)
+          .map(node => ({
+            source: node,
+            target: anchorNode!,
+            weight: 0.05,
+            type: 'anchor',
+          }));
+        
+        anchorLinks = linkGroup
+          .selectAll('line.anchor-link')
+          .data(anchorEdges)
+          .join('line')
+          .attr('class', 'anchor-link')
+          .attr('stroke', '#d1d5db')
+          .attr('stroke-opacity', 0.15)
+          .attr('stroke-width', 0.5)
+          .attr('x1', d => d.source.x!)
+          .attr('y1', d => d.source.y!)
+          .attr('x2', d => d.target.x!)
+          .attr('y2', d => d.target.y!);
+        
+        anchorGroup = g.append('g')
+          .attr('transform', `translate(${centroidX},${centroidY})`)
+          .attr('cursor', 'default')
+          .attr('data-testid', 'node-user-anchor');
+        
+        anchorGroup.append('circle')
+          .attr('r', 15)
+          .attr('fill', '#f59e0b')
+          .attr('stroke', '#f59e0b')
+          .attr('stroke-width', 3)
+          .attr('filter', 'url(#anchor-shadow)');
+        
+        anchorGroup.append('text')
+          .text('★')
+          .attr('font-size', '16px')
+          .attr('font-family', 'Inter, sans-serif')
+          .attr('fill', 'white')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '0.35em')
+          .attr('pointer-events', 'none');
+        
+        anchorGroup.append('text')
+          .text('You')
+          .attr('font-size', '11px')
+          .attr('font-family', 'Inter, sans-serif')
+          .attr('fill', '#374151')
+          .attr('text-anchor', 'middle')
+          .attr('dy', 28)
+          .attr('pointer-events', 'none');
+        
+        anchorCreated = true;
+      }
+
+      // Create ghost-to-personal connections once after settling (before freezing)
+      if (!ghostLinksCreated && simulation.alpha() < 0.005 && ghostNodes.length > 0 && regularNodes.length > 0) {
+        const ghostLinkPairs: Array<{source: D3Node, target: D3Node}> = [];
+        
+        ghostNodes.forEach(ghost => {
+          const nearest = findNearestPersonalNode(ghost, regularNodes);
+          if (nearest) {
+            ghostLinksRef.current.set(ghost.id, nearest.id);
+            ghostLinkPairs.push({ source: ghost, target: nearest });
+          }
+        });
+
+        // Render dashed links from ghost nodes to nearest personal nodes
+        ghostLinkGroup
+          .selectAll('line.ghost-link')
+          .data(ghostLinkPairs)
+          .join('line')
+          .attr('class', 'ghost-link')
+          .attr('stroke', '#bbb')
+          .attr('stroke-width', 1)
+          .attr('stroke-dasharray', '3,3')
+          .attr('opacity', 0.4)
+          .attr('x1', d => d.source.x!)
+          .attr('y1', d => d.source.y!)
+          .attr('x2', d => d.target.x!)
+          .attr('y2', d => d.target.y!)
+          .lower();
+        
+        ghostLinksCreated = true;
+      }
+
+      // Freeze simulation after settling for stable hover interactions
+      if (simulation.alpha() < 0.005) {
+        simulation.stop();
+      }
     });
 
     function dragstarted(event: d3.D3DragEvent<SVGGElement, D3Node, D3Node>) {
@@ -488,7 +587,7 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
     return () => {
       simulation.stop();
     };
-  }, [graphData, killedNodes, pinnedNodes, currentContext, isNearbyPulse]);
+  }, [graphData, killedNodes, pinnedNodes, currentContext, isNearbyPulse, promotedGhosts, promotedGhostNodes]);
 
   useEffect(() => {
     isLassoModeRef.current = isLassoMode;
@@ -724,31 +823,47 @@ export function SelfMapGraph({ graphData, showNearbyPulse = false }: SelfMapGrap
               <div className="text-xs text-gray-700 mb-1">Interest</div>
               <div className="font-semibold text-gray-900">{tooltipData.node.label}</div>
             </div>
-            <div className="mb-3">
-              <div className="text-xs text-gray-700 mb-1">Last Interaction</div>
-              <div className="text-sm text-gray-900">
-                {formatDistanceToNow(new Date(tooltipData.node.lastActive), { addSuffix: true })}
-              </div>
-            </div>
-            <div className="mb-3">
-              <div className="text-xs text-gray-700 mb-1 flex items-center gap-1">
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Shared Nearby</span>
-              </div>
-              <div className="text-sm text-gray-900">{tooltipData.node.sharedCount} users</div>
-            </div>
-            {tooltipData.node.children && tooltipData.node.children.length > 0 && (
-              <button
-                className="w-full mt-2 pt-2 border-t border-gray-200 flex items-center justify-center gap-1 text-xs text-gray-600 hover-elevate"
-                data-testid="button-expand-node"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDrillDown(tooltipData.node);
-                }}
-              >
-                <MoreHorizontal className="w-3.5 h-3.5" />
-                <span>Expand</span>
-              </button>
+            {(tooltipData.node as D3Node).isGhost ? (
+              <>
+                <div className="mb-3">
+                  <div className="text-xs text-amber-600 font-medium mb-1">Trending nearby</div>
+                  <div className="text-sm text-gray-900">
+                    Popular with {tooltipData.node.sharedCount} users in your area
+                  </div>
+                </div>
+                <div className="text-xs text-gray-600 italic">
+                  Click to add to your interests
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="mb-3">
+                  <div className="text-xs text-gray-700 mb-1">Last Interaction</div>
+                  <div className="text-sm text-gray-900">
+                    {formatDistanceToNow(new Date(tooltipData.node.lastActive), { addSuffix: true })}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <div className="text-xs text-gray-700 mb-1 flex items-center gap-1">
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>Shared Nearby</span>
+                  </div>
+                  <div className="text-sm text-gray-900">{tooltipData.node.sharedCount} users</div>
+                </div>
+                {tooltipData.node.children && tooltipData.node.children.length > 0 && (
+                  <button
+                    className="w-full mt-2 pt-2 border-t border-gray-200 flex items-center justify-center gap-1 text-xs text-gray-600 hover-elevate"
+                    data-testid="button-expand-node"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDrillDown(tooltipData.node);
+                    }}
+                  >
+                    <MoreHorizontal className="w-3.5 h-3.5" />
+                    <span>Expand</span>
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
