@@ -4,6 +4,11 @@ import { storage } from "./storage";
 import { insertProfileSchema } from "@shared/schema";
 import { findSharedInterests, isMatch } from "./matching";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import OpenAI from "openai";
+import { z } from "zod";
+
+// Using OpenAI API with user's API key for document analysis
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Replit Auth
@@ -18,6 +23,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Analyze document and extract interests (protected)
+  app.post("/api/analyze-document", isAuthenticated, async (req, res) => {
+    try {
+      const { text } = req.body;
+      
+      if (!text || typeof text !== 'string') {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      // Truncate to ~2k tokens (~8k characters)
+      const truncatedText = text.slice(0, 8000);
+
+      const prompt = `Analyze the following text and extract 10-15 key interests, topics, or recurring ideas.
+Group them into 3-5 thematic clusters.
+Return clean JSON with this format:
+{ "clusters": [ { "theme": "", "topics": [] } ] }
+
+Text:
+${truncatedText}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert at analyzing text and extracting key interests and topics. Return only valid JSON."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 1000,
+      });
+
+      const content = response.choices[0].message.content;
+      if (!content) {
+        return res.status(500).json({ error: "Failed to analyze document" });
+      }
+
+      const result = JSON.parse(content);
+      
+      // Flatten clusters into interests array
+      const interests: string[] = [];
+      if (result.clusters && Array.isArray(result.clusters)) {
+        for (const cluster of result.clusters) {
+          if (cluster.topics && Array.isArray(cluster.topics)) {
+            interests.push(...cluster.topics);
+          }
+        }
+      }
+
+      res.json({ 
+        interests: interests.slice(0, 15),
+        clusters: result.clusters || []
+      });
+
+    } catch (error: any) {
+      console.error("Error analyzing document:", error);
+      res.status(500).json({ error: error.message || "Failed to analyze document" });
     }
   });
 

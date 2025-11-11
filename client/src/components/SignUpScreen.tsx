@@ -1,8 +1,8 @@
-import { MapPin, Upload } from 'lucide-react';
+import { MapPin, Upload, Loader2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -10,9 +10,12 @@ import { apiRequest } from '@/lib/queryClient';
 export function SignUpScreen() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [locationGranted, setLocationGranted] = useState(false);
   const [name, setName] = useState('');
-  const [interests, setInterests] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [extractedInterests, setExtractedInterests] = useState<string[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleLocationAccess = async () => {
     try {
@@ -85,6 +88,56 @@ export function SignUpScreen() {
     },
   });
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.includes('text') && !file.name.endsWith('.txt') && !file.name.endsWith('.md')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a text file (.txt or .md)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadedFile(file);
+    setIsAnalyzing(true);
+
+    try {
+      const text = await file.text();
+      const truncatedText = text.slice(0, 8000);
+
+      const response = await apiRequest('POST', '/api/analyze-document', {
+        text: truncatedText,
+      });
+
+      const result = await response.json();
+      
+      if (result.interests && result.interests.length > 0) {
+        setExtractedInterests(result.interests);
+        toast({
+          title: "Document analyzed!",
+          description: `Extracted ${result.interests.length} interests from your document.`,
+        });
+      } else {
+        toast({
+          title: "Analysis complete",
+          description: "Couldn't extract enough interests. Try a different document or enter manually.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Analysis failed",
+        description: error.message || "Please try again or enter interests manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleConnect = async () => {
     if (!name.trim()) {
       toast({
@@ -95,24 +148,10 @@ export function SignUpScreen() {
       return;
     }
 
-    if (!interests.trim()) {
+    if (extractedInterests.length < 5) {
       toast({
         title: "Interests required",
-        description: "Please enter at least 5 interests, one per line.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const interestArray = interests
-      .split('\n')
-      .map(i => i.trim())
-      .filter(i => i.length > 0);
-
-    if (interestArray.length < 5) {
-      toast({
-        title: "More interests needed",
-        description: "Please enter at least 5 interests, one per line.",
+        description: "Please upload a document to extract at least 5 interests.",
         variant: "destructive",
       });
       return;
@@ -132,7 +171,7 @@ export function SignUpScreen() {
       // Timeout fallback - create without coordinates
       createProfileMutation.mutate({
         name: name.trim(),
-        interests: interestArray.slice(0, 5),
+        interests: extractedInterests.slice(0, 15),
       });
     }, 3000);
 
@@ -141,7 +180,7 @@ export function SignUpScreen() {
         clearTimeout(timeoutId);
         createProfileMutation.mutate({
           name: name.trim(),
-          interests: interestArray.slice(0, 5),
+          interests: extractedInterests.slice(0, 15),
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
@@ -151,7 +190,7 @@ export function SignUpScreen() {
         // If location fails, create without coordinates
         createProfileMutation.mutate({
           name: name.trim(),
-          interests: interestArray.slice(0, 5),
+          interests: extractedInterests.slice(0, 15),
         });
       },
       { timeout: 2000 }
@@ -261,37 +300,64 @@ export function SignUpScreen() {
         </div>
         
         <div className="mb-6">
-          <h3 className="text-gray-600 text-base mb-4" data-testid="heading-upload">
-            Upload your files, docs, and notes
+          <h3 className="text-gray-700 text-base mb-2" data-testid="heading-upload">
+            Upload your files, docs, and notes <span className="text-red-500">*</span>
           </h3>
+          <p className="text-gray-500 text-sm mb-3">
+            Upload a text file to extract your interests. Text is analyzed via OpenAI's API for topic extraction. Data is not stored or shared.
+          </p>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.md,text/*"
+            onChange={handleFileUpload}
+            className="hidden"
+            data-testid="input-file"
+          />
           
           <button 
             className="w-full h-32 rounded-2xl border-2 border-dashed border-gray-400 bg-transparent flex flex-col items-center justify-center gap-2 hover-elevate"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isAnalyzing}
             data-testid="button-upload"
+            type="button"
           >
-            <Upload className="w-8 h-8 text-gray-400" />
-            <span className="text-gray-500 text-base">Tap to upload</span>
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="w-8 h-8 text-gray-600 animate-spin" />
+                <span className="text-gray-600 text-base">Analyzing your document...</span>
+              </>
+            ) : uploadedFile ? (
+              <>
+                <FileText className="w-8 h-8 text-green-600" />
+                <span className="text-gray-700 text-base font-medium">{uploadedFile.name}</span>
+                <span className="text-gray-500 text-sm">Tap to upload different file</span>
+              </>
+            ) : (
+              <>
+                <Upload className="w-8 h-8 text-gray-400" />
+                <span className="text-gray-500 text-base">Tap to upload</span>
+              </>
+            )}
           </button>
-        </div>
-        
-        <div className="mb-6">
-          <label className="block text-gray-700 mb-3">
-            Talk to Find <span className="text-red-500">*</span>
-          </label>
-          <p className="text-gray-500 text-sm mb-3 leading-relaxed">
-            Tell Find about whatever is important to you - niche interests, things you're excited about, questions, anything you need.
-            <br />
-            <span className="font-semibold">Tip:</span> the more detail you give, the better your connections will be.
-          </p>
           
-          <Textarea 
-            placeholder="..."
-            value={interests}
-            onChange={(e) => setInterests(e.target.value)}
-            className="min-h-[180px] rounded-xl border-2 border-black resize-none"
-            data-testid="textarea-interests"
-            required
-          />
+          {extractedInterests.length > 0 && (
+            <div className="mt-4 p-4 rounded-xl bg-white border border-gray-200" data-testid="extracted-interests">
+              <p className="text-gray-700 text-sm font-medium mb-2">Extracted interests ({extractedInterests.length}):</p>
+              <div className="flex flex-wrap gap-2">
+                {extractedInterests.map((interest, idx) => (
+                  <span 
+                    key={idx}
+                    className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                    data-testid={`interest-${idx}`}
+                  >
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="mt-auto space-y-3">
