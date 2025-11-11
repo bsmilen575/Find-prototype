@@ -78,10 +78,22 @@ The backend uses Express.js with TypeScript, providing a RESTful API for profile
 - Auth flow: Landing page → Login → Profile creation (if new user) → Main app
 - Logout properly destroys both Passport session and database session
 
+**Document Upload & Interest Extraction:**
+- Users can upload text files (.txt, .md) during signup to automatically extract interests
+- Backend endpoint POST `/api/analyze-document` uses OpenAI `gpt-4o-mini` model
+- Analyzes up to 8000 characters (~2k tokens) per document
+- Extracts 10-15 key interests grouped into 3-5 thematic clusters
+- Privacy notice: "Text is analyzed via OpenAI's API for topic extraction. Data is not stored or shared."
+- Real-time feedback with loading spinner and success toasts
+- Extracted interests displayed as pills with option to upload different file
+
 **User Flow:**
 1. Unauthenticated users see a landing page with login button
-2. After authentication, new users complete onboarding (name, 5 interests, location)
-3. Profile creation requires exactly 5 interests and browser geolocation access
+2. After authentication, new users complete onboarding:
+   - Enter name
+   - Upload a document to extract interests (5-15 interests required)
+   - Grant browser geolocation access
+3. Profile creation accepts 5-15 interests extracted from documents
    - 3-second timeout fallback ensures profile creation proceeds even if geolocation API hangs
    - Profiles can be created with or without coordinates (coordinates enable proximity matching)
 4. Authenticated users with profiles access the full Find experience
