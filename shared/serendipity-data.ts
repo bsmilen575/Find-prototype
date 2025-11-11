@@ -6,6 +6,7 @@ export interface FakeEncounter {
   distance: string;
   nearbyUser: {
     alias: string;
+    firstName: string;
     overlapPercent: number;
   };
 }
@@ -19,6 +20,7 @@ export const fakeEncounters: FakeEncounter[] = [
     distance: "12m",
     nearbyUser: {
       alias: "Someone nearby",
+      firstName: "Maya",
       overlapPercent: 0.82
     }
   },
@@ -30,6 +32,7 @@ export const fakeEncounters: FakeEncounter[] = [
     distance: "35m",
     nearbyUser: {
       alias: "A runner nearby",
+      firstName: "Alex",
       overlapPercent: 0.76
     }
   },
@@ -41,6 +44,7 @@ export const fakeEncounters: FakeEncounter[] = [
     distance: "8m",
     nearbyUser: {
       alias: "A reader nearby",
+      firstName: "Jordan",
       overlapPercent: 0.88
     }
   },
@@ -52,6 +56,7 @@ export const fakeEncounters: FakeEncounter[] = [
     distance: "22m",
     nearbyUser: {
       alias: "An athlete nearby",
+      firstName: "Sam",
       overlapPercent: 0.71
     }
   }

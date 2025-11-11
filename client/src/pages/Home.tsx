@@ -20,6 +20,8 @@ interface Match {
   revealed: boolean;
 }
 
+type SerendipityStage = 'teaser' | 'revealed' | 'matched';
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('about');
   const [isOpen, setIsOpen] = useState(true);
@@ -27,7 +29,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [latestMatch, setLatestMatch] = useState<Match | null>(null);
   const [serendipityMatch, setSerendipityMatch] = useState<FakeEncounter | null>(null);
-  const [serendipityRevealed, setSerendipityRevealed] = useState(false);
+  const [serendipityStage, setSerendipityStage] = useState<SerendipityStage>('teaser');
   const { profileId } = useProfile();
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
@@ -65,16 +67,20 @@ export default function Home() {
   const triggerSerendipity = () => {
     const randomMatch = fakeEncounters[Math.floor(Math.random() * fakeEncounters.length)];
     setSerendipityMatch(randomMatch);
-    setSerendipityRevealed(false);
+    setSerendipityStage('teaser');
   };
 
-  const handleRevealSerendipity = () => {
-    setSerendipityRevealed(true);
+  const handleFindOutWho = () => {
+    setSerendipityStage('revealed');
+  };
+
+  const handleMatched = () => {
+    setSerendipityStage('matched');
   };
 
   const handleDismissSerendipity = () => {
     setSerendipityMatch(null);
-    setSerendipityRevealed(false);
+    setSerendipityStage('teaser');
   };
 
   useEffect(() => {
@@ -120,8 +126,9 @@ export default function Home() {
 
       <SerendipityPopup
         match={serendipityMatch}
-        revealed={serendipityRevealed}
-        onReveal={handleRevealSerendipity}
+        stage={serendipityStage}
+        onFindOutWho={handleFindOutWho}
+        onMatched={handleMatched}
         onDismiss={handleDismissSerendipity}
       />
     </div>
