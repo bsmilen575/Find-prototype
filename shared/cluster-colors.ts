@@ -88,32 +88,32 @@ export const clusterCategoryMetadata: ClusterCategory[] = [
   },
   { 
     id: 1, 
-    name: "Lifestyle & Adventures", 
+    name: "Adventures", 
     color: "#F5C06E", 
     examples: ["Travel Destinations", "Interior Design", "Hiking Trails"]
   },
   { 
     id: 2, 
-    name: "Healthy Eating", 
+    name: "Health & Wellness", 
     color: "#9C8ADE", 
     examples: ["Protein Recipes", "Taco Tuesday"]
   },
   { 
     id: 3, 
-    name: "Entertainment & Sports", 
+    name: "Sports & Music", 
     color: "#74A8E4", 
     examples: ["The Bear", "Warriors Games", "Taylor Swift"]
   },
   { 
     id: 4, 
-    name: "Wellness & Lifestyle", 
+    name: "Lifestyle", 
     color: "#E7A26F", 
     examples: ["Home Workouts", "Yoga", "Indie Music"]
   },
   { 
     id: 5, 
-    name: "Photography & Tech", 
+    name: "Photography", 
     color: "#F28B82", 
-    examples: ["Concert Photos", "iPhone", "Tech Reviews"]
+    examples: ["Concert Photos", "iPhone", "Tech"]
   },
 ];

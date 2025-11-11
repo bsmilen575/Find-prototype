@@ -18,43 +18,43 @@ export function InsightsTab() {
         {/* Attention Clusters */}
         <div className="space-y-4">
           <AttentionCluster
-            title="Indie Music & Cultural Aesthetics"
-            cluster="Cluster 2 (Purple — Arts & Media)"
+            title="Healthy Habits & Nutrition"
+            cluster="Cluster 2 (Purple — Health & Wellness)"
             color="#9C8ADE"
-            nodes={["Phoebe Bridgers", "The Eras Tour", "Vinyl Collection"]}
-            theme="nostalgia, identity through sound, communal emotion"
+            nodes={["Protein Recipes", "Taco Tuesday", "Meal Prep"]}
+            theme="sustainable eating patterns, nutrition as daily practice"
           />
           
           <AttentionCluster
-            title="Home Fitness & Body Energy"
-            cluster="Cluster 3 (Blue — Fitness / Health)"
+            title="Sports, Music & Live Experiences"
+            cluster="Cluster 3 (Blue — Sports & Music)"
             color="#74A8E4"
-            nodes={["Yoga", "Chloe Ting Workouts", "Meal Prep"]}
-            theme="What routines sustain motivation after novelty fades?"
+            nodes={["The Bear", "Warriors Games", "Taylor Swift"]}
+            theme="What makes live shared experiences more memorable than solo ones?"
           />
           
           <AttentionCluster
-            title="Design & Lifestyle Minimalism"
-            cluster="Cluster 4 (Orange — Lifestyle / Decor / Tech)"
+            title="Home & Personal Wellness"
+            cluster="Cluster 4 (Orange — Lifestyle)"
             color="#E7A26F"
-            nodes={["Interior Design", "Sustainable Decor", "Studio McGee"]}
-            theme="aesthetics as self-regulation"
+            nodes={["Home Workouts", "Yoga", "Indie Music"]}
+            theme="creating intentional routines, space as self-care"
           />
           
           <AttentionCluster
-            title="Technology & Everyday Tools"
-            cluster="Cluster 0 / 1 (Green / Yellow — Tech / Shows)"
+            title="Food Culture & Entertainment"
+            cluster="Cluster 0 (Green — Food & Entertainment)"
             color="#8CCB9B"
-            nodes={["iPhone Tips", "Tech News", "MKBHD"]}
-            theme="interface literacy, calm computing"
+            nodes={["Baking", "Netflix Shows", "Wine Tasting"]}
+            theme="comfort rituals, shared enjoyment"
           />
           
           <AttentionCluster
-            title="Streaming & Shared Story Worlds"
-            cluster="Cluster 1 / 2 mix (Yellow–Purple)"
+            title="Travel & New Experiences"
+            cluster="Cluster 1 (Yellow — Adventures)"
             color="#F5C06E"
-            nodes={["Succession", "The Bear", "Netflix Shows"]}
-            theme="Why do imperfect characters feel more real than heroes?"
+            nodes={["Travel Destinations", "Interior Design", "Hiking Trails"]}
+            theme="Why does exploration feel restorative?"
           />
         </div>
 
