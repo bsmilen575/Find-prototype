@@ -20,6 +20,9 @@ export interface Node {
   trending: boolean;
   parentId?: string;
   children?: string[];
+  embedding?: number[];
+  clusterId?: number;
+  categoryColor?: string;
 }
 
 export interface Edge {
