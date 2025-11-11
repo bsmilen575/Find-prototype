@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Info, MapPin, Shield, Zap } from "lucide-react";
+import { Info, MapPin, Shield, Zap, Download } from "lucide-react";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 export default function Landing() {
+  const { canInstall, isInstalled, promptInstall } = usePWAInstall();
+
+  const handleInstall = async () => {
+    await promptInstall();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f5f3f0] to-[#e8e6e1] flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
@@ -50,6 +57,18 @@ export default function Landing() {
           </div>
 
           <div className="space-y-4 pt-4">
+            {canInstall && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full max-w-sm text-lg h-12 gap-2"
+                onClick={handleInstall}
+                data-testid="button-install-app"
+              >
+                <Download className="w-5 h-5" />
+                Install App
+              </Button>
+            )}
             <Button
               size="lg"
               className="w-full max-w-sm text-lg h-12"
@@ -59,7 +78,7 @@ export default function Landing() {
               Get Started
             </Button>
             <p className="text-sm text-gray-500">
-              Sign in with Google, GitHub, or email to continue
+              {isInstalled ? "App installed - Sign in to continue" : "Sign in with Google, GitHub, or email to continue"}
             </p>
           </div>
 
