@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { syntheticUserGraph } from '@shared/synthetic-data';
 import { HomeHeader } from '@/components/HomeHeader';
 import { HomeTabs, TabType } from '@/components/HomeTabs';
+import { AboutTab } from '@/components/AboutTab';
 import { GraphTab } from '@/components/GraphTab';
 import { ConnectionsTab } from '@/components/ConnectionsTab';
 import { InsightsTab } from '@/components/InsightsTab';
@@ -18,7 +19,7 @@ interface Match {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<TabType>('mine');
+  const [activeTab, setActiveTab] = useState<TabType>('about');
   const [isOpen, setIsOpen] = useState(true);
   const [showNearbyPulse, setShowNearbyPulse] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -69,6 +70,8 @@ export default function Home() {
       <HomeTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex-1 relative overflow-hidden">
+        {activeTab === 'about' && <AboutTab />}
+
         {activeTab === 'mine' && (
           <GraphTab graphData={syntheticUserGraph} tabKey="mine-tab" showNearbyPulse={showNearbyPulse} />
         )}

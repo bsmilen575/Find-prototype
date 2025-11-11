@@ -1,6 +1,6 @@
-import { User, Lightbulb, Users } from 'lucide-react';
+import { Info, User, Lightbulb, Users } from 'lucide-react';
 
-export type TabType = 'mine' | 'insights' | 'connections';
+export type TabType = 'about' | 'mine' | 'insights' | 'connections';
 
 interface HomeTabsProps {
   activeTab: TabType;
@@ -10,6 +10,17 @@ interface HomeTabsProps {
 export function HomeTabs({ activeTab, onTabChange }: HomeTabsProps) {
   return (
     <nav className="flex items-center justify-around px-4 py-3 border-b border-gray-200">
+      <button
+        onClick={() => onTabChange('about')}
+        className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+          activeTab === 'about' ? 'text-gray-900' : 'text-gray-400'
+        }`}
+        data-testid="tab-about"
+      >
+        <Info className={`w-6 h-6 ${activeTab === 'about' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+        <span className="text-xs font-medium">About</span>
+      </button>
+
       <button
         onClick={() => onTabChange('mine')}
         className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${

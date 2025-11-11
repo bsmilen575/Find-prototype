@@ -17,9 +17,16 @@ The frontend is built with React and TypeScript, using Vite for development. It 
 Key UI/UX decisions include:
 - A warm beige background for a calm user experience.
 - Inter as the primary font and Space Grotesk for accents.
-- A "Mine" tab featuring a D3.js force-directed graph for visualizing user interests, with an optional "Nearby Pulse" overlay to show local trends.
+- Four-tab navigation: About (Info icon), Mine, Insights, Connections
+- An "About" tab (default landing) explaining Find's philosophy, privacy architecture (SOLID protocol), and usage guidance
+- A "Mine" tab featuring a D3.js force-directed graph for visualizing user interests, with an optional "Nearby Pulse" overlay to show local trends
+  - Nearby Pulse legend uses human-friendly labels: "New to you & Popular nearby" (ghost nodes), "Common in your area" (halos)
 - A "Connections" tab for match cards, implementing a double-blind reveal.
-- An "Insights" tab with "Attention Map" clusters, "Things You Might Like Exploring" suggestions, and local trending interests.
+- An "Insights" tab with simplified, human-digestible content:
+  - "Your Attention Map" showing 5 semantic clusters with just titles and color dots
+  - "Things You Might Like Exploring" with 5 curated suggestions using conversational "Because you..." reasoning
+  - "Insights on Your Neighborhood" with natural language relation descriptions
+  - "Magic" section with Find logo and light blue gradient
 - A detailed signup process for name, interests, optional social media connections (Pods), and file uploads.
 - The `SelfMapGraph` component uses D3.js for interactive interest visualization, including a central "You" anchor node, hover tooltips, drill-down navigation, and lens modes (Recency, Heat).
 
