@@ -5,75 +5,13 @@ import fs from 'fs';
 console.log('Loading embedding model (all-MiniLM-L6-v2)...');
 const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
 
-// Personal nodes from synthetic-data.ts
-const personalNodes = [
-  { id: 'n1', label: 'Home Workouts' },
-  { id: 'n2', label: 'Chloe Ting' },
-  { id: 'n3', label: 'Yoga' },
-  { id: 'n4', label: 'Protein Recipes' },
-  { id: 'n5', label: 'Interior Design' },
-  { id: 'n6', label: 'The Bear' },
-  { id: 'n7', label: 'Succession' },
-  { id: 'n8', label: 'TV Recommendations' },
-  { id: 'n9', label: 'Weekend Binge' },
-  { id: 'n10', label: 'True Crime' },
-  { id: 'n11', label: 'Taylor Swift' },
-  { id: 'n12', label: 'Concert Photos' },
-  { id: 'n13', label: 'Indie Music' },
-  { id: 'n14', label: 'Phoebe Bridgers' },
-  { id: 'n15', label: 'Camera Gear' },
-  { id: 'n16', label: 'Baking' },
-  { id: 'n17', label: 'Sourdough' },
-  { id: 'n18', label: 'Recipe Videos' },
-  { id: 'n19', label: 'Minimalist Decor' },
-  { id: 'n20', label: 'Plant Care' },
-  { id: 'n21', label: 'Travel Destinations' },
-  { id: 'n22', label: 'Weekend Trips' },
-  { id: 'n23', label: 'Road Trip Playlists' },
-  { id: 'n24', label: 'Beach Weekend' },
-  { id: 'n25', label: 'Wine Country' },
-  { id: 'n26', label: 'City Guide: Portland' },
-  { id: 'n27', label: 'City Guide: Austin' },
-  { id: 'n28', label: 'Personal Finance' },
-  { id: 'n29', label: 'Budgeting Apps' },
-  { id: 'n30', label: 'Tech News' },
-  { id: 'n31', label: 'iPhone Tips' },
-  { id: 'n32', label: 'MKBHD' },
-  { id: 'n33', label: 'Meditation' },
-  { id: 'n34', label: 'Headspace' },
-  { id: 'n35', label: 'Morning Routine' },
-];
+// Import actual data from source files to ensure labels match
+import { syntheticUserGraph } from '../shared/synthetic-data.ts';
+import { nearbyPulseGraph } from '../shared/nearby-pulse-data.ts';
 
-// Ghost nodes from nearby-pulse-data.ts
-const ghostNodes = [
-  { id: 'p1', label: 'Coffee Shops' },
-  { id: 'p2', label: 'Local Brunch' },
-  { id: 'p3', label: 'Dog Parks' },
-  { id: 'p4', label: 'Warriors Games' },
-  { id: 'p5', label: 'NFL Playoffs' },
-  { id: 'p6', label: 'Sports Bars' },
-  { id: 'p7', label: 'Taylor Swift' },
-  { id: 'p8', label: 'The Eras Tour' },
-  { id: 'p9', label: 'Concert Tickets' },
-  { id: 'p10', label: 'Netflix Shows' },
-  { id: 'p11', label: 'Stranger Things' },
-  { id: 'p12', label: 'Binge Watching' },
-  { id: 'p13', label: 'Pizza Places' },
-  { id: 'p14', label: 'Food Delivery' },
-  { id: 'p15', label: 'Taco Tuesday' },
-  { id: 'p16', label: 'Hiking Trails' },
-  { id: 'p17', label: 'Weekend Plans' },
-  { id: 'p18', label: 'Beach Day' },
-  { id: 'p19', label: 'Gym Motivation' },
-  { id: 'p20', label: 'New Years Resolutions' },
-  { id: 'p21', label: 'Peloton' },
-  { id: 'p22', label: 'iPhone' },
-  { id: 'p23', label: 'AirPods' },
-  { id: 'p24', label: 'Tech Reviews' },
-  { id: 'p25', label: 'Happy Hour' },
-  { id: 'p26', label: 'Date Night' },
-  { id: 'p27', label: 'Wine Tasting' },
-];
+// Extract nodes with correct labels from source data
+const personalNodes = syntheticUserGraph.nodes.map(n => ({ id: n.id, label: n.label }));
+const ghostNodes = nearbyPulseGraph.nodes.map(n => ({ id: n.id, label: n.label }));
 
 const allNodes = [...personalNodes, ...ghostNodes];
 
