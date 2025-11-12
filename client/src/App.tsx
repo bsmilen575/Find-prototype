@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { isDemoMode } from "@/lib/demoMode";
+import { DemoGate } from "@/components/DemoGate";
 import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/not-found";
@@ -36,7 +37,7 @@ function Router() {
     return (
       <Switch>
         <Route path="/landing" component={Landing} />
-        <Route path="/" component={Home} />
+        <Route path="/" component={DemoGate} />
         <Route component={NotFound} />
       </Switch>
     );

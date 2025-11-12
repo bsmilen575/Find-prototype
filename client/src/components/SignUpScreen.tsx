@@ -7,7 +7,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
-export function SignUpScreen() {
+type SignUpScreenProps =
+  | { mode: 'prototype' }
+  | { mode: 'demo'; onDemoComplete: (data: { name: string; interests: string[] }) => void };
+
+export function SignUpScreen(props: SignUpScreenProps = { mode: 'prototype' }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -164,14 +168,14 @@ export function SignUpScreen() {
     }
   };
 
-  const handleConnect = async () => {
+  const prepareSubmission = (): { name: string; interests: string[] } | null => {
     if (!name.trim()) {
       toast({
         title: "Name required",
         description: "Please enter your name to continue.",
         variant: "destructive",
       });
-      return;
+      return null;
     }
 
     const mergedInterests = getMergedInterests();
@@ -182,7 +186,7 @@ export function SignUpScreen() {
         description: "Please enter at least 5 interests (type manually or upload a document).",
         variant: "destructive",
       });
-      return;
+      return null;
     }
 
     if (!locationGranted) {
@@ -191,15 +195,36 @@ export function SignUpScreen() {
         description: "Please allow location access first.",
         variant: "destructive",
       });
+      return null;
+    }
+
+    return {
+      name: name.trim(),
+      interests: mergedInterests,
+    };
+  };
+
+  const handleConnect = async () => {
+    const submission = prepareSubmission();
+    if (!submission) return;
+
+    // Demo mode: bypass API and call completion callback
+    if (props.mode === 'demo') {
+      toast({
+        title: "Demo profile created!",
+        description: "Explore Find with sample data.",
+      });
+      props.onDemoComplete(submission);
       return;
     }
 
+    // Prototype mode: create real profile via API
     // Get current location with timeout
     const timeoutId = setTimeout(() => {
       // Timeout fallback - create without coordinates
       createProfileMutation.mutate({
-        name: name.trim(),
-        interests: mergedInterests,
+        name: submission.name,
+        interests: submission.interests,
       });
     }, 3000);
 
@@ -207,8 +232,8 @@ export function SignUpScreen() {
       (position) => {
         clearTimeout(timeoutId);
         createProfileMutation.mutate({
-          name: name.trim(),
-          interests: mergedInterests,
+          name: submission.name,
+          interests: submission.interests,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
@@ -217,8 +242,8 @@ export function SignUpScreen() {
         clearTimeout(timeoutId);
         // If location fails, create without coordinates
         createProfileMutation.mutate({
-          name: name.trim(),
-          interests: mergedInterests,
+          name: submission.name,
+          interests: submission.interests,
         });
       },
       { timeout: 2000 }

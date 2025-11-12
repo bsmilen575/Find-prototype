@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { Profile } from '@shared/schema';
-import { isDemoMode } from '@/lib/demoMode';
+import { isDemoMode, getDemoProfileData } from '@/lib/demoMode';
 import { syntheticUserGraph } from '@shared/synthetic-data';
 import { fakeEncounters, type FakeEncounter } from '@shared/serendipity-data';
 import { HomeHeader } from '@/components/HomeHeader';
@@ -35,11 +35,13 @@ export default function Home() {
   const previousMatchIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
 
+  // Use captured demo profile data if available, otherwise use defaults
+  const demoProfileData = getDemoProfileData();
   const demoProfile: Profile = {
     id: 'demo-profile-001',
     userId: 'demo-user-001',
-    name: 'Demo User',
-    interests: ['Artificial Intelligence', 'Film Production', 'Rock Climbing', 'Sourdough Baking', 'Product Design'],
+    name: demoProfileData?.name || 'Demo User',
+    interests: demoProfileData?.interests || ['Artificial Intelligence', 'Film Production', 'Rock Climbing', 'Sourdough Baking', 'Product Design'],
     discoverable: true,
     latitude: null,
     longitude: null,
@@ -138,7 +140,7 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f3f0' }}>
         <div className="w-full h-screen max-w-md mx-auto">
-          <SignUpScreen />
+          <SignUpScreen mode="prototype" />
         </div>
       </div>
     );
